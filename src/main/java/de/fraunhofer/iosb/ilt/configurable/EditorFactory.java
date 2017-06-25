@@ -22,6 +22,6 @@ package de.fraunhofer.iosb.ilt.configurable;
  */
 public interface EditorFactory<E extends ConfigEditor> {
 
-    public E createEditor();
+	public E createEditor();
 
 }

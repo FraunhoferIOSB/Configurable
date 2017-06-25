@@ -15,12 +15,9 @@
  */
 package de.fraunhofer.iosb.ilt.configurable;
 
-import javax.swing.JComponent;
-
 import com.google.gson.JsonElement;
-
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
+import javax.swing.JComponent;
 
 /**
  * Interface defining configuration editors.
@@ -32,59 +29,59 @@ import javafx.scene.layout.Pane;
  */
 public interface ConfigEditor<C, D, T> {
 
-    /**
-     * Load the given configuration into this editor.
-     *
-     * @param config the configuration to load into this editor.
-     * @param context the object that defines the context at runtime.
-     * @param edtCtx the object that defines the context while editing.
-     */
-    public void setConfig(JsonElement config, C context, D edtCtx);
+	/**
+	 * Load the given configuration into this editor.
+	 *
+	 * @param config the configuration to load into this editor.
+	 * @param context the object that defines the context at runtime.
+	 * @param edtCtx the object that defines the context while editing.
+	 */
+	public void setConfig(JsonElement config, C context, D edtCtx);
 
-    /**
-     * Get the current (edited) state of the configuration.
-     *
-     * @return The current (edited) configuration.
-     */
-    public JsonElement getConfig();
+	/**
+	 * Get the current (edited) state of the configuration.
+	 *
+	 * @return The current (edited) configuration.
+	 */
+	public JsonElement getConfig();
 
-    /**
-     * Get the value configured in the editor.
-     *
-     * @return the value configured in the editor.
-     */
-    public T getValue();
+	/**
+	 * Get the value configured in the editor.
+	 *
+	 * @return the value configured in the editor.
+	 */
+	public T getValue();
 
-    /**
-     * Get the swing Component that represents the editor.
-     *
-     * @return The swing Component that represents the editor.
-     */
-    public JComponent getComponent();
+	/**
+	 * Get the swing Component that represents the editor.
+	 *
+	 * @return The swing Component that represents the editor.
+	 */
+	public JComponent getComponent();
 
-    /**
-     * Get the JavaFX Node that represents the editor.
-     *
-     * @return The JavaFX Node that represents the editor.
-     */
-    public Node getNode();
+	/**
+	 * Get the JavaFX Node that represents the editor.
+	 *
+	 * @return The JavaFX Node that represents the editor.
+	 */
+	public Node getNode();
 
-    /**
-     * Get the human-readable label to use for this editor. Can return an empty
-     * string.
-     *
-     * @return The label to use for this editor.
-     */
-    default String getLabel() {
-        return "";
-    }
+	/**
+	 * Get the human-readable label to use for this editor. Can return an empty
+	 * string.
+	 *
+	 * @return The label to use for this editor.
+	 */
+	default String getLabel() {
+		return "";
+	}
 
-    /**
-     * Get the description for this editor. Can return an empty string.
-     *
-     * @return The description to use for this editor.
-     */
-    default String getDescription() {
-        return "";
-    }
+	/**
+	 * Get the description for this editor. Can return an empty string.
+	 *
+	 * @return The description to use for this editor.
+	 */
+	default String getDescription() {
+		return "";
+	}
 }

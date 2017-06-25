@@ -4,16 +4,13 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
-
+import java.awt.BorderLayout;
 import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 /**
  * An editor that does not edit anything. For cases where you want a class to be
@@ -25,46 +22,46 @@ import javafx.scene.layout.BorderPane;
  */
 public class EditorNull<C, D> extends EditorDefault<C, D, Void> {
 
-    private JComponent swComponent;
-    private BorderPane fxNode;
+	private JComponent swComponent;
+	private BorderPane fxNode;
 
-    public EditorNull() {
-    }
+	public EditorNull() {
+	}
 
-    public EditorNull(String label, String description) {
-        setLabel(label);
-        setDescription(description);
-    }
+	public EditorNull(String label, String description) {
+		setLabel(label);
+		setDescription(description);
+	}
 
-    @Override
-    public void setConfig(JsonElement config, Object context, Object edtCtx) {
-        // Nothing to configure
-    }
+	@Override
+	public void setConfig(JsonElement config, Object context, Object edtCtx) {
+		// Nothing to configure
+	}
 
-    @Override
-    public JsonElement getConfig() {
-        return JsonNull.INSTANCE;
-    }
+	@Override
+	public JsonElement getConfig() {
+		return JsonNull.INSTANCE;
+	}
 
-    @Override
-    public JComponent getComponent() {
-        if (swComponent == null) {
-            swComponent = new JPanel(new BorderLayout());
-        }
-        return swComponent;
-    }
+	@Override
+	public JComponent getComponent() {
+		if (swComponent == null) {
+			swComponent = new JPanel(new BorderLayout());
+		}
+		return swComponent;
+	}
 
-    @Override
-    public Node getNode() {
-        if (fxNode == null) {
-            fxNode = new BorderPane();
-        }
-        return fxNode;
-    }
+	@Override
+	public Node getNode() {
+		if (fxNode == null) {
+			fxNode = new BorderPane();
+		}
+		return fxNode;
+	}
 
-    @Override
-    public Void getValue() {
-        return null;
-    }
+	@Override
+	public Void getValue() {
+		return null;
+	}
 
 }

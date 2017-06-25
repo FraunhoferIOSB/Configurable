@@ -25,23 +25,23 @@ import com.google.gson.JsonElement;
  */
 public interface Configurable<C, D> {
 
-    /**
-     * Configure the instance using the given configuration.
-     *
-     * @param config The configuration to use for this instance.
-     * @param context the object that defines the context at runtime.
-     * @param edtCtx the object that defines the context while editing.
-     */
-    public void configure(JsonElement config, C context, D edtCtx);
+	/**
+	 * Configure the instance using the given configuration.
+	 *
+	 * @param config The configuration to use for this instance.
+	 * @param context the object that defines the context at runtime.
+	 * @param edtCtx the object that defines the context while editing.
+	 */
+	public void configure(JsonElement config, C context, D edtCtx);
 
-    /**
-     * Returns an generic editor for any instance of this class. This editor can
-     * be given a configuration separate from the configuration of the class
-     * used to generate this editor.
-     *
-     * @param context the object that defines the context at runtime.
-     * @param edtCtx the object that defines the context while editing.
-     * @return A generic editor for any instance of this class.
-     */
-    public ConfigEditor<C, D, ?> getConfigEditor(C context, D edtCtx);
+	/**
+	 * Returns an generic editor for any instance of this class. This editor can
+	 * be given a configuration separate from the configuration of the class
+	 * used to generate this editor.
+	 *
+	 * @param context the object that defines the context at runtime.
+	 * @param edtCtx the object that defines the context while editing.
+	 * @return A generic editor for any instance of this class.
+	 */
+	public ConfigEditor<C, D, ?> getConfigEditor(C context, D edtCtx);
 }

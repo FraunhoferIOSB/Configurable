@@ -15,17 +15,14 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-
 import javafx.scene.Node;
 import javafx.scene.control.CheckBox;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An editor for boolean values.
@@ -36,112 +33,112 @@ import javafx.scene.control.CheckBox;
  */
 public final class EditorBoolean<C, D> extends EditorDefault<C, D, Boolean> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EditorBoolean.class.getName());
-    private final boolean deflt;
-    private boolean value;
-    /**
-     * Flag indicating we are in JavaFX mode.
-     */
-    private Boolean fx;
-    // Swing components
-    private JCheckBox swComponent;
-    // FX Nodes
-    private CheckBox fxNode;
+	private static final Logger LOGGER = LoggerFactory.getLogger(EditorBoolean.class.getName());
+	private final boolean deflt;
+	private boolean value;
+	/**
+	 * Flag indicating we are in JavaFX mode.
+	 */
+	private Boolean fx;
+	// Swing components
+	private JCheckBox swComponent;
+	// FX Nodes
+	private CheckBox fxNode;
 
-    public EditorBoolean(boolean deflt) {
-        this.value = deflt;
-        this.deflt = deflt;
-    }
+	public EditorBoolean(boolean deflt) {
+		this.value = deflt;
+		this.deflt = deflt;
+	}
 
-    public EditorBoolean(boolean deflt, String label, String description) {
-        this.value = deflt;
-        this.deflt = deflt;
-        setLabel(label);
-        setDescription(description);
-    }
+	public EditorBoolean(boolean deflt, String label, String description) {
+		this.value = deflt;
+		this.deflt = deflt;
+		setLabel(label);
+		setDescription(description);
+	}
 
-    @Override
-    public void setConfig(JsonElement config, C context, final D edtCtx) {
-        try {
-            value = config.getAsBoolean();
-        } catch (ClassCastException | IllegalStateException e) {
-            value = deflt;
-            LOGGER.trace("", e);
-            LOGGER.debug("Value is not a boolean: {}.", config.toString());
-        }
-        fillComponent();
-    }
+	@Override
+	public void setConfig(JsonElement config, C context, final D edtCtx) {
+		try {
+			value = config.getAsBoolean();
+		} catch (ClassCastException | IllegalStateException e) {
+			value = deflt;
+			LOGGER.trace("", e);
+			LOGGER.debug("Value is not a boolean: {}.", config.toString());
+		}
+		fillComponent();
+	}
 
-    @Override
-    public JsonElement getConfig() {
-        if (swComponent != null) {
-            value = swComponent.isSelected();
-        }
-        if (fxNode != null) {
-            value = fxNode.isSelected();
-        }
-        return new JsonPrimitive(value);
-    }
+	@Override
+	public JsonElement getConfig() {
+		if (swComponent != null) {
+			value = swComponent.isSelected();
+		}
+		if (fxNode != null) {
+			value = fxNode.isSelected();
+		}
+		return new JsonPrimitive(value);
+	}
 
-    private void setFx(boolean fxMode) {
-        if (fx != null && fx != fxMode) {
-            throw new IllegalStateException("Can not switch between swing and FX mode.");
-        }
-        fx = fxMode;
-    }
+	private void setFx(boolean fxMode) {
+		if (fx != null && fx != fxMode) {
+			throw new IllegalStateException("Can not switch between swing and FX mode.");
+		}
+		fx = fxMode;
+	}
 
-    @Override
-    public JComponent getComponent() {
-        setFx(false);
-        if (swComponent == null) {
-            createComponent();
-        }
-        return swComponent;
-    }
+	@Override
+	public JComponent getComponent() {
+		setFx(false);
+		if (swComponent == null) {
+			createComponent();
+		}
+		return swComponent;
+	}
 
-    @Override
-    public Node getNode() {
-        setFx(true);
-        if (fxNode == null) {
-            createNode();
-        }
-        return fxNode;
-    }
+	@Override
+	public Node getNode() {
+		setFx(true);
+		if (fxNode == null) {
+			createNode();
+		}
+		return fxNode;
+	}
 
-    private void createNode() {
-        fxNode = new CheckBox();
-        fillComponent();
-    }
+	private void createNode() {
+		fxNode = new CheckBox();
+		fillComponent();
+	}
 
-    private void createComponent() {
-        swComponent = new JCheckBox();
-        fillComponent();
-    }
+	private void createComponent() {
+		swComponent = new JCheckBox();
+		fillComponent();
+	}
 
-    /**
-     * Ensure the component represents the current value.
-     */
-    private void fillComponent() {
-        if (fx == null) {
-            return;
-        }
-        if (fx) {
-            fxNode.setSelected(value);
-        } else {
-            swComponent.setSelected(value);
-        }
-    }
+	/**
+	 * Ensure the component represents the current value.
+	 */
+	private void fillComponent() {
+		if (fx == null) {
+			return;
+		}
+		if (fx) {
+			fxNode.setSelected(value);
+		} else {
+			swComponent.setSelected(value);
+		}
+	}
 
-    public boolean isSelected() {
-        if (fx == null) {
-            return value;
-        }
-        return fx ? fxNode.isSelected() : swComponent.isSelected();
-    }
+	public boolean isSelected() {
+		if (fx == null) {
+			return value;
+		}
+		return fx ? fxNode.isSelected() : swComponent.isSelected();
+	}
 
-    @Override
-    public Boolean getValue() {
-        return value;
-    }
+	@Override
+	public Boolean getValue() {
+		return value;
+	}
 
 }

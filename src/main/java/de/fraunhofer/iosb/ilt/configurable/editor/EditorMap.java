@@ -29,48 +29,48 @@ import java.util.Map;
  */
 public class EditorMap<C, D, T> extends AbstractEditorMap<C, D, Map<String, T>, T> {
 
-    public EditorMap() {
-        super();
-    }
+	public EditorMap() {
+		super();
+	}
 
-    public EditorMap(int columns) {
-        super(columns);
-    }
+	public EditorMap(int columns) {
+		super(columns);
+	}
 
-    @Override
-    public Map<String, T> getValue() {
-        Map<String, T> result = new HashMap<>();
-        for (String name : value) {
-            Item<C, D, T> item = options.get(name);
-            T val = item.editor.getValue();
-            result.put(name, val);
-        }
-        return result;
-    }
+	@Override
+	public Map<String, T> getValue() {
+		Map<String, T> result = new HashMap<>();
+		for (String name : value) {
+			Item<C, D, T> item = options.get(name);
+			T val = item.editor.getValue();
+			result.put(name, val);
+		}
+		return result;
+	}
 
-    public double getDouble(String name, double deflt) {
-        Item<C, D, T> item = options.get(name);
-        Object result = item.editor.getValue();
-        if (result instanceof Number) {
-            return ((Number) result).doubleValue();
-        }
-        return deflt;
-    }
+	public double getDouble(String name, double deflt) {
+		Item<C, D, T> item = options.get(name);
+		Object result = item.editor.getValue();
+		if (result instanceof Number) {
+			return ((Number) result).doubleValue();
+		}
+		return deflt;
+	}
 
-    public long getLong(String name, long deflt) {
-        Item<C, D, T> item = options.get(name);
-        Object result = item.editor.getValue();
-        if (result instanceof Number) {
-            return ((Number) result).longValue();
-        }
-        return deflt;
-    }
+	public long getLong(String name, long deflt) {
+		Item<C, D, T> item = options.get(name);
+		Object result = item.editor.getValue();
+		if (result instanceof Number) {
+			return ((Number) result).longValue();
+		}
+		return deflt;
+	}
 
-    public Map<String, Long> getLongMap() {
-        Map<String, Long> result = new HashMap<>();
-        for (String name : value) {
-            result.put(name, getLong(name, 0));
-        }
-        return result;
-    }
+	public Map<String, Long> getLongMap() {
+		Map<String, Long> result = new HashMap<>();
+		for (String name : value) {
+			result.put(name, getLong(name, 0));
+		}
+		return result;
+	}
 }
