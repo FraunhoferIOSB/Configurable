@@ -1,17 +1,18 @@
 /*
- * Copyright (C) 2015 Hylke van der Schaaf
+ * Copyright (C) 2017 Fraunhofer IOSB
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, in version 3 of the License.
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
@@ -29,10 +30,12 @@ import java.util.Arrays;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -86,6 +89,12 @@ public class EditorSubclass<C, D, T> extends EditorDefault<C, D, T> {
 		this.iface = iface;
 		this.merge = merge;
 		this.nameField = nameField;
+	}
+
+	public EditorSubclass(final Class<? extends T> iface, final String label, final String description) {
+		this.iface = iface;
+		setLabel(label);
+		setDescription(description);
 	}
 
 	/**
@@ -209,16 +218,17 @@ public class EditorSubclass<C, D, T> extends EditorDefault<C, D, T> {
 	}
 
 	private void createPane(String[] classes) {
-		BorderPane controls = new BorderPane();
-		controls.setLeft(new Label(selectLabel));
+		FlowPane controls = new FlowPane();
+		controls.setAlignment(Pos.TOP_RIGHT);
+		controls.getChildren().add(new Label(selectLabel));
 
 		fxItems = new ComboBox<>(FXCollections.observableArrayList(classes));
 		fxItems.getSelectionModel().select(displayName);
-		controls.setCenter(fxItems);
+		controls.getChildren().add(fxItems);
 
 		Button addButton = new Button("set");
 		addButton.setOnAction(event -> setItem());
-		controls.setRight(addButton);
+		controls.getChildren().add(addButton);
 
 		fxPaneItem = new BorderPane();
 		fxPaneItem.setPadding(new Insets(0, 0, 0, 5));
@@ -242,20 +252,22 @@ public class EditorSubclass<C, D, T> extends EditorDefault<C, D, T> {
 		}
 		boolean end = false;
 		int length = 0;
-		while (!end) {
-			length++;
-			String test = result[0].substring(0, length);
-			for (String name : result) {
-				if (!name.startsWith(test)) {
-					end = true;
-					break;
+		if (result.length > 1) {
+			while (!end && length < result[0].length()) {
+				length++;
+				String test = result[0].substring(0, length);
+				for (String name : result) {
+					if (!name.startsWith(test)) {
+						end = true;
+						break;
+					}
+				}
+				if (!end && result[0].charAt(length - 1) == '.') {
+					prefix = test;
 				}
 			}
-			if (!end) {
-				prefix = test;
-			}
+			LOGGER.info("Found prefix to be: {}", prefix);
 		}
-		LOGGER.info("Found prefix to be: {}", prefix);
 		if (length > 0) {
 			for (i = 0; i < result.length; i++) {
 				result[i] = result[i].substring(prefix.length());
