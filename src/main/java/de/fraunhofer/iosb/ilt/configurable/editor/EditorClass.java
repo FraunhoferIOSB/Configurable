@@ -71,6 +71,7 @@ public final class EditorClass<C, D, T> extends EditorDefault<C, D, T> {
 		this.context = context;
 		this.edtCtx = edtCtx;
 		this.classConfig = classConfig;
+		initClass();
 	}
 
 	@Override
