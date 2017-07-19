@@ -66,6 +66,17 @@ public final class EditorClass<C, D, T> extends EditorDefault<C, D, T> {
 		this.clazz = clazz;
 	}
 
+	/**
+	 * @param clazz The class to wrap.
+	 * @param label The label to use when showing this editor in a GUI.
+	 * @param description The description of the editor.
+	 */
+	public EditorClass(final Class<T> clazz, final String label, final String description) {
+		this.clazz = clazz;
+		setLabel(label);
+		setDescription(description);
+	}
+
 	@Override
 	public void setConfig(final JsonElement classConfig, final C context, final D edtCtx) {
 		this.context = context;
