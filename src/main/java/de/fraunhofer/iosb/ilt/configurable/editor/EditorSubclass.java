@@ -16,6 +16,7 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -117,7 +118,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<C, D, T> {
 	public void setConfig(JsonElement config, C context, D edtCtx) {
 		this.context = context;
 		this.edtCtx = edtCtx;
-		if (config.isJsonObject()) {
+		if (config != null && config.isJsonObject()) {
 			JsonObject confObj = config.getAsJsonObject();
 			if (merge) {
 				JsonElement classNameElem = confObj.get(nameField);
@@ -266,7 +267,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<C, D, T> {
 					prefix = test;
 				}
 			}
-			LOGGER.info("Found prefix to be: {}", prefix);
+			LOGGER.debug("Found prefix to be: {}", prefix);
 		}
 		if (length > 0) {
 			for (i = 0; i < result.length; i++) {
@@ -397,6 +398,9 @@ public class EditorSubclass<C, D, T> extends EditorDefault<C, D, T> {
 		readComponent();
 		try {
 			ClassLoader cl = getClass().getClassLoader();
+			if (Strings.isNullOrEmpty(className)) {
+				return null;
+			}
 			Class<?> loadedClass = cl.loadClass(className);
 			Object instance = loadedClass.newInstance();
 
