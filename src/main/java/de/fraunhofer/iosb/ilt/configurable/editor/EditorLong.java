@@ -19,12 +19,10 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import javafx.scene.Node;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
 import javax.swing.JComponent;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.JTextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,30 +30,27 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hylke van der Schaaf
  */
-public final class EditorInt extends EditorDefault<Object, Object, Integer> {
+public final class EditorLong extends EditorDefault<Object, Object, Long> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EditorInt.class);
-	private final int min;
-	private final int max;
-	private final int step;
-	private final int deflt;
-	private int value;
+	private static final Logger LOGGER = LoggerFactory.getLogger(EditorLong.class);
+	private final long min;
+	private final long max;
+	private final long deflt;
+	private long value;
 	/**
 	 * Flag indicating we are in JavaFX mode.
 	 */
 	private Boolean fx;
 	// Swing components
-	private SpinnerNumberModel swModel;
-	private JSpinner swComponent;
-	// FX Nodes
-	private Spinner<Integer> fxNode;
+	private JTextField swComponent;
+	// JavaFX Nodes
+	private TextInputControl fxNode;
 
-	public EditorInt(int min, int max, int step, int deflt, String label, String description) {
+	public EditorLong(long min, long max, long deflt, String label, String description) {
 		this.deflt = deflt;
 		this.value = deflt;
 		this.min = min;
 		this.max = max;
-		this.step = step;
 		setLabel(label);
 		setDescription(description);
 	}
@@ -107,17 +102,9 @@ public final class EditorInt extends EditorDefault<Object, Object, Integer> {
 		}
 
 		if (fx) {
-			SpinnerValueFactory.IntegerSpinnerValueFactory factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, value, step);
-			fxNode = new Spinner<>(factory);
-			fxNode.setEditable(true);
-			// hook in a formatter with the same properties as the factory
-			TextFormatter formatter = new TextFormatter(factory.getConverter(), factory.getValue());
-			fxNode.getEditor().setTextFormatter(formatter);
-			// bidi-bind the values
-			factory.valueProperty().bindBidirectional(formatter.valueProperty());
+			fxNode = new TextField();
 		} else {
-			swModel = new SpinnerNumberModel(value, min, max, step);
-			swComponent = new JSpinner(swModel);
+			swComponent = new JTextField();
 		}
 		fillComponent();
 	}
@@ -130,25 +117,39 @@ public final class EditorInt extends EditorDefault<Object, Object, Integer> {
 			return;
 		}
 		if (fx) {
-			fxNode.getValueFactory().setValue(value);
+			fxNode.setText("" + value);
 		} else {
-			swComponent.setValue(value);
+			swComponent.setText("" + value);
 		}
 	}
 
 	@Override
-	public Integer getValue() {
+	public Long getValue() {
 		if (swComponent != null) {
-			value = swModel.getNumber().intValue();
+			try {
+				value = Long.parseLong(swComponent.getText());
+			} catch (NumberFormatException exc) {
+				LOGGER.error("Failed to parse text to number: " + swComponent.getText());
+			}
 		}
 		if (fxNode != null) {
-			value = fxNode.getValue();
+			try {
+				value = Long.parseLong(fxNode.getText());
+			} catch (NumberFormatException exc) {
+				LOGGER.error("Failed to parse text to number: " + swComponent.getText());
+			}
+		}
+		if (value > max) {
+			value = max;
+		}
+		if (value < min) {
+			value = min;
 		}
 		return value;
 	}
 
 	@Override
-	public void setValue(Integer value) {
+	public void setValue(Long value) {
 		this.value = value;
 		fillComponent();
 	}

@@ -165,4 +165,11 @@ public class EditorString<C, D> extends EditorDefault<C, D, String> {
 		readComponent();
 		return value;
 	}
+
+	@Override
+	public void setValue(String value) {
+		this.value = value;
+		fillComponent();
+	}
+
 }

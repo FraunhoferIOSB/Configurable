@@ -246,4 +246,9 @@ public class EditorList<C, D, U, T extends ConfigEditor<C, D, U>> extends Editor
 		return valList;
 	}
 
+	@Override
+	public void setValue(List<U> value) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
 }

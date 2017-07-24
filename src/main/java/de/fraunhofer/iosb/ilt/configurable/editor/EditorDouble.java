@@ -156,4 +156,10 @@ public class EditorDouble<C, D> extends EditorDefault<C, D, Double> {
 		}
 		return value;
 	}
+
+	@Override
+	public void setValue(Double value) {
+		this.value = value;
+		fillComponent();
+	}
 }

@@ -230,4 +230,9 @@ public class EditorColor<C, D> extends EditorDefault<C, D, Color> {
 		readComponent();
 		return new Color(red, green, blue, alpha);
 	}
+
+	@Override
+	public void setValue(Color value) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }

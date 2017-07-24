@@ -142,4 +142,10 @@ public final class EditorBoolean<C, D> extends EditorDefault<C, D, Boolean> {
 		return value;
 	}
 
+	@Override
+	public void setValue(Boolean value) {
+		this.value = value;
+		fillComponent();
+	}
+
 }

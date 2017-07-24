@@ -184,6 +184,9 @@ public final class EditorClass<C, D, T> extends EditorDefault<C, D, T> {
 	}
 
 	private void readComponent() {
+		if (classEditor == null) {
+			initClass();
+		}
 		if (classEditor != null) {
 			classConfig = classEditor.getConfig();
 		}
@@ -211,6 +214,7 @@ public final class EditorClass<C, D, T> extends EditorDefault<C, D, T> {
 			if (instance instanceof Configurable) {
 				final Configurable confInstance = (Configurable) instance;
 				confInstance.configure(classConfig, context, edtCtx);
+				classEditor = confInstance.getConfigEditor(context, edtCtx);
 			}
 			return (T) instance;
 		} catch (InstantiationException | IllegalAccessException | ClassCastException exc) {
@@ -218,6 +222,11 @@ public final class EditorClass<C, D, T> extends EditorDefault<C, D, T> {
 			LOGGER.trace("Exception instantiating class.", exc);
 			return null;
 		}
+	}
+
+	@Override
+	public void setValue(T value) {
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 }

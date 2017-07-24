@@ -76,4 +76,8 @@ public class EditorNull<C, D> extends EditorDefault<C, D, Void> {
 		return null;
 	}
 
+	@Override
+	public void setValue(Void value) {
+	}
+
 }

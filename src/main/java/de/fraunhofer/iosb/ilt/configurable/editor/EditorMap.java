@@ -74,4 +74,10 @@ public class EditorMap<C, D, T> extends AbstractEditorMap<C, D, Map<String, T>, 
 		}
 		return result;
 	}
+
+	@Override
+	public void setValue(Map<String, T> value) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
 }

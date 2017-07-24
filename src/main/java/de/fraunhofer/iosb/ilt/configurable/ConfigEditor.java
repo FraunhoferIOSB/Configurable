@@ -54,6 +54,14 @@ public interface ConfigEditor<C, D, T> {
 	public T getValue();
 
 	/**
+	 * Set the value in the editor. Used for saving an (externally) updated
+	 * configuration.
+	 *
+	 * @param value the value in the editor.
+	 */
+	public void setValue(T value);
+
+	/**
 	 * Get the swing Component that represents the editor.
 	 *
 	 * @return The swing Component that represents the editor.

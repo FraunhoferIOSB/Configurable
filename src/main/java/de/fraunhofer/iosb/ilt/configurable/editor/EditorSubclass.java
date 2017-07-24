@@ -416,6 +416,11 @@ public class EditorSubclass<C, D, T> extends EditorDefault<C, D, T> {
 		}
 	}
 
+	@Override
+	public void setValue(T value) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
 	public EditorSubclass<C, D, T> setSelectLabel(String selectLabel) {
 		this.selectLabel = selectLabel;
 		return this;

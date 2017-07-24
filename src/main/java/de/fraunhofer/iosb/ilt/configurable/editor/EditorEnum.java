@@ -154,4 +154,10 @@ public class EditorEnum<C, D, T extends Enum<T>> extends EditorDefault<C, D, T> 
 		return value;
 	}
 
+	@Override
+	public void setValue(T value) {
+		this.value = value;
+		fillComponent();
+	}
+
 }
