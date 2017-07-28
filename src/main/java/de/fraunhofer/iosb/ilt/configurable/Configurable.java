@@ -44,5 +44,5 @@ public interface Configurable<C, D> {
 	 * @param edtCtx the object that defines the context while editing.
 	 * @return A generic editor for any instance of this class.
 	 */
-	public ConfigEditor<C, D, ?> getConfigEditor(C context, D edtCtx);
+	public ConfigEditor<?> getConfigEditor(C context, D edtCtx);
 }

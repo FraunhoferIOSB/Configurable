@@ -31,11 +31,9 @@ import javax.swing.JPanel;
 /**
  *
  * @author Hylke van der Schaaf
- * @param <C> The class type that provides context at runtime.
- * @param <D> The class type that provides context while editing.
  * @param <T> The type this editor selects.
  */
-public class EditorEnum<C, D, T extends Enum<T>> extends EditorDefault<C, D, T> {
+public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
 
 	private final Class<T> sourceType;
 	private final T deflt;
@@ -60,7 +58,7 @@ public class EditorEnum<C, D, T extends Enum<T>> extends EditorDefault<C, D, T> 
 	}
 
 	@Override
-	public void setConfig(JsonElement config, C context, final D edtCtx) {
+	public void setConfig(JsonElement config) {
 		if (config != null && config.isJsonPrimitive()) {
 			JsonPrimitive prim = config.getAsJsonPrimitive();
 			if (prim.isString()) {

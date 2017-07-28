@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * @param <D> The class type that provides context while editing.
  * @param <T> The type of object returned by getValue.
  */
-public final class EditorClass<C, D, T> extends EditorDefault<C, D, T> {
+public final class EditorClass<C, D, T> extends EditorDefault<T> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditorClass.class);
 	private final Class<T> clazz;
@@ -60,27 +60,36 @@ public final class EditorClass<C, D, T> extends EditorDefault<C, D, T> {
 	private D edtCtx;
 
 	/**
+	 * @param context The Object that provides context at runtime.
+	 * @param edtCtx The Object that provides context while editing.
 	 * @param clazz The class to wrap.
 	 */
-	public EditorClass(final Class<T> clazz) {
+	public EditorClass(final C context, final D edtCtx, final Class<T> clazz) {
 		this.clazz = clazz;
+		setContexts(context, edtCtx);
 	}
 
 	/**
+	 * @param context The Object that provides context at runtime.
+	 * @param edtCtx The Object that provides context while editing.
 	 * @param clazz The class to wrap.
 	 * @param label The label to use when showing this editor in a GUI.
 	 * @param description The description of the editor.
 	 */
-	public EditorClass(final Class<T> clazz, final String label, final String description) {
+	public EditorClass(final C context, final D edtCtx, final Class<T> clazz, final String label, final String description) {
 		this.clazz = clazz;
 		setLabel(label);
 		setDescription(description);
+		setContexts(context, edtCtx);
+	}
+
+	public final void setContexts(final C context, final D edtCtx) {
+		this.context = context;
+		this.edtCtx = edtCtx;
 	}
 
 	@Override
-	public void setConfig(final JsonElement classConfig, final C context, final D edtCtx) {
-		this.context = context;
-		this.edtCtx = edtCtx;
+	public void setConfig(final JsonElement classConfig) {
 		this.classConfig = classConfig;
 		initClass();
 	}
@@ -142,11 +151,11 @@ public final class EditorClass<C, D, T> extends EditorDefault<C, D, T> {
 		if (instance instanceof Configurable) {
 			final Configurable confInstance = (Configurable) instance;
 			classEditor = confInstance.getConfigEditor(context, edtCtx);
-			classEditor.setConfig(classConfig, context, edtCtx);
+			classEditor.setConfig(classConfig);
 		} else {
 			LOGGER.warn("Class {} is not configurable.", clazz.getName());
 			classEditor = new EditorString("", 6);
-			classEditor.setConfig(classConfig, context, edtCtx);
+			classEditor.setConfig(classConfig);
 		}
 
 		fillComponent();

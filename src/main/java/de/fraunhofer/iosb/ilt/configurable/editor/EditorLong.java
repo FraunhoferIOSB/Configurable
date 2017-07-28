@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Hylke van der Schaaf
  */
-public final class EditorLong extends EditorDefault<Object, Object, Long> {
+public final class EditorLong extends EditorDefault<Long> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditorLong.class);
 	private final long min;
@@ -56,7 +56,7 @@ public final class EditorLong extends EditorDefault<Object, Object, Long> {
 	}
 
 	@Override
-	public void setConfig(JsonElement config, Object context, Object edtCtx) {
+	public void setConfig(JsonElement config) {
 		if (config != null && config.isJsonPrimitive() && config.getAsJsonPrimitive().isNumber()) {
 			value = config.getAsInt();
 		} else {

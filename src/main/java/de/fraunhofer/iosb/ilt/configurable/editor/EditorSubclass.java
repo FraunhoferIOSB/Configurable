@@ -57,7 +57,7 @@ import org.slf4j.LoggerFactory;
  * @param <D> The class type that provides context while editing.
  * @param <T> The type of object returned by getValue.
  */
-public class EditorSubclass<C, D, T> extends EditorDefault<C, D, T> {
+public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 
 	private static final String KEY_CLASSNAME = "className";
 	private static final String KEY_CLASSCONFIG = "classConfig";
@@ -86,16 +86,18 @@ public class EditorSubclass<C, D, T> extends EditorDefault<C, D, T> {
 	private BorderPane fxPaneItem;
 	private ComboBox<String> fxItems;
 
-	public EditorSubclass(Class<?> iface, boolean merge, String nameField) {
+	public EditorSubclass(final C context, final D edtCtx, Class<?> iface, boolean merge, String nameField) {
 		this.iface = iface;
 		this.merge = merge;
 		this.nameField = nameField;
+		setContexts(context, edtCtx);
 	}
 
-	public EditorSubclass(final Class<? extends T> iface, final String label, final String description) {
+	public EditorSubclass(final C context, final D edtCtx, final Class<? extends T> iface, final String label, final String description) {
 		this.iface = iface;
 		setLabel(label);
 		setDescription(description);
+		setContexts(context, edtCtx);
 	}
 
 	/**
@@ -105,19 +107,25 @@ public class EditorSubclass<C, D, T> extends EditorDefault<C, D, T> {
 	 * @param description The description describing this instance.
 	 * @param merge Should the class name be merged into the configuration.
 	 * @param nameField The name of the field to use for storing the className.
+	 * @param context
+	 * @param edtCtx
 	 */
-	public EditorSubclass(final Class<? extends T> iface, final String label, final String description, final boolean merge, final String nameField) {
+	public EditorSubclass(final C context, final D edtCtx, final Class<? extends T> iface, final String label, final String description, final boolean merge, final String nameField) {
 		this.iface = iface;
 		this.merge = merge;
 		this.nameField = nameField;
 		setLabel(label);
 		setDescription(description);
+		setContexts(context, edtCtx);
+	}
+
+	public final void setContexts(final C context, final D edtCtx) {
+		this.context = context;
+		this.edtCtx = edtCtx;
 	}
 
 	@Override
-	public void setConfig(JsonElement config, C context, D edtCtx) {
-		this.context = context;
-		this.edtCtx = edtCtx;
+	public void setConfig(JsonElement config) {
 		if (config != null && config.isJsonObject()) {
 			JsonObject confObj = config.getAsJsonObject();
 			if (merge) {
@@ -331,7 +339,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<C, D, T> {
 		if (instance != null && instance instanceof Configurable) {
 			Configurable confInstance = (Configurable) instance;
 			classEditor = confInstance.getConfigEditor(context, edtCtx);
-			classEditor.setConfig(classConfig, context, edtCtx);
+			classEditor.setConfig(classConfig);
 		} else {
 			LOGGER.warn("Class {} is not configurable.", className);
 			classEditor = null;

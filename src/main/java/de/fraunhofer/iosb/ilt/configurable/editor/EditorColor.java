@@ -35,10 +35,8 @@ import javax.swing.SpinnerNumberModel;
 /**
  *
  * @author Hylke van der Schaaf
- * @param <C> The class type that provides context at runtime.
- * @param <D> The class type that provides context while editing.
  */
-public class EditorColor<C, D> extends EditorDefault<C, D, Color> {
+public class EditorColor extends EditorDefault<Color> {
 
 	private boolean editAlpla = true;
 	private int red;
@@ -88,7 +86,7 @@ public class EditorColor<C, D> extends EditorDefault<C, D, Color> {
 	}
 
 	@Override
-	public void setConfig(JsonElement config, C context, D edtCtx) {
+	public void setConfig(JsonElement config) {
 		if (config.isJsonObject()) {
 			JsonObject confObj = config.getAsJsonObject();
 			red = getInt(confObj, red, "r", "red");

@@ -24,20 +24,16 @@ import javax.swing.JComponent;
  * Interface defining configuration editors.
  *
  * @author hylke
- * @param <C> The class type that provides context.
- * @param <D> The class type that provides context while editing.
  * @param <T> The type of object returned by getValue.
  */
-public interface ConfigEditor<C, D, T> {
+public interface ConfigEditor<T> {
 
 	/**
 	 * Load the given configuration into this editor.
 	 *
 	 * @param config the configuration to load into this editor.
-	 * @param context the object that defines the context at runtime.
-	 * @param edtCtx the object that defines the context while editing.
 	 */
-	public void setConfig(JsonElement config, C context, D edtCtx);
+	public void setConfig(JsonElement config);
 
 	/**
 	 * Get the current (edited) state of the configuration.

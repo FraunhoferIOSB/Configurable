@@ -50,17 +50,13 @@ import javax.swing.border.EtchedBorder;
  * An editor for a list of editors, all of the same type.
  *
  * @author Hylke van der Schaaf
- * @param <C> The class type that provides context at runtime.
- * @param <D> The class type that provides context while editing.
  * @param <T> The type of editors that edit the items in the list.
  * @param <U> The type of items in the list.
  */
-public class EditorList<C, D, U, T extends ConfigEditor<C, D, U>> extends EditorDefault<C, D, List<U>> implements Iterable<T> {
+public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List<U>> implements Iterable<T> {
 
 	private final EditorFactory<T> factory;
 	private final List<T> value = new ArrayList<>();
-	private C context;
-	private D edtCtx;
 	/**
 	 * Flag indicating we are in JavaFX mode.
 	 */
@@ -83,15 +79,13 @@ public class EditorList<C, D, U, T extends ConfigEditor<C, D, U>> extends Editor
 	}
 
 	@Override
-	public void setConfig(JsonElement config, C context, D edtCtx) {
-		this.context = context;
-		this.edtCtx = edtCtx;
+	public void setConfig(JsonElement config) {
 		value.clear();
 		if (config != null && config.isJsonArray()) {
 			JsonArray asArray = config.getAsJsonArray();
 			for (JsonElement subConf : asArray) {
 				T item = factory.createEditor();
-				item.setConfig(subConf, context, edtCtx);
+				item.setConfig(subConf);
 				value.add(item);
 			}
 		}
@@ -167,7 +161,6 @@ public class EditorList<C, D, U, T extends ConfigEditor<C, D, U>> extends Editor
 
 	public void addItem() {
 		final T item = factory.createEditor();
-		item.setConfig(null, context, edtCtx);
 		value.add(item);
 		fillComponent();
 	}

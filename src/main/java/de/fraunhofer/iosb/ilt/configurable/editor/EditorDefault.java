@@ -27,11 +27,9 @@ import javax.swing.text.html.HTMLEditorKit;
 /**
  *
  * @author Hylke van der Schaaf
- * @param <C> The class type that provides context at runtime.
- * @param <D> The class type that provides context while editing.
  * @param <T> The type of object returned by getValue.
  */
-public abstract class EditorDefault<C, D, T> implements ConfigEditor<C, D, T> {
+public abstract class EditorDefault<T> implements ConfigEditor<T> {
 
 	/**
 	 * The human readable label for this editor.

@@ -29,10 +29,8 @@ import javax.swing.JPanel;
  * configurable, but not actually have an editor.
  *
  * @author Hylke van der Schaaf
- * @param <C> The class type that provides context at runtime.
- * @param <D> The class type that provides context while editing.
  */
-public class EditorNull<C, D> extends EditorDefault<C, D, Void> {
+public class EditorNull extends EditorDefault<Void> {
 
 	private JComponent swComponent;
 	private BorderPane fxNode;
@@ -46,7 +44,7 @@ public class EditorNull<C, D> extends EditorDefault<C, D, Void> {
 	}
 
 	@Override
-	public void setConfig(JsonElement config, Object context, Object edtCtx) {
+	public void setConfig(JsonElement config) {
 		// Nothing to configure
 	}
 

@@ -29,10 +29,8 @@ import org.slf4j.LoggerFactory;
  * An editor for boolean values.
  *
  * @author Hylke van der Schaaf
- * @param <C> The class type that provides context at runtime.
- * @param <D> The class type that provides context while editing.
  */
-public final class EditorBoolean<C, D> extends EditorDefault<C, D, Boolean> {
+public final class EditorBoolean extends EditorDefault<Boolean> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditorBoolean.class.getName());
 	private final boolean deflt;
@@ -59,7 +57,7 @@ public final class EditorBoolean<C, D> extends EditorDefault<C, D, Boolean> {
 	}
 
 	@Override
-	public void setConfig(JsonElement config, C context, final D edtCtx) {
+	public void setConfig(JsonElement config) {
 		try {
 			value = config.getAsBoolean();
 		} catch (ClassCastException | IllegalStateException e) {

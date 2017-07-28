@@ -31,10 +31,8 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * @author Hylke van der Schaaf
- * @param <C> The class type that provides context at runtime.
- * @param <D> The class type that provides context while editing.
  */
-public class EditorDouble<C, D> extends EditorDefault<C, D, Double> {
+public class EditorDouble extends EditorDefault<Double> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditorDouble.class);
 	private final double min;
@@ -71,7 +69,7 @@ public class EditorDouble<C, D> extends EditorDefault<C, D, Double> {
 	}
 
 	@Override
-	public void setConfig(JsonElement config, C context, D edtCtx) {
+	public void setConfig(JsonElement config) {
 		if (config != null && config.isJsonPrimitive()) {
 			value = config.getAsDouble();
 		} else {

@@ -24,11 +24,9 @@ import java.util.Map;
  * from a list.
  *
  * @author Hylke van der Schaaf
- * @param <C> The class type that provides context at runtime.
- * @param <D> The class type that provides context while editing.
  * @param <T> The type of object returned by getValue.
  */
-public class EditorMap<C, D, T> extends AbstractEditorMap<C, D, Map<String, T>, T> {
+public class EditorMap<T> extends AbstractEditorMap<Map<String, T>, T> {
 
 	public EditorMap() {
 		super();
@@ -42,7 +40,7 @@ public class EditorMap<C, D, T> extends AbstractEditorMap<C, D, Map<String, T>, 
 	public Map<String, T> getValue() {
 		Map<String, T> result = new HashMap<>();
 		for (String name : value) {
-			Item<C, D, T> item = options.get(name);
+			Item<T> item = options.get(name);
 			T val = item.editor.getValue();
 			result.put(name, val);
 		}
@@ -50,7 +48,7 @@ public class EditorMap<C, D, T> extends AbstractEditorMap<C, D, Map<String, T>, 
 	}
 
 	public double getDouble(String name, double deflt) {
-		Item<C, D, T> item = options.get(name);
+		Item<T> item = options.get(name);
 		Object result = item.editor.getValue();
 		if (result instanceof Number) {
 			return ((Number) result).doubleValue();
@@ -59,7 +57,7 @@ public class EditorMap<C, D, T> extends AbstractEditorMap<C, D, Map<String, T>, 
 	}
 
 	public long getLong(String name, long deflt) {
-		Item<C, D, T> item = options.get(name);
+		Item<T> item = options.get(name);
 		Object result = item.editor.getValue();
 		if (result instanceof Number) {
 			return ((Number) result).longValue();

@@ -63,22 +63,20 @@ import org.slf4j.LoggerFactory;
  * An editor for a list of editors, all of the same type.
  *
  * @author Hylke van der Schaaf
- * @param <C> The class type that provides context at runtime.
- * @param <D> The class type that provides context while editing.
  * @param <T> The type of object returned by getValue.
  * @param <V> The type of object in the map.
  */
-public abstract class AbstractEditorMap<C, D, T, V> extends EditorDefault<C, D, T> implements Iterable<String> {
+public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implements Iterable<String> {
 
-	protected static final class Item<C, D, V> {
+	protected static final class Item< V> {
 
-		final ConfigEditor<C, D, V> editor;
+		final ConfigEditor<V> editor;
 		final boolean optional;
 		final int colwidth;
 		final String name;
 		final String label;
 
-		public Item(final String name, final ConfigEditor<C, D, V> editor, final boolean optional, final int colwidth) {
+		public Item(final String name, final ConfigEditor<V> editor, final boolean optional, final int colwidth) {
 			this.name = name;
 			final String edLabel = editor.getLabel();
 			if (edLabel == null || edLabel.isEmpty()) {
@@ -106,7 +104,7 @@ public abstract class AbstractEditorMap<C, D, T, V> extends EditorDefault<C, D, 
 	/**
 	 * All options
 	 */
-	protected final Map<String, Item<C, D, V>> options = new LinkedHashMap<>();
+	protected final Map<String, Item<V>> options = new LinkedHashMap<>();
 	/**
 	 * The names of the selected options.
 	 */
@@ -169,7 +167,7 @@ public abstract class AbstractEditorMap<C, D, T, V> extends EditorDefault<C, D, 
 	}
 
 	@Override
-	public void setConfig(JsonElement config, C context, D edtCtx) {
+	public void setConfig(JsonElement config) {
 		value.clear();
 
 		if (config != null && config.isJsonObject()) {
@@ -177,20 +175,20 @@ public abstract class AbstractEditorMap<C, D, T, V> extends EditorDefault<C, D, 
 			for (final Map.Entry<String, JsonElement> entry : asObj.entrySet()) {
 				final String key = entry.getKey();
 				final JsonElement itemConfig = entry.getValue();
-				final Item<C, D, V> item = options.get(key);
+				final Item<V> item = options.get(key);
 				if (item == null) {
 					if (!"$type".equals(key)) {
 						LOGGER.debug("Unknown entry {} in configuration.", key);
 					}
 				} else {
-					item.editor.setConfig(itemConfig, context, edtCtx);
+					item.editor.setConfig(itemConfig);
 					value.add(key);
 				}
 			}
 		}
-		for (final Map.Entry<String, Item<C, D, V>> entry : options.entrySet()) {
+		for (final Map.Entry<String, Item<V>> entry : options.entrySet()) {
 			final String key = entry.getKey();
-			final Item<C, D, V> val = entry.getValue();
+			final Item<V> val = entry.getValue();
 			if (!val.optional) {
 				value.add(key);
 			}
@@ -202,7 +200,7 @@ public abstract class AbstractEditorMap<C, D, T, V> extends EditorDefault<C, D, 
 	public JsonElement getConfig() {
 		final JsonObject result = new JsonObject();
 		for (final String key : value) {
-			final Item<C, D, V> item = options.get(key);
+			final Item<V> item = options.get(key);
 			result.add(key, item.editor.getConfig());
 		}
 		return result;
@@ -320,7 +318,7 @@ public abstract class AbstractEditorMap<C, D, T, V> extends EditorDefault<C, D, 
 	}
 
 	public void removeItem(final String key) {
-		final Item<C, D, V> item = options.get(key);
+		final Item<V> item = options.get(key);
 		if (item.optional) {
 			value.remove(key);
 			if (swModel != null) {
@@ -351,12 +349,12 @@ public abstract class AbstractEditorMap<C, D, T, V> extends EditorDefault<C, D, 
 		int row = 0;
 		int endCol = -1;
 		// Iterate over the options so the order is fixed.
-		for (final Map.Entry<String, Item<C, D, V>> entry : options.entrySet()) {
+		for (final Map.Entry<String, Item<V>> entry : options.entrySet()) {
 			final String key = entry.getKey();
 			if (!value.contains(key)) {
 				continue;
 			}
-			final Item<C, D, V> item = entry.getValue();
+			final Item<V> item = entry.getValue();
 			endCol += item.colwidth;
 			if (endCol >= columns) {
 				endCol = item.colwidth - 1;
@@ -386,7 +384,7 @@ public abstract class AbstractEditorMap<C, D, T, V> extends EditorDefault<C, D, 
 		}
 	}
 
-	private void addToGridFx(int row, final int x0, String label, final int x1, final Item<C, D, V> item, final int width, final int x2, final String key) {
+	private void addToGridFx(int row, final int x0, String label, final int x1, final Item<V> item, final int width, final int x2, final String key) {
 		Label fxLabel = new Label(label);
 		fxLabel.setTooltip(new Tooltip(item.editor.getDescription()));
 		GridPane.setConstraints(fxLabel, x0, row, 1, 1, HPos.LEFT, VPos.BASELINE, Priority.NEVER, Priority.NEVER);
@@ -405,7 +403,7 @@ public abstract class AbstractEditorMap<C, D, T, V> extends EditorDefault<C, D, 
 		}
 	}
 
-	private void addToGridSw(int row, final int x0, String label, final int x1, final Item<C, D, V> item, final int width, final int x2, final String key) {
+	private void addToGridSw(int row, final int x0, String label, final int x1, final Item<V> item, final int width, final int x2, final String key) {
 		GridBagConstraints gbc;
 		gbc = new GridBagConstraints();
 		gbc.gridx = x0;
@@ -490,7 +488,7 @@ public abstract class AbstractEditorMap<C, D, T, V> extends EditorDefault<C, D, 
 	}
 
 	public V getValue(final String name) {
-		final Item<C, D, V> item = options.get(name);
+		final Item<V> item = options.get(name);
 		return item.editor.getValue();
 	}
 
