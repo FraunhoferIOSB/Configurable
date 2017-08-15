@@ -224,6 +224,7 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 				final Configurable confInstance = (Configurable) instance;
 				confInstance.configure(classConfig, context, edtCtx);
 				classEditor = confInstance.getConfigEditor(context, edtCtx);
+				fillComponent();
 			}
 			return (T) instance;
 		} catch (InstantiationException | IllegalAccessException | ClassCastException exc) {
