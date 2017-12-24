@@ -18,15 +18,10 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import javafx.scene.Node;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TextFormatter;
-import javax.swing.JComponent;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryIntFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryIntSwing;
 
 /**
  *
@@ -34,21 +29,14 @@ import org.slf4j.LoggerFactory;
  */
 public final class EditorInt extends EditorDefault<Integer> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EditorInt.class);
 	private final int min;
 	private final int max;
 	private final int step;
 	private final int deflt;
 	private int value;
-	/**
-	 * Flag indicating we are in JavaFX mode.
-	 */
-	private Boolean fx;
-	// Swing components
-	private SpinnerNumberModel swModel;
-	private JSpinner swComponent;
-	// FX Nodes
-	private Spinner<Integer> fxNode;
+
+	private FactoryIntSwing factorySwing;
+	private FactoryIntFx factoryFx;
 
 	public EditorInt(int min, int max, int step, int deflt, String label, String description) {
 		this.deflt = deflt;
@@ -75,75 +63,73 @@ public final class EditorInt extends EditorDefault<Integer> {
 		return new JsonPrimitive(getValue());
 	}
 
-	private void setFx(boolean fxMode) {
-		if (fx != null && fx != fxMode) {
-			throw new IllegalStateException("Can not switch between swing and FX mode.");
+	@Override
+	public GuiFactorySwing getGuiFactorySwing() {
+		if (factoryFx != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		fx = fxMode;
+		if (factorySwing == null) {
+			factorySwing = new FactoryIntSwing(this);
+		}
+		return factorySwing;
 	}
 
 	@Override
-	public JComponent getComponent() {
-		setFx(false);
-		if (swComponent == null) {
-			createComponent();
+	public GuiFactoryFx getGuiFactoryFx() {
+		if (factorySwing != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		return swComponent;
+		if (factoryFx == null) {
+			factoryFx = new FactoryIntFx(this);
+		}
+		return factoryFx;
 	}
 
-	@Override
-	public Node getNode() {
-		setFx(true);
-		if (fxNode == null) {
-			createComponent();
-		}
-		return fxNode;
-	}
-
-	private void createComponent() {
-		if (value < min || value > max) {
-			LOGGER.error("min < value < max is false: {} < {} < {}.", min, value, max);
-			value = Math.max(min, Math.min(value, max));
-		}
-
-		if (fx) {
-			SpinnerValueFactory.IntegerSpinnerValueFactory factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(min, max, value, step);
-			fxNode = new Spinner<>(factory);
-			fxNode.setEditable(true);
-			// hook in a formatter with the same properties as the factory
-			TextFormatter formatter = new TextFormatter(factory.getConverter(), factory.getValue());
-			fxNode.getEditor().setTextFormatter(formatter);
-			// bidi-bind the values
-			factory.valueProperty().bindBidirectional(formatter.valueProperty());
-		} else {
-			swModel = new SpinnerNumberModel(value, min, max, step);
-			swComponent = new JSpinner(swModel);
-		}
-		fillComponent();
-	}
-
-	/**
-	 * Ensure the component represents the current value.
-	 */
 	private void fillComponent() {
-		if (fx == null) {
-			return;
+		if (factorySwing != null) {
+			factorySwing.fillComponent();
 		}
-		if (fx) {
-			fxNode.getValueFactory().setValue(value);
-		} else {
-			swComponent.setValue(value);
+		if (factoryFx != null) {
+			factoryFx.fillComponent();
 		}
+	}
+
+	private void readComponent() {
+		if (factorySwing != null) {
+			factorySwing.readComponent();
+		}
+		if (factoryFx != null) {
+			factoryFx.readComponent();
+		}
+	}
+
+	public int getMin() {
+		return min;
+	}
+
+	public int getMax() {
+		return max;
+	}
+
+	public int getDeflt() {
+		return deflt;
+	}
+
+	public int getStep() {
+		return step;
+	}
+
+	public int getRawValue() {
+		return value;
+	}
+
+	public void setRawValue(int value) {
+		this.value = value;
 	}
 
 	@Override
 	public Integer getValue() {
-		if (swComponent != null) {
-			value = swModel.getNumber().intValue();
-		}
-		if (fxNode != null) {
-			value = fxNode.getValue();
-		}
+		readComponent();
 		return value;
 	}
 
@@ -152,5 +138,4 @@ public final class EditorInt extends EditorDefault<Integer> {
 		this.value = value;
 		fillComponent();
 	}
-
 }

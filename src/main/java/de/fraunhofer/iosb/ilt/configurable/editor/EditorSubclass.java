@@ -22,29 +22,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
-import de.fraunhofer.iosb.ilt.configurable.Styles;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactorySubclsFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactorySubclsSwing;
 import java.util.Arrays;
 import java.util.List;
-import javafx.collections.FXCollections;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.Pane;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,29 +46,19 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	private static final String KEY_CLASSNAME = "className";
 	private static final String KEY_CLASSCONFIG = "classConfig";
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditorSubclass.class);
-	private String selectLabel = "Available Classes:";
 	private final Class<?> iface;
 	private boolean merge = false;
 	private String nameField = KEY_CLASSNAME;
 	private String className = "";
-	private String displayName = "";
 	private JsonElement classConfig;
 	private ConfigEditor classEditor;
 	private String prefix = "";
 	private C context;
 	private D edtCtx;
-	/**
-	 * Flag indicating we are in JavaFX mode.
-	 */
-	private Boolean fx;
-	// Swing components
-	private JPanel swComponent;
-	private JPanel swItemHolder;
-	private JComboBox<String> swItems;
-	// JavaFX nodes
-	private BorderPane fxPaneRoot;
-	private BorderPane fxPaneItem;
-	private ComboBox<String> fxItems;
+	private String selectLabel = "Available Classes:";
+
+	private FactorySubclsSwing factorySwing;
+	private FactorySubclsFx factoryFx;
 
 	public EditorSubclass(final C context, final D edtCtx, Class<?> iface, boolean merge, String nameField) {
 		this.iface = iface;
@@ -165,90 +139,52 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		return result;
 	}
 
-	private void setFx(boolean fxMode) {
-		if (fx != null && fx != fxMode) {
-			throw new IllegalStateException("Can not switch between swing and FX mode.");
+	@Override
+	public GuiFactorySwing getGuiFactorySwing() {
+		if (factoryFx != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		fx = fxMode;
+		if (factorySwing == null) {
+			factorySwing = new FactorySubclsSwing(this);
+			factorySwing.setSelectLabel(selectLabel);
+		}
+		return factorySwing;
 	}
 
 	@Override
-	public JComponent getComponent() {
-		setFx(false);
-		if (swComponent == null) {
-			createGui();
+	public GuiFactoryFx getGuiFactoryFx() {
+		if (factorySwing != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		return swComponent;
+		if (factoryFx == null) {
+			factoryFx = new FactorySubclsFx(this);
+			factoryFx.setSelectLabel(selectLabel);
+		}
+		return factoryFx;
 	}
 
-	@Override
-	public Pane getNode() {
-		setFx(true);
-		if (fxPaneRoot == null) {
-			createGui();
+	private void fillComponent() {
+		if (factorySwing != null) {
+			factorySwing.fillComponent();
 		}
-		return fxPaneRoot;
-	}
-
-	private void createGui() {
-		String[] classes = getClasses();
-
-		displayName = className;
-		if (!displayName.isEmpty()) {
-			displayName = displayName.substring(prefix.length());
-		}
-
-		if (fx) {
-			createPane(classes);
-		} else {
-			createComponent(classes);
+		if (factoryFx != null) {
+			factoryFx.fillComponent();
 		}
 	}
 
-	private void createComponent(String[] classes) {
-		JPanel controls = new JPanel(new BorderLayout());
-		controls.add(new JLabel(selectLabel), BorderLayout.WEST);
-
-		swItems = new JComboBox<>(classes);
-		controls.add(swItems, BorderLayout.CENTER);
-		swItems.setSelectedItem(displayName);
-
-		JButton addButton = new JButton("Set");
-		addButton.addActionListener((ActionEvent e) -> {
-			setItem();
-		});
-		controls.add(addButton, BorderLayout.EAST);
-		swItemHolder = new JPanel(new BorderLayout());
-		swComponent = new JPanel(new BorderLayout());
-		swComponent.setBorder(new EtchedBorder());
-		swComponent.add(controls, BorderLayout.NORTH);
-		swComponent.add(swItemHolder, BorderLayout.CENTER);
-		fillComponent();
+	public String getClassName() {
+		return className;
 	}
 
-	private void createPane(String[] classes) {
-		FlowPane controls = new FlowPane();
-		controls.setAlignment(Pos.TOP_RIGHT);
-		controls.getChildren().add(new Label(selectLabel));
-
-		fxItems = new ComboBox<>(FXCollections.observableArrayList(classes));
-		fxItems.getSelectionModel().select(displayName);
-		controls.getChildren().add(fxItems);
-
-		Button addButton = new Button("set");
-		addButton.setOnAction(event -> setItem());
-		controls.getChildren().add(addButton);
-
-		fxPaneItem = new BorderPane();
-		fxPaneItem.setPadding(new Insets(0, 0, 0, 5));
-		fxPaneRoot = new BorderPane();
-		fxPaneRoot.setStyle(Styles.STYLE_BORDER);
-		fxPaneRoot.setCenter(fxPaneItem);
-		fxPaneRoot.setTop(controls);
-		fillComponent();
+	public ConfigEditor getClassEditor() {
+		return classEditor;
 	}
 
-	private String[] getClasses() {
+	public String getPrefix() {
+		return prefix;
+	}
+
+	public String[] getClasses() {
 		List<Class> subtypes = Reflection.getSubtypesOf(iface, false);
 		int i = 0;
 		String[] result = new String[subtypes.size()];
@@ -286,28 +222,11 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		return result;
 	}
 
-	private void setItem() {
-		if (fx) {
-			String cName = fxItems.getSelectionModel().getSelectedItem();
-			if (cName != null && !cName.isEmpty()) {
-				setClassName(prefix + cName);
-			}
-		} else {
-			int idx = swItems.getSelectedIndex();
-			if (idx >= 0) {
-				String cName = swItems.getModel().getElementAt(idx);
-				setClassName(prefix + cName);
-			}
-		}
-	}
-
-	private void setClassName(String name) {
+	public void setClassName(final String name) {
 		className = name;
-		displayName = className;
 		if (name == null || name.isEmpty()) {
 			return;
 		}
-		displayName = className.substring(prefix.length());
 		Class<?> loadedClass = null;
 		Object instance = null;
 		ClassLoader cl = getClass().getClassLoader();
@@ -357,42 +276,6 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 			}
 		}
 		return from;
-	}
-
-	private void fillComponent() {
-		if (fx == null) {
-			return;
-		}
-		String label;
-		if (className == null || className.isEmpty()) {
-			label = "No Class selected.";
-		} else {
-			label = "Selected: " + className.substring(prefix.length());
-		}
-		if (fx) {
-			fxPaneItem.getChildren().clear();
-			fxPaneItem.setTop(new Label(label));
-			if (classEditor == null) {
-				Label noConf = new Label("Nothing to be configured.");
-				fxPaneItem.setCenter(noConf);
-			} else {
-				fxPaneItem.setCenter(classEditor.getNode());
-			}
-		} else {
-			swItemHolder.removeAll();
-			Dimension dim = new Dimension(5, 5);
-			swItemHolder.add(new Box.Filler(dim, dim, dim), BorderLayout.WEST);
-			swItemHolder.add(new JLabel(label), BorderLayout.NORTH);
-			if (classEditor == null) {
-				JLabel noConf = new JLabel("Nothing to be configured.");
-				swItemHolder.add(noConf, BorderLayout.CENTER);
-			} else {
-				swItemHolder.add(classEditor.getComponent(), BorderLayout.CENTER);
-			}
-			swItemHolder.invalidate();
-			swComponent.revalidate();
-			swComponent.repaint();
-		}
 	}
 
 	private void readComponent() {

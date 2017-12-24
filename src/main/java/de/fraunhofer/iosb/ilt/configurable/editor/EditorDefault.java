@@ -83,7 +83,7 @@ public abstract class EditorDefault<T> implements ConfigEditor<T> {
 		this.description = description;
 	}
 
-	protected JButton getHelpButton() {
+	public JButton getHelpButton() {
 		JButton button = new JButton("?");
 		button.setMargin(new java.awt.Insets(0, 0, 0, 0));
 		button.addActionListener((ActionEvent e) -> popupDescription());

@@ -16,15 +16,12 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryLongFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryLongSwing;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import javafx.scene.Node;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
-import javax.swing.JComponent;
-import javax.swing.JTextField;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 
 /**
  *
@@ -32,19 +29,13 @@ import org.slf4j.LoggerFactory;
  */
 public final class EditorLong extends EditorDefault<Long> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EditorLong.class);
 	private final long min;
 	private final long max;
 	private final long deflt;
 	private long value;
-	/**
-	 * Flag indicating we are in JavaFX mode.
-	 */
-	private Boolean fx;
-	// Swing components
-	private JTextField swComponent;
-	// JavaFX Nodes
-	private TextInputControl fxNode;
+
+	private FactoryLongSwing factorySwing;
+	private FactoryLongFx factoryFx;
 
 	public EditorLong(long min, long max, long deflt, String label, String description) {
 		this.deflt = deflt;
@@ -70,75 +61,69 @@ public final class EditorLong extends EditorDefault<Long> {
 		return new JsonPrimitive(getValue());
 	}
 
-	private void setFx(boolean fxMode) {
-		if (fx != null && fx != fxMode) {
-			throw new IllegalStateException("Can not switch between swing and FX mode.");
+	@Override
+	public GuiFactorySwing getGuiFactorySwing() {
+		if (factoryFx != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		fx = fxMode;
+		if (factorySwing == null) {
+			factorySwing = new FactoryLongSwing(this);
+		}
+		return factorySwing;
 	}
 
 	@Override
-	public JComponent getComponent() {
-		setFx(false);
-		if (swComponent == null) {
-			createComponent();
+	public GuiFactoryFx getGuiFactoryFx() {
+		if (factorySwing != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		return swComponent;
+		if (factoryFx == null) {
+			factoryFx = new FactoryLongFx(this);
+		}
+		return factoryFx;
 	}
 
-	@Override
-	public Node getNode() {
-		setFx(true);
-		if (fxNode == null) {
-			createComponent();
-		}
-		return fxNode;
-	}
-
-	private void createComponent() {
-		if (value < min || value > max) {
-			LOGGER.error("min < value < max is false: {} < {} < {}.", min, value, max);
-			value = Math.max(min, Math.min(value, max));
-		}
-
-		if (fx) {
-			fxNode = new TextField();
-		} else {
-			swComponent = new JTextField();
-		}
-		fillComponent();
-	}
-
-	/**
-	 * Ensure the component represents the current value.
-	 */
 	private void fillComponent() {
-		if (fx == null) {
-			return;
+		if (factorySwing != null) {
+			factorySwing.fillComponent();
 		}
-		if (fx) {
-			fxNode.setText("" + value);
-		} else {
-			swComponent.setText("" + value);
+		if (factoryFx != null) {
+			factoryFx.fillComponent();
 		}
+	}
+
+	private void readComponent() {
+		if (factorySwing != null) {
+			factorySwing.readComponent();
+		}
+		if (factoryFx != null) {
+			factoryFx.readComponent();
+		}
+	}
+
+	public long getRawValue() {
+		return value;
+	}
+
+	public void setRawValue(long value) {
+		this.value = value;
+	}
+
+	public long getMin() {
+		return min;
+	}
+
+	public long getMax() {
+		return max;
+	}
+
+	public long getDeflt() {
+		return deflt;
 	}
 
 	@Override
 	public Long getValue() {
-		if (swComponent != null) {
-			try {
-				value = Long.parseLong(swComponent.getText());
-			} catch (NumberFormatException exc) {
-				LOGGER.error("Failed to parse text to number: " + swComponent.getText());
-			}
-		}
-		if (fxNode != null) {
-			try {
-				value = Long.parseLong(fxNode.getText());
-			} catch (NumberFormatException exc) {
-				LOGGER.error("Failed to parse text to number: " + swComponent.getText());
-			}
-		}
+		readComponent();
 		if (value > max) {
 			value = max;
 		}

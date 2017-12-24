@@ -18,10 +18,10 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import javafx.scene.Node;
-import javafx.scene.control.CheckBox;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryBooleanFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryBooleanSwing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,14 +35,9 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditorBoolean.class.getName());
 	private final boolean deflt;
 	private boolean value;
-	/**
-	 * Flag indicating we are in JavaFX mode.
-	 */
-	private Boolean fx;
-	// Swing components
-	private JCheckBox swComponent;
-	// FX Nodes
-	private CheckBox fxNode;
+
+	private FactoryBooleanSwing factorySwing;
+	private FactoryBooleanFx factoryFx;
 
 	public EditorBoolean(boolean deflt) {
 		this.value = deflt;
@@ -69,70 +64,55 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 	}
 
 	@Override
-	public JsonElement getConfig() {
-		if (swComponent != null) {
-			value = swComponent.isSelected();
+	public GuiFactorySwing getGuiFactorySwing() {
+		if (factoryFx != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		if (fxNode != null) {
-			value = fxNode.isSelected();
+		if (factorySwing == null) {
+			factorySwing = new FactoryBooleanSwing(this);
+		}
+		return factorySwing;
+	}
+
+	@Override
+	public GuiFactoryFx getGuiFactoryFx() {
+		if (factorySwing != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
+		}
+		if (factoryFx == null) {
+			factoryFx = new FactoryBooleanFx(this);
+		}
+		return factoryFx;
+	}
+
+	private void fillComponent() {
+		if (factorySwing != null) {
+			factorySwing.fillComponent();
+		}
+		if (factoryFx != null) {
+			factoryFx.fillComponent();
+		}
+	}
+
+	@Override
+	public JsonElement getConfig() {
+		if (factorySwing != null) {
+			value = factorySwing.isSelected();
+		}
+		if (factoryFx != null) {
+			value = factoryFx.isSelected();
 		}
 		return new JsonPrimitive(value);
 	}
 
-	private void setFx(boolean fxMode) {
-		if (fx != null && fx != fxMode) {
-			throw new IllegalStateException("Can not switch between swing and FX mode.");
-		}
-		fx = fxMode;
-	}
-
-	@Override
-	public JComponent getComponent() {
-		setFx(false);
-		if (swComponent == null) {
-			createComponent();
-		}
-		return swComponent;
-	}
-
-	@Override
-	public Node getNode() {
-		setFx(true);
-		if (fxNode == null) {
-			createNode();
-		}
-		return fxNode;
-	}
-
-	private void createNode() {
-		fxNode = new CheckBox();
-		fillComponent();
-	}
-
-	private void createComponent() {
-		swComponent = new JCheckBox();
-		fillComponent();
-	}
-
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	private void fillComponent() {
-		if (fx == null) {
-			return;
-		}
-		if (fx) {
-			fxNode.setSelected(value);
-		} else {
-			swComponent.setSelected(value);
-		}
-	}
-
 	public boolean isSelected() {
-		if (fx == null) {
-			return value;
+		if (factorySwing != null) {
+			return factorySwing.isSelected();
 		}
-		return fx ? fxNode.isSelected() : swComponent.isSelected();
+		if (factoryFx != null) {
+			return factoryFx.isSelected();
+		}
+		return value;
 	}
 
 	@Override

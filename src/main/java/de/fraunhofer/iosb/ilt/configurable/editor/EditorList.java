@@ -20,31 +20,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.EditorFactory;
-import de.fraunhofer.iosb.ilt.configurable.Styles;
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryListFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryListSwing;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.border.EtchedBorder;
 
 /**
  * An editor for a list of editors, all of the same type.
@@ -57,16 +39,9 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 
 	private final EditorFactory<T> factory;
 	private final List<T> value = new ArrayList<>();
-	/**
-	 * Flag indicating we are in JavaFX mode.
-	 */
-	private Boolean fx;
-	// Swing components
-	private JPanel swComponent;
-	private JPanel swListHolder;
-	// FX Nodes
-	private BorderPane fxPaneRoot;
-	private GridPane fxPaneList;
+
+	private FactoryListSwing factorySwing;
+	private FactoryListFx factoryFx;
 
 	public EditorList(EditorFactory<T> factory) {
 		this.factory = factory;
@@ -101,62 +76,35 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		return result;
 	}
 
-	private void setFx(boolean fxMode) {
-		if (fx != null && fx != fxMode) {
-			throw new IllegalStateException("Can not switch between swing and FX mode.");
+	@Override
+	public GuiFactorySwing getGuiFactorySwing() {
+		if (factoryFx != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		fx = fxMode;
+		if (factorySwing == null) {
+			factorySwing = new FactoryListSwing(this);
+		}
+		return factorySwing;
 	}
 
 	@Override
-	public JComponent getComponent() {
-		setFx(false);
-		if (swComponent == null) {
-			createComponent();
+	public GuiFactoryFx getGuiFactoryFx() {
+		if (factorySwing != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		return swComponent;
-	}
-
-	@Override
-	public Pane getNode() {
-		setFx(true);
-		if (fxPaneRoot == null) {
-			createPane();
+		if (factoryFx == null) {
+			factoryFx = new FactoryListFx(this);
 		}
-		return fxPaneRoot;
+		return factoryFx;
 	}
 
-	private void createPane() {
-		FlowPane controls = new FlowPane();
-		controls.setAlignment(Pos.TOP_RIGHT);
-		Label addLabel = new Label("Add item");
-		addLabel.setAlignment(Pos.BASELINE_RIGHT);
-		controls.getChildren().add(addLabel);
-
-		Button addButton = new Button("+");
-		addButton.setOnAction(event -> addItem());
-		controls.getChildren().add(addButton);
-
-		fxPaneList = new GridPane();
-		fxPaneRoot = new BorderPane();
-		fxPaneRoot.setStyle(Styles.STYLE_BORDER);
-		fxPaneRoot.setTop(controls);
-		fxPaneRoot.setCenter(fxPaneList);
-		fillComponent();
-	}
-
-	private void createComponent() {
-		JPanel controls = new JPanel(new BorderLayout());
-		controls.add(new JLabel("Add item", SwingConstants.RIGHT), BorderLayout.CENTER);
-		JButton addButton = new JButton("+");
-		addButton.addActionListener(event -> addItem());
-		controls.add(addButton, BorderLayout.EAST);
-		swListHolder = new JPanel(new GridBagLayout());
-		swComponent = new JPanel(new BorderLayout());
-		swComponent.setBorder(new EtchedBorder());
-		swComponent.add(controls, BorderLayout.NORTH);
-		swComponent.add(swListHolder, BorderLayout.CENTER);
-		fillComponent();
+	private void fillComponent() {
+		if (factorySwing != null) {
+			factorySwing.fillComponent();
+		}
+		if (factoryFx != null) {
+			factoryFx.fillComponent();
+		}
 	}
 
 	public void addItem() {
@@ -170,64 +118,13 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		fillComponent();
 	}
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	private void fillComponent() {
-		if (fx == null) {
-			return;
-		}
-		if (fx) {
-			fxPaneList.getChildren().clear();
-			if (value.isEmpty()) {
-				fxPaneList.add(new Label("No items added."), 0, 0);
-			}
-			int row = 0;
-			for (final T item : value) {
-				Node pane = item.getNode();
-				GridPane.setConstraints(pane, 0, row, 1, 1, HPos.LEFT, VPos.BASELINE, Priority.ALWAYS, Priority.SOMETIMES);
-
-				Button removeButton = new Button("-");
-				removeButton.setOnAction(event -> removeItem(item));
-				GridPane.setConstraints(removeButton, 1, row, 1, 1, HPos.RIGHT, VPos.TOP, Priority.NEVER, Priority.NEVER);
-
-				fxPaneList.getChildren().addAll(pane, removeButton);
-				row++;
-			}
-		} else {
-			swListHolder.removeAll();
-			if (value.isEmpty()) {
-				swListHolder.add(new JLabel("No items added."));
-			}
-			GridBagConstraints gbc;
-			int row = 0;
-			Insets insets = new Insets(1, 1, 1, 1);
-			for (final T item : value) {
-				gbc = new GridBagConstraints();
-				gbc.gridx = 0;
-				gbc.gridy = row;
-				gbc.weightx = 1;
-				gbc.fill = GridBagConstraints.HORIZONTAL;
-				gbc.insets = insets;
-				swListHolder.add(item.getComponent(), gbc);
-
-				JButton removeButton = new JButton("-");
-				removeButton.addActionListener(event -> removeItem(item));
-				gbc = new GridBagConstraints();
-				gbc.gridx = 1;
-				gbc.gridy = row;
-				gbc.insets = insets;
-				swListHolder.add(removeButton, gbc);
-				row++;
-			}
-			swListHolder.invalidate();
-			swComponent.revalidate();
-		}
-	}
-
 	@Override
 	public Iterator<T> iterator() {
 		return value.iterator();
+	}
+
+	public List<T> getRawValue() {
+		return value;
 	}
 
 	@Override

@@ -16,19 +16,12 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryStringFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryStringSwing;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import java.awt.BorderLayout;
-import javafx.scene.Node;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextInputControl;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.text.JTextComponent;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 
 /**
  *
@@ -39,15 +32,9 @@ public class EditorString extends EditorDefault<String> {
 	private final String deflt;
 	private String value;
 	private int lines = 5;
-	/**
-	 * Flag indicating we are in JavaFX mode.
-	 */
-	private Boolean fx;
-	// Swing components
-	private JTextComponent swText;
-	private JComponent swComponent;
-	// JavaFX Nodes
-	private TextInputControl fxNode;
+
+	private FactoryStringSwing factorySwing;
+	private FactoryStringFx factoryFx;
 
 	public EditorString(String deflt, int lines) {
 		this.deflt = deflt;
@@ -79,83 +66,56 @@ public class EditorString extends EditorDefault<String> {
 		return new JsonPrimitive(value);
 	}
 
-	private void setFx(boolean fxMode) {
-		if (fx != null && fx != fxMode) {
-			throw new IllegalStateException("Can not switch between swing and FX mode.");
+	@Override
+	public GuiFactorySwing getGuiFactorySwing() {
+		if (factoryFx != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		fx = fxMode;
+		if (factorySwing == null) {
+			factorySwing = new FactoryStringSwing(this);
+		}
+		return factorySwing;
 	}
 
 	@Override
-	public JComponent getComponent() {
-		setFx(false);
-		if (swComponent == null) {
-			createComponent();
+	public GuiFactoryFx getGuiFactoryFx() {
+		if (factorySwing != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		return swComponent;
+		if (factoryFx == null) {
+			factoryFx = new FactoryStringFx(this);
+		}
+		return factoryFx;
 	}
 
-	@Override
-	public Node getNode() {
-		setFx(true);
-		if (fxNode == null) {
-			createNode();
-		}
-		return fxNode;
-	}
-
-	private void createNode() {
-		if (lines == 1) {
-			fxNode = new TextField();
-		} else {
-			TextArea text = new TextArea();
-			text.setPrefRowCount(lines);
-			fxNode = text;
-		}
-		fillComponent();
-	}
-
-	private void createComponent() {
-		if (lines == 1) {
-			swText = new JTextField();
-			swComponent = swText;
-		} else {
-			JTextArea textArea = new JTextArea();
-			swText = textArea;
-			textArea.setRows(lines);
-			textArea.setLineWrap(true);
-			JScrollPane jScrollPane = new JScrollPane();
-			jScrollPane.setViewportView(textArea);
-			JPanel panel = new JPanel(new BorderLayout());
-			panel.add(jScrollPane, BorderLayout.CENTER);
-			swComponent = panel;
-		}
-		fillComponent();
-	}
-
-	/**
-	 * Ensure the swComponent represents the current value.
-	 */
 	private void fillComponent() {
-		if (fx == null) {
-			return;
+		if (factorySwing != null) {
+			factorySwing.fillComponent();
 		}
-		if (fx) {
-			fxNode.setText(value);
-		} else {
-			swText.setText(value);
+		if (factoryFx != null) {
+			factoryFx.fillComponent();
 		}
 	}
 
 	private void readComponent() {
-		if (fx == null) {
-			return;
+		if (factorySwing != null) {
+			factorySwing.readComponent();
 		}
-		if (fx) {
-			value = fxNode.getText();
-		} else {
-			value = swText.getText();
+		if (factoryFx != null) {
+			factoryFx.readComponent();
 		}
+	}
+
+	public int getLines() {
+		return lines;
+	}
+
+	public String getRawValue() {
+		return value;
+	}
+
+	public void setRawValue(String value) {
+		this.value = value;
 	}
 
 	@Override

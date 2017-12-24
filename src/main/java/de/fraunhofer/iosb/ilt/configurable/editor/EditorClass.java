@@ -19,15 +19,10 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 import com.google.gson.JsonElement;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryClassFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryClassSwing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,14 +42,9 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	private final Class<T> clazz;
 	private JsonElement classConfig;
 	private ConfigEditor classEditor;
-	/**
-	 * Flag indicating we are in JavaFX mode.
-	 */
-	private Boolean fx;
-	// Swing components
-	private JPanel component;
-	// FX Nodes
-	private BorderPane fxPaneRoot;
+
+	private FactoryClassSwing factorySwing;
+	private FactoryClassFx factoryFx;
 
 	private C context;
 	private D edtCtx;
@@ -100,46 +90,32 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 		return classConfig;
 	}
 
-	private void setFx(boolean fxMode) {
-		if (fx != null && fx != fxMode) {
-			throw new IllegalStateException("Can not switch between swing and FX mode.");
+	@Override
+	public GuiFactorySwing getGuiFactorySwing() {
+		if (factoryFx != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		fx = fxMode;
+		if (factorySwing == null) {
+			factorySwing = new FactoryClassSwing(this);
+		}
+		return factorySwing;
 	}
 
 	@Override
-	public Node getNode() {
-		setFx(true);
-		if (fxPaneRoot == null) {
-			createPane();
+	public GuiFactoryFx getGuiFactoryFx() {
+		if (factorySwing != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		return fxPaneRoot;
-	}
-
-	@Override
-	public JComponent getComponent() {
-		setFx(false);
-		if (component == null) {
-			createComponent();
+		if (factoryFx == null) {
+			factoryFx = new FactoryClassFx(this);
 		}
-		return component;
-	}
-
-	private void createPane() {
-		fxPaneRoot = new BorderPane();
-		fillComponent();
-	}
-
-	private void createComponent() {
-		component = new JPanel(new BorderLayout());
-		component.setBorder(new EtchedBorder());
-		fillComponent();
+		return factoryFx;
 	}
 
 	/**
 	 * Set the name of the class selected in this editor.
 	 */
-	private void initClass() {
+	public void initClass() {
 		Object instance = null;
 		try {
 			instance = clazz.newInstance();
@@ -162,34 +138,16 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	}
 
 	private void fillComponent() {
-		if (fx == null) {
-			return;
+		if (factorySwing != null) {
+			factorySwing.fillComponent();
 		}
-		if (classEditor == null) {
-			initClass();
-			return; // initClass calls fillComponent again.
+		if (factoryFx != null) {
+			factoryFx.fillComponent();
 		}
-		if (fx) {
-			fxPaneRoot.getChildren().clear();
-			if (classEditor == null) {
-				final Label noConf = new Label("Nothing to be configured.");
-				noConf.setTextFill(javafx.scene.paint.Color.RED);
-				fxPaneRoot.setCenter(noConf);
-			} else {
-				fxPaneRoot.setCenter(classEditor.getNode());
-			}
-		} else {
-			component.removeAll();
-			if (classEditor == null) {
-				final JLabel noConf = new JLabel("Nothing to be configured.");
-				noConf.setForeground(Color.RED);
-				component.add(noConf, BorderLayout.CENTER);
-			} else {
-				component.add(classEditor.getComponent(), BorderLayout.CENTER);
-			}
-			component.revalidate();
-			component.repaint();
-		}
+	}
+
+	public ConfigEditor getClassEditor() {
+		return classEditor;
 	}
 
 	private void readComponent() {

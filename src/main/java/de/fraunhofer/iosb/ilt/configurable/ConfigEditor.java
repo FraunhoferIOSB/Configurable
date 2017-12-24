@@ -17,8 +17,6 @@
 package de.fraunhofer.iosb.ilt.configurable;
 
 import com.google.gson.JsonElement;
-import javafx.scene.Node;
-import javax.swing.JComponent;
 
 /**
  * Interface defining configuration editors.
@@ -58,18 +56,18 @@ public interface ConfigEditor<T> {
 	public void setValue(T value);
 
 	/**
-	 * Get the swing Component that represents the editor.
+	 * Get a factory that can generate a swing-based gui for this editor.
 	 *
-	 * @return The swing Component that represents the editor.
+	 * @return A factory that can generate a swing-based gui for this editor.
 	 */
-	public JComponent getComponent();
+	public GuiFactorySwing getGuiFactorySwing();
 
 	/**
-	 * Get the JavaFX Node that represents the editor.
+	 * Get a factory that can generate a JavaFX-based gui for this editor.
 	 *
-	 * @return The JavaFX Node that represents the editor.
+	 * @return A factory that can generate a JavaFX-based gui for this editor.
 	 */
-	public Node getNode();
+	public GuiFactoryFx getGuiFactoryFx();
 
 	/**
 	 * Get the human-readable label to use for this editor. Can return an empty

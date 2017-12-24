@@ -19,18 +19,11 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryColorFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryColorSwing;
 import java.awt.Color;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import javafx.scene.Node;
-import javafx.scene.control.ColorPicker;
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
 
 /**
  *
@@ -43,18 +36,9 @@ public class EditorColor extends EditorDefault<Color> {
 	private int green;
 	private int blue;
 	private int alpha = 255;
-	/**
-	 * Flag indicating we are in JavaFX mode.
-	 */
-	private Boolean fx;
-	// Swing components
-	private JPanel swComponent;
-	private SpinnerNumberModel swModelAlpha;
-	private SpinnerNumberModel swModelBlue;
-	private SpinnerNumberModel swModelGreen;
-	private SpinnerNumberModel swModelRed;
-	// FX Nodes
-	private ColorPicker fxNode;
+
+	private FactoryColorSwing factorySwing;
+	private FactoryColorFx factoryFx;
 
 	public EditorColor(Color deflt) {
 		this.red = deflt.getRed();
@@ -97,24 +81,6 @@ public class EditorColor extends EditorDefault<Color> {
 		fillComponent();
 	}
 
-	private void readComponent() {
-		if (fx == null) {
-			return;
-		}
-		if (fx) {
-			javafx.scene.paint.Color color = fxNode.getValue();
-			red = (int) (color.getRed() * 255);
-			green = (int) (color.getGreen() * 255);
-			blue = (int) (color.getBlue() * 255);
-			alpha = (int) ((1 - color.getOpacity()) * 255);
-		} else {
-			red = swModelRed.getNumber().intValue();
-			green = swModelGreen.getNumber().intValue();
-			blue = swModelBlue.getNumber().intValue();
-			alpha = swModelAlpha.getNumber().intValue();
-		}
-	}
-
 	@Override
 	public JsonElement getConfig() {
 		readComponent();
@@ -128,99 +94,80 @@ public class EditorColor extends EditorDefault<Color> {
 		return config;
 	}
 
-	private void setFx(boolean fxMode) {
-		if (fx != null && fx != fxMode) {
-			throw new IllegalStateException("Can not switch between swing and FX mode.");
+	@Override
+	public GuiFactorySwing getGuiFactorySwing() {
+		if (factoryFx != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		fx = fxMode;
+		if (factorySwing == null) {
+			factorySwing = new FactoryColorSwing(this);
+		}
+		return factorySwing;
 	}
 
 	@Override
-	public JComponent getComponent() {
-		setFx(false);
-		if (swComponent == null) {
-			createComponent();
+	public GuiFactoryFx getGuiFactoryFx() {
+		if (factorySwing != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		return swComponent;
+		if (factoryFx == null) {
+			factoryFx = new FactoryColorFx(this);
+		}
+		return factoryFx;
 	}
 
-	@Override
-	public Node getNode() {
-		setFx(true);
-		if (fxNode == null) {
-			createNode();
-		}
-		return fxNode;
-	}
-
-	private void createNode() {
-		fxNode = new ColorPicker();
-		fxNode.setOnAction(event -> readComponent());
-
-		fillComponent();
-	}
-
-	private void createComponent() {
-		swModelAlpha = new SpinnerNumberModel(0, 0, 255, 1);
-		swModelBlue = new SpinnerNumberModel(0, 0, 255, 1);
-		swModelGreen = new SpinnerNumberModel(0, 0, 255, 1);
-		swModelRed = new SpinnerNumberModel(0, 0, 255, 1);
-
-		swComponent = new JPanel(new GridBagLayout());
-		swComponent.add(new JSpinner(swModelRed), new GridBagConstraints());
-		swComponent.add(new JSpinner(swModelGreen), new GridBagConstraints());
-		swComponent.add(new JSpinner(swModelBlue), new GridBagConstraints());
-		swComponent.add(new JSpinner(swModelAlpha), new GridBagConstraints());
-
-		JButton button = new JButton("…");
-		button.setMargin(new java.awt.Insets(0, 2, 0, 2));
-		button.addActionListener((ActionEvent e) -> openPicker());
-		swComponent.add(button, new GridBagConstraints());
-
-		fillComponent();
-	}
-
-	private void openPicker() {
-		if (fx == null) {
-			return;
-		}
-		if (fx) {
-			return;
-		}
-		Color newColor = JColorChooser.showDialog(
-				swComponent,
-				"Choose Color",
-				new Color(red, green, blue, alpha));
-		if (newColor != null) {
-			red = newColor.getRed();
-			green = newColor.getGreen();
-			blue = newColor.getBlue();
-			if (this.editAlpla) {
-				this.alpha = newColor.getAlpha();
-			}
-		}
-		fillComponent();
-	}
-
-	/**
-	 * Ensure the component represents the current value.
-	 */
 	private void fillComponent() {
-		if (fx == null) {
-			return;
+		if (factorySwing != null) {
+			factorySwing.fillComponent();
 		}
-		if (fx) {
-			javafx.scene.paint.Color color = javafx.scene.paint.Color.color(255.0 / red, 255.0 / green, 255.0 / blue, 255.0 / (1 - alpha));
-			fxNode.setValue(color);
-		} else {
-			swModelRed.setValue(red);
-			swModelGreen.setValue(green);
-			swModelBlue.setValue(blue);
-			if (this.editAlpla) {
-				swModelAlpha.setValue(alpha);
-			}
-			swComponent.setBackground(new Color(this.red, this.green, this.blue));
+		if (factoryFx != null) {
+			factoryFx.fillComponent();
 		}
+	}
+
+	private void readComponent() {
+		if (factorySwing != null) {
+			factorySwing.readComponent();
+		}
+		if (factoryFx != null) {
+			factoryFx.readComponent();
+		}
+	}
+
+	public int getRed() {
+		return red;
+	}
+
+	public void setRed(int red) {
+		this.red = red;
+	}
+
+	public int getGreen() {
+		return green;
+	}
+
+	public void setGreen(int green) {
+		this.green = green;
+	}
+
+	public int getBlue() {
+		return blue;
+	}
+
+	public void setBlue(int blue) {
+		this.blue = blue;
+	}
+
+	public int getAlpha() {
+		return alpha;
+	}
+
+	public void setAlpha(int alpha) {
+		this.alpha = alpha;
+	}
+
+	public boolean isEditAlpla() {
+		return editAlpla;
 	}
 
 	@Override

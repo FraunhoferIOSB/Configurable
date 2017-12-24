@@ -19,11 +19,10 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
-import de.fraunhofer.iosb.ilt.configurable.Styles;
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryMapFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryMapSwing;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -34,28 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import javafx.collections.FXCollections;
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.geometry.VPos;
-import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.MutableComboBoxModel;
-import javax.swing.border.EtchedBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,13 +45,13 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implements Iterable<String> {
 
-	protected static final class Item< V> {
+	public static final class Item< V> {
 
-		final ConfigEditor<V> editor;
-		final boolean optional;
-		final int colwidth;
-		final String name;
-		final String label;
+		public final ConfigEditor<V> editor;
+		public final boolean optional;
+		public final int colwidth;
+		public final String name;
+		public final String label;
 
 		public Item(final String name, final ConfigEditor<V> editor, final boolean optional, final int colwidth) {
 			this.name = name;
@@ -114,22 +91,12 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	 */
 	private final List<String> optionalOptions = new ArrayList<>();
 	/**
-	 * Flag indicating we are in JavaFX mode.
-	 */
-	private Boolean fx;
-	// Swing components
-	private JPanel swComponent;
-	private JPanel swListHolder;
-	private JComboBox<Item> swNames;
-	private MutableComboBoxModel<Item> swModel;
-	// FX Nodes
-	private BorderPane fxPaneRoot;
-	private GridPane fxPaneList;
-	private ComboBox<Item> fxBoxNames;
-	/**
 	 * How many columns we want to have. Defaults to 1.
 	 */
 	private final int columns;
+
+	private FactoryMapSwing factorySwing;
+	private FactoryMapFx factoryFx;
 
 	public AbstractEditorMap() {
 		columns = 1;
@@ -193,7 +160,13 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 				value.add(key);
 			}
 		}
-		fillComponent();
+
+		if (factorySwing != null) {
+			factorySwing.fillComponent();
+		}
+		if (factoryFx != null) {
+			factoryFx.fillComponent();
+		}
 	}
 
 	@Override
@@ -206,235 +179,53 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		return result;
 	}
 
-	private void setFx(boolean fxMode) {
-		if (fx != null && fx != fxMode) {
-			throw new IllegalStateException("Can not switch between swing and FX mode.");
+	@Override
+	public GuiFactorySwing getGuiFactorySwing() {
+		if (factoryFx != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		fx = fxMode;
+		if (factorySwing == null) {
+			factorySwing = new FactoryMapSwing(this);
+		}
+		return factorySwing;
 	}
 
 	@Override
-	public JComponent getComponent() {
-		setFx(false);
-		if (swComponent == null) {
-			createComponent();
+	public GuiFactoryFx getGuiFactoryFx() {
+		if (factorySwing != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		return swComponent;
-	}
-
-	@Override
-	public Pane getNode() {
-		setFx(true);
-		if (fxPaneRoot == null) {
-			createPane();
+		if (factoryFx == null) {
+			factoryFx = new FactoryMapFx(this);
 		}
-		return fxPaneRoot;
-	}
-
-	private void createPane() {
-		FlowPane controls = new FlowPane();
-		controls.setAlignment(Pos.TOP_RIGHT);
-		if (!optionalOptions.isEmpty()) {
-			controls.getChildren().add(new Label("Available items:"));
-			List<Item> optionals = new ArrayList<>();
-			for (final String optionName : optionalOptions) {
-				if (!value.contains(optionName)) {
-					optionals.add(options.get(optionName));
-				}
-			}
-			optionals.sort((final Item o1, final Item o2) -> o1.label.compareTo(o2.label));
-			fxBoxNames = new ComboBox<>(FXCollections.observableArrayList(optionals));
-			controls.getChildren().add(fxBoxNames);
-
-			Button addButton = new Button("+");
-			addButton.setOnAction(event -> addItem());
-			controls.getChildren().add(addButton);
-		}
-		fxPaneList = new GridPane();
-		fxPaneRoot = new BorderPane();
-		fxPaneRoot.setStyle(Styles.STYLE_BORDER);
-		fxPaneRoot.setTop(controls);
-		fxPaneRoot.setCenter(fxPaneList);
-
-		fillComponent();
-	}
-
-	private void createComponent() {
-		JPanel controls = new JPanel(new BorderLayout());
-		if (!optionalOptions.isEmpty()) {
-			controls.add(new JLabel("List of items:"), BorderLayout.WEST);
-			List<Item> optionals = new ArrayList<>();
-			for (final String optionName : optionalOptions) {
-				if (!value.contains(optionName)) {
-					optionals.add(options.get(optionName));
-				}
-			}
-			optionals.sort((final Item o1, final Item o2) -> o1.label.compareTo(o2.label));
-			swModel = new DefaultComboBoxModel<>(optionals.toArray(new Item[optionals.size()]));
-			swNames = new JComboBox<>(swModel);
-			controls.add(swNames, BorderLayout.CENTER);
-
-			final JButton addButton = new JButton("+");
-			addButton.addActionListener(event -> addItem());
-
-			controls.add(addButton, BorderLayout.EAST);
-		}
-
-		swListHolder = new JPanel(new GridBagLayout());
-
-		swComponent = new JPanel(new BorderLayout());
-		swComponent.setBorder(new EtchedBorder());
-		swComponent.add(controls, BorderLayout.NORTH);
-		swComponent.add(swListHolder, BorderLayout.CENTER);
-
-		fillComponent();
-	}
-
-	private void addItem() {
-		if (fx) {
-			Item item = fxBoxNames.getSelectionModel().getSelectedItem();
-			if (item != null) {
-				String key = item.getName();
-				addItem(key);
-			}
-		} else {
-			int idx = swNames.getSelectedIndex();
-			if (idx >= 0) {
-				String key = swNames.getModel().getElementAt(idx).getName();
-				addItem(key);
-			}
-		}
+		return factoryFx;
 	}
 
 	public void addItem(final String key) {
 		value.add(key);
-		if (swModel != null) {
-			swModel.removeElement(options.get(key));
+		if (factorySwing != null) {
+			factorySwing.addItem(key);
 		}
-		if (fxBoxNames != null) {
-			fxBoxNames.getItems().remove(options.get(key));
+		if (factoryFx != null) {
+			factoryFx.addItem(key);
 		}
-		fillComponent();
 	}
 
 	public void removeItem(final String key) {
 		final Item<V> item = options.get(key);
 		if (item.optional) {
 			value.remove(key);
-			if (swModel != null) {
-				swModel.addElement(item);
+			if (factorySwing != null) {
+				factorySwing.removeItem(item);
 			}
-			if (fxBoxNames != null) {
-				fxBoxNames.getItems().add(item);
+			if (factoryFx != null) {
+				factoryFx.removeItem(item);
 			}
-			fillComponent();
 		}
 	}
 
 	/**
-	 * Ensure the component represents the current value.
-	 */
-	private void fillComponent() {
-		if (fx == null) {
-			return;
-		}
-
-		if (fx) {
-			fxPaneList.getChildren().clear();
-		} else {
-			swListHolder.removeAll();
-		}
-
-		GridBagConstraints gbc;
-		int row = 0;
-		int endCol = -1;
-		// Iterate over the options so the order is fixed.
-		for (final Map.Entry<String, Item<V>> entry : options.entrySet()) {
-			final String key = entry.getKey();
-			if (!value.contains(key)) {
-				continue;
-			}
-			final Item<V> item = entry.getValue();
-			endCol += item.colwidth;
-			if (endCol >= columns) {
-				endCol = item.colwidth - 1;
-				row++;
-			}
-			final int startCol = endCol - item.colwidth + 1;
-			final int width = 3 * item.colwidth - 2;
-			final int x0 = startCol * 3;
-			final int x1 = x0 + 1;
-			final int x2 = x0 + width + 1;
-
-			String label = item.editor.getLabel();
-			if (label.isEmpty()) {
-				label = key;
-			}
-
-			if (fx) {
-				addToGridFx(row, x0, label, x1, item, width, x2, key);
-			} else {
-				addToGridSw(row, x0, label, x1, item, width, x2, key);
-			}
-		}
-		if (!fx) {
-			swListHolder.invalidate();
-			swComponent.revalidate();
-			swComponent.repaint();
-		}
-	}
-
-	private void addToGridFx(int row, final int x0, String label, final int x1, final Item<V> item, final int width, final int x2, final String key) {
-		Label fxLabel = new Label(label);
-		fxLabel.setTooltip(new Tooltip(item.editor.getDescription()));
-		GridPane.setConstraints(fxLabel, x0, row, 1, 1, HPos.LEFT, VPos.BASELINE, Priority.NEVER, Priority.NEVER);
-		fxPaneList.getChildren().add(fxLabel);
-
-		Node itemPane = item.editor.getNode();
-		GridPane.setConstraints(itemPane, x1, row, width, 1, HPos.LEFT, VPos.BASELINE, Priority.SOMETIMES, Priority.NEVER);
-		fxPaneList.getChildren().add(itemPane);
-
-		if (!optionalOptions.isEmpty()) {
-			Button removeButton = new Button("-");
-			removeButton.setDisable(!item.optional);
-			removeButton.setOnAction(event -> removeItem(key));
-			GridPane.setConstraints(removeButton, x2, row, 1, 1, HPos.LEFT, VPos.BASELINE, Priority.NEVER, Priority.NEVER);
-			fxPaneList.getChildren().add(removeButton);
-		}
-	}
-
-	private void addToGridSw(int row, final int x0, String label, final int x1, final Item<V> item, final int width, final int x2, final String key) {
-		GridBagConstraints gbc;
-		gbc = new GridBagConstraints();
-		gbc.gridx = x0;
-		gbc.gridy = row;
-		gbc.weightx = 0;
-		gbc.anchor = GridBagConstraints.NORTHWEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.insets = new Insets(2, 3, 1, 1);
-		final JLabel jLabel = new JLabel(label);
-		jLabel.setToolTipText(item.editor.getDescription());
-		swListHolder.add(jLabel, gbc);
-		gbc = new GridBagConstraints();
-		gbc.gridx = x1;
-		gbc.gridy = row;
-		gbc.gridwidth = width;
-		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		swListHolder.add(item.editor.getComponent(), gbc);
-		if (!optionalOptions.isEmpty()) {
-			JButton removeButton = new JButton("-");
-			removeButton.setEnabled(item.optional);
-			removeButton.addActionListener(event -> removeItem(key));
-			gbc = new GridBagConstraints();
-			gbc.gridx = x2;
-			gbc.gridy = row;
-			swListHolder.add(removeButton, gbc);
-		}
-	}
-
-	/**
-	 * For each of the keys in the map, tries to call setKeyname(keyValue) on
+	 * For each of the keys in the map, tries to call set{Keyname}(keyValue) on
 	 * the target.
 	 *
 	 * @param target The target to call the setters on.
@@ -487,6 +278,10 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		return value.iterator();
 	}
 
+	public Set<String> getRawValue() {
+		return value;
+	}
+
 	public V getValue(final String name) {
 		final Item<V> item = options.get(name);
 		return item.editor.getValue();
@@ -500,6 +295,28 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	 */
 	public boolean isOptionSet(final String name) {
 		return value.contains(name);
+	}
+
+	/**
+	 * The names of the optional options.
+	 *
+	 * @return the optionalOptions
+	 */
+	public final List<String> getOptionalOptions() {
+		return optionalOptions;
+	}
+
+	/**
+	 * How many columns we want to have. Defaults to 1.
+	 *
+	 * @return	How many columns we want to have.
+	 */
+	public final int getColumns() {
+		return columns;
+	}
+
+	public Map<String, Item<V>> getOptions() {
+		return options;
 	}
 
 }

@@ -16,17 +16,12 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryEnumFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryEnumSwing;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import java.awt.BorderLayout;
-import javafx.collections.FXCollections;
-import javafx.scene.Node;
-import javafx.scene.control.Spinner;
-import javax.swing.ComboBoxModel;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 
 /**
  *
@@ -38,16 +33,9 @@ public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
 	private final Class<T> sourceType;
 	private final T deflt;
 	private T value;
-	/**
-	 * Flag indicating we are in JavaFX mode.
-	 */
-	private Boolean fx;
-	// Swing components
-	private JComboBox<T> swComboBox;
-	private ComboBoxModel<T> swModel;
-	private JPanel swComponent;
-	// FX Nodes
-	private Spinner<T> fxNode;
+
+	private FactoryEnumSwing<T> factorySwing;
+	private FactoryEnumFx<T> factoryFx;
 
 	public EditorEnum(Class<T> sourceType, T deflt, String label, String description) {
 		this.sourceType = sourceType;
@@ -82,68 +70,56 @@ public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
 		return new JsonPrimitive(value.name());
 	}
 
-	private void setFx(boolean fxMode) {
-		if (fx != null && fx != fxMode) {
-			throw new IllegalStateException("Can not switch between swing and FX mode.");
+	@Override
+	public GuiFactorySwing getGuiFactorySwing() {
+		if (factoryFx != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		fx = fxMode;
+		if (factorySwing == null) {
+			factorySwing = new FactoryEnumSwing<>(this, this);
+		}
+		return factorySwing;
 	}
 
 	@Override
-	public JComponent getComponent() {
-		setFx(false);
-		if (swComponent == null) {
-			createComponent();
+	public GuiFactoryFx getGuiFactoryFx() {
+		if (factorySwing != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
-		return swComponent;
+		if (factoryFx == null) {
+			factoryFx = new FactoryEnumFx<>(this, this);
+		}
+		return factoryFx;
 	}
 
-	@Override
-	public Node getNode() {
-		setFx(true);
-		if (fxNode == null) {
-			createComponent();
-		}
-		return fxNode;
-	}
-
-	private void createComponent() {
-		if (fx) {
-			fxNode = new Spinner<>(FXCollections.observableArrayList(sourceType.getEnumConstants()));
-		} else {
-			swModel = new DefaultComboBoxModel<>(sourceType.getEnumConstants());
-			swComboBox = new JComboBox<>(swModel);
-			swComponent = new JPanel(new BorderLayout());
-			swComponent.add(swComboBox, BorderLayout.CENTER);
-			swComponent.add(getHelpButton(), BorderLayout.WEST);
-		}
-		fillComponent();
-	}
-
-	/**
-	 * Ensure the component represents the current value.
-	 */
 	private void fillComponent() {
-		if (fx == null) {
-			return;
+		if (factorySwing != null) {
+			factorySwing.fillComponent();
 		}
-		if (fx) {
-			fxNode.getValueFactory().setValue(value);
-		} else {
-			swComboBox.setSelectedItem(value);
+		if (factoryFx != null) {
+			factoryFx.fillComponent();
 		}
 	}
 
 	private void readComponent() {
-		if (fx == null) {
-			return;
+		if (factorySwing != null) {
+			factorySwing.readComponent();
 		}
-		if (fx) {
-			value = fxNode.getValue();
-		} else {
-			int index = swComboBox.getSelectedIndex();
-			value = swModel.getElementAt(index);
+		if (factoryFx != null) {
+			factoryFx.readComponent();
 		}
+	}
+
+	public Class<T> getSourceType() {
+		return sourceType;
+	}
+
+	public T getRawValue() {
+		return value;
+	}
+
+	public void setRawValue(T value) {
+		this.value = value;
 	}
 
 	@Override

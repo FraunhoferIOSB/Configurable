@@ -16,13 +16,12 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryNullFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryNullSwing;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
-import java.awt.BorderLayout;
-import javafx.scene.Node;
-import javafx.scene.layout.BorderPane;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 
 /**
  * An editor that does not edit anything. For cases where you want a class to be
@@ -32,8 +31,8 @@ import javax.swing.JPanel;
  */
 public class EditorNull extends EditorDefault<Void> {
 
-	private JComponent swComponent;
-	private BorderPane fxNode;
+	private FactoryNullSwing factorySwing;
+	private FactoryNullFx factoryFx;
 
 	public EditorNull() {
 	}
@@ -49,24 +48,30 @@ public class EditorNull extends EditorDefault<Void> {
 	}
 
 	@Override
+	public GuiFactorySwing getGuiFactorySwing() {
+		if (factoryFx != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
+		}
+		if (factorySwing == null) {
+			factorySwing = new FactoryNullSwing();
+		}
+		return factorySwing;
+	}
+
+	@Override
+	public GuiFactoryFx getGuiFactoryFx() {
+		if (factorySwing != null) {
+			throw new IllegalArgumentException("Can not mix different types of editors.");
+		}
+		if (factoryFx == null) {
+			factoryFx = new FactoryNullFx();
+		}
+		return factoryFx;
+	}
+
+	@Override
 	public JsonElement getConfig() {
 		return JsonNull.INSTANCE;
-	}
-
-	@Override
-	public JComponent getComponent() {
-		if (swComponent == null) {
-			swComponent = new JPanel(new BorderLayout());
-		}
-		return swComponent;
-	}
-
-	@Override
-	public Node getNode() {
-		if (fxNode == null) {
-			fxNode = new BorderPane();
-		}
-		return fxNode;
 	}
 
 	@Override
