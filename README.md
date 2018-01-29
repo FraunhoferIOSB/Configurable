@@ -104,6 +104,8 @@ using the GUI
 
 ### A super-simple example
 
+You can find the source code of this example in the examples folder.
+
 Lets say we have a class that draws a circle, with a certain radius.
 
 ```
@@ -522,3 +524,5 @@ super.configure(config, context, edtCtx);
 
 As a result, adding any configuration options to AbstractShape automatically adds
 those options to the child classes, including their GUI.
+
+You can find the source code of this example in the examples folder.
