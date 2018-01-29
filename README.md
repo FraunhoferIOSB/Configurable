@@ -460,7 +460,65 @@ public class FlagShapeList implements Configurable<Object, Object> {
 
 And the nice thing: If you add a shape class, it automatically appears in your configuration GUI!
 
-No magic configuration strings that are parsed by some archaic code written decades ago
-of which everyone forgot which options exist and what they do.
-No hunting through scores of source files to find where the config is parsed and
-where it is used.
+### Inheriting options from super
+
+All our shapes, Circle, Triangle and Rectangle, have a Color, but all three define
+their own color field and editor. In this case it makes more sense to use an abstract
+class `AbstractShape`, that defines the Color field. How do we deal with superclasses
+that are Configurable?
+
+First we define our AbstractShape class, just as we normally would, with an important
+distinction: `getConfigEditor` specifically returns an `EditorMap`.
+
+```
+public abstract class AbstractShape implements Shape {
+
+    private Color color;
+
+    private EditorMap configEditor;
+    private EditorColor editorColor;
+
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public void configure(JsonElement config, Object context, Object edtCtx) {
+        getConfigEditor(context, edtCtx);
+        configEditor.setConfig(config);
+        color = editorColor.getValue();
+    }
+
+    @Override
+    public EditorMap getConfigEditor(Object context, Object edtCtx) {
+        if (configEditor == null) {
+            configEditor = new EditorMap();
+
+            editorColor = new EditorColor(Color.GREEN, false, "Color", "The colour of the circle");
+            configEditor.addOption("color", editorColor, true);
+        }
+        return configEditor;
+    }
+
+}
+```
+
+Our subclasses now have two small changes. In `getConfigEditor` they do not create
+a new EditorMap themselves, they call `getConfigEditor` on the super class instead:
+
+```
+configEditor = super.getConfigEditor(context, edtCtx);
+```
+
+As a result, the EditorMap of the child classes already contains the fields that
+are defined by the superclass.
+Second, in their `configure` method, the child classes do not call `getConfigEditor`
+nor `configEditor.setConfig´. Instead they let the superclass do this, by calling
+`super.configure`.
+
+```
+super.configure(config, context, edtCtx);
+```
+
+As a result, adding any configuration options to AbstractShape automatically adds
+those options to the child classes, including their GUI.
