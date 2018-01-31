@@ -1,20 +1,15 @@
 package de.fraunhofer.iosb.ilt.configurableexample;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JPanel;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
-
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
+import de.fraunhofer.iosb.ilt.configurable.Reflection;
+import java.awt.event.ActionEvent;
+import javax.swing.JPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -116,6 +111,10 @@ public class ExampleGui extends javax.swing.JFrame {
             exampleGui.setVisible(true);
             exampleGui.setSize(400, 300);
         });
+        // Do classpath scanning in the background.
+        new Thread(() -> {
+            Reflection.getReflections();
+        }).start();
     }
 
 }

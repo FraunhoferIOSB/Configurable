@@ -16,6 +16,7 @@
  */
 package de.fraunhofer.iosb.ilt.configurable;
 
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -66,14 +67,14 @@ public class Reflection {
 	 * filtering out all interfaces.
 	 *
 	 * @param parent The class or interface to find subclasses of.
-	 * @param interfaces Should interfaces be included.
+	 * @param interfaces Should interfaces and abstract classes be included.
 	 * @return
 	 */
 	public static List<Class> getSubtypesOf(Class parent, boolean interfaces) {
 		Set<Class> types = getReflections().getSubTypesOf(parent);
 		List<Class> result = new ArrayList<>();
 		for (Class subtype : types) {
-			if (interfaces || !subtype.isInterface()) {
+			if (interfaces || (!subtype.isInterface() && !Modifier.isAbstract(subtype.getModifiers()))) {
 				result.add(subtype);
 			}
 		}
