@@ -99,6 +99,21 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	}
 
 	@Override
+	public JsonElement getConfig() {
+		readComponent();
+		JsonObject result;
+		if (merge && classConfig != null && classConfig.isJsonObject()) {
+			result = classConfig.getAsJsonObject();
+			result.add(nameField, new JsonPrimitive(className));
+		} else {
+			result = new JsonObject();
+			result.add(KEY_CLASSNAME, new JsonPrimitive(className));
+			result.add(KEY_CLASSCONFIG, classConfig);
+		}
+		return result;
+	}
+
+	@Override
 	public void setConfig(JsonElement config) {
 		if (config != null && config.isJsonObject()) {
 			JsonObject confObj = config.getAsJsonObject();
@@ -124,19 +139,22 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		setClassName(className);
 	}
 
-	@Override
-	public JsonElement getConfig() {
-		readComponent();
-		JsonObject result;
-		if (merge && classConfig != null && classConfig.isJsonObject()) {
-			result = classConfig.getAsJsonObject();
-			result.add(nameField, new JsonPrimitive(className));
-		} else {
-			result = new JsonObject();
-			result.add(KEY_CLASSNAME, new JsonPrimitive(className));
-			result.add(KEY_CLASSCONFIG, classConfig);
-		}
-		return result;
+	/**
+	 * Get the configuration of the selected class.
+	 *
+	 * @return the configuration of the selected class.
+	 */
+	public JsonElement getClassConfig() {
+		return this.classConfig;
+	}
+
+	/**
+	 * Set the configuration of the selected class.
+	 *
+	 * @param classConfig the configuration of the selected class.
+	 */
+	public void setClassConfig(final JsonElement classConfig) {
+		this.classConfig = classConfig;
 	}
 
 	@Override
@@ -317,4 +335,33 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		return this;
 	}
 
+	/**
+	 * Helper method to test if the given config is a valid configuration for
+	 * this EditorSubclass.
+	 *
+	 * @param config The configuration to test.
+	 * @return true if the configuration is valid.
+	 */
+	public boolean testConfig(final JsonElement config) {
+		if (config == null || !config.isJsonObject()) {
+			return false;
+		}
+		final JsonObject confObj = config.getAsJsonObject();
+		if (this.merge) {
+			final JsonElement classNameElem = confObj.get(this.nameField);
+			if (classNameElem == null || !classNameElem.isJsonPrimitive()) {
+				return false;
+			}
+		} else {
+			final JsonElement classNameElem = confObj.get(KEY_CLASSNAME);
+			if (classNameElem == null || !classNameElem.isJsonPrimitive()) {
+				return false;
+			}
+
+			if (!confObj.has(KEY_CLASSCONFIG)) {
+				return false;
+			}
+		}
+		return true;
+	}
 }
