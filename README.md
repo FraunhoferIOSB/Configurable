@@ -8,6 +8,32 @@ Why Configurable?
 3. All configuration options are available, and discoverable, through the GUI.
 4. The configuration is stored in simple JSON.
 
+## Maven
+
+Configurable is hosted on Bintray. If you add the bintray repository to your pom you are set:
+```
+    <repositories>
+        <repository>
+            <id>bintray-fraunhoferiosb-Maven</id>
+            <url>https://dl.bintray.com/fraunhoferiosb/Maven</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.fraunhofer.iosb.ilt</groupId>
+            <artifactId>Configurable</artifactId>
+            <version>0.8</version>
+        </dependency>
+    </dependencies>
+```
+
 ## Manual
 
 In essence, Configurable is an interface. It revolves around classes, or instances of classes,
