@@ -46,8 +46,19 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	private static final String KEY_CLASSNAME = "className";
 	private static final String KEY_CLASSCONFIG = "classConfig";
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditorSubclass.class);
+	/**
+	 * The interface or superclass that the selectable classes must
+	 * implement/extend.
+	 */
 	private final Class<?> iface;
+	/**
+	 * The flag indicating the selected class name and the configuration of this
+	 * class should be merged into one JSON object.
+	 */
 	private boolean merge = false;
+	/**
+	 * The name of the json field that holds the name of the selected class.
+	 */
 	private String nameField = KEY_CLASSNAME;
 	private String className = "";
 	private JsonElement classConfig;
@@ -203,7 +214,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	}
 
 	public String[] getClasses() {
-		List<Class> subtypes = Reflection.getSubtypesOf(iface, false);
+		List<Class> subtypes = Reflection.getSubtypesOf(iface, false, true);
 		int i = 0;
 		String[] result = new String[subtypes.size()];
 		for (Class subtype : subtypes) {
@@ -363,5 +374,53 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * The interface or superclass that the selectable classes must
+	 * implement/extend.
+	 *
+	 * @return the interface class.
+	 */
+	public Class<?> getIface() {
+		return iface;
+	}
+
+	/**
+	 * The flag indicating the selected class name and the configuration of this
+	 * class should be merged into one JSON object.
+	 *
+	 * @return the merge setting
+	 */
+	public boolean isMerge() {
+		return merge;
+	}
+
+	/**
+	 * The flag indicating the selected class name and the configuration of this
+	 * class should be merged into one JSON object.
+	 *
+	 * @param merge the merge to set
+	 */
+	public void setMerge(boolean merge) {
+		this.merge = merge;
+	}
+
+	/**
+	 * The name of the json field that holds the name of the selected class.
+	 *
+	 * @return the nameField
+	 */
+	public String getNameField() {
+		return nameField;
+	}
+
+	/**
+	 * The name of the json field that holds the name of the selected class.
+	 *
+	 * @param nameField the nameField to set
+	 */
+	public void setNameField(String nameField) {
+		this.nameField = nameField;
 	}
 }

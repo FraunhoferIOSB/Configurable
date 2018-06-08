@@ -63,15 +63,32 @@ public class Reflection {
 	}
 
 	/**
-	 * Returns all subtypes of the given class or interface. Optionally
-	 * filtering out all interfaces.
+	 * Returns all subtypes of the given class or interface, excluding the given
+	 * class itself. Optionally filtering out all interfaces.
 	 *
 	 * @param parent The class or interface to find subclasses of.
 	 * @param interfaces Should interfaces and abstract classes be included.
 	 * @return
 	 */
 	public static List<Class> getSubtypesOf(Class parent, boolean interfaces) {
+		return getSubtypesOf(parent, interfaces, false);
+	}
+
+	/**
+	 * Returns all subtypes of the given class or interface, optionally
+	 * including the given class itself. Optionally filtering out all
+	 * interfaces.
+	 *
+	 * @param parent The class or interface to find subclasses of.
+	 * @param interfaces Should interfaces and abstract classes be included.
+	 * @param includeParent Should the given parent class itself be returned.
+	 * @return The list of classes.
+	 */
+	public static List<Class> getSubtypesOf(Class parent, boolean interfaces, boolean includeParent) {
 		Set<Class> types = getReflections().getSubTypesOf(parent);
+		if (includeParent && (interfaces || (!parent.isInterface() && !Modifier.isAbstract(parent.getModifiers())))) {
+			types.add(parent);
+		}
 		List<Class> result = new ArrayList<>();
 		for (Class subtype : types) {
 			if (interfaces || (!subtype.isInterface() && !Modifier.isAbstract(subtype.getModifiers()))) {
