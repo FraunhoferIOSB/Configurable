@@ -16,12 +16,17 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
-import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryEnumFx;
-import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryEnumSwing;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryEnumFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryEnumSwing;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 
 /**
  *
@@ -30,19 +35,48 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
  */
 public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
 
-	private final Class<T> sourceType;
-	private final T deflt;
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public static @interface EdOptsEnum {
+
+		/**
+		 * @return The Enum to present the values of.
+		 */
+		Class<? extends Enum> sourceType();
+
+		/**
+		 * @return The enum.name of the default value.
+		 */
+		String dflt();
+	}
+
+	private Class<T> sourceType;
+	private T dflt;
 	private T value;
 
 	private FactoryEnumSwing<T> factorySwing;
 	private FactoryEnumFx<T> factoryFx;
 
+	public EditorEnum() {
+	}
+
 	public EditorEnum(Class<T> sourceType, T deflt, String label, String description) {
 		this.sourceType = sourceType;
-		this.deflt = deflt;
+		this.dflt = deflt;
 		this.value = deflt;
 		setLabel(label);
 		setDescription(description);
+	}
+
+	@Override
+	public void initFor(Field field) {
+		EdOptsEnum annotation = field.getAnnotation(EdOptsEnum.class);
+		if (annotation == null) {
+			throw new IllegalArgumentException("Field must have an EdOptsEnum annotation to use this editor: " + field.getName());
+		}
+		sourceType = (Class<T>) annotation.sourceType();
+		dflt = Enum.valueOf(sourceType, annotation.dflt());
+		value = dflt;
 	}
 
 	@Override
@@ -59,7 +93,7 @@ public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
 				}
 			}
 		} else {
-			value = deflt;
+			value = dflt;
 		}
 		fillComponent();
 	}

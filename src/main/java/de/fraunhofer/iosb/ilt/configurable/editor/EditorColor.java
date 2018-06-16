@@ -24,12 +24,55 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryColorFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryColorSwing;
 import java.awt.Color;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 
 /**
  *
  * @author Hylke van der Schaaf
  */
 public class EditorColor extends EditorDefault<Color> {
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public static @interface EdOptsColor {
+
+		/**
+		 * A value from 0-255.
+		 *
+		 * @return The default red value.
+		 */
+		int red() default 0;
+
+		/**
+		 * A value from 0-255.
+		 *
+		 * @return The default green value.
+		 */
+		int green() default 0;
+
+		/**
+		 * A value from 0-255.
+		 *
+		 * @return The default blue value.
+		 */
+		int blue() default 0;
+
+		/**
+		 * A value from 0-255.
+		 *
+		 * @return The default alpha value.
+		 */
+		int alpha() default 255;
+
+		/**
+		 * @return Flag indicating the alpha value can be edited.
+		 */
+		boolean editAlpha() default true;
+	}
 
 	private boolean editAlpla = true;
 	private int red;
@@ -39,6 +82,9 @@ public class EditorColor extends EditorDefault<Color> {
 
 	private FactoryColorSwing factorySwing;
 	private FactoryColorFx factoryFx;
+
+	public EditorColor() {
+	}
 
 	public EditorColor(Color deflt) {
 		this.red = deflt.getRed();
@@ -53,10 +99,22 @@ public class EditorColor extends EditorDefault<Color> {
 	}
 
 	public EditorColor(final Color deflt, final boolean editAlpha, final String label, final String description) {
-		this(deflt);
-		this.editAlpla = editAlpha;
+		this(deflt, editAlpha);
 		setLabel(label);
 		setDescription(description);
+	}
+
+	@Override
+	public void initFor(Field field) {
+		EdOptsColor annotation = field.getAnnotation(EdOptsColor.class);
+		if (annotation == null) {
+			throw new IllegalArgumentException("Field must have an EdOptsColor annotation to use this editor: " + field.getName());
+		}
+		editAlpla = annotation.editAlpha();
+		red = annotation.red();
+		green = annotation.green();
+		blue = annotation.blue();
+		alpha = annotation.alpha();
 	}
 
 	private static int getInt(JsonObject confObj, int dflt, String... names) {

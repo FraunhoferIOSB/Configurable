@@ -16,12 +16,17 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
-import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryLongFx;
-import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryLongSwing;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryLongFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryLongSwing;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 
 /**
  *
@@ -29,16 +34,30 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
  */
 public final class EditorLong extends EditorDefault<Long> {
 
-	private final long min;
-	private final long max;
-	private final long deflt;
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public static @interface EdOptsLong {
+
+		int min();
+
+		int max();
+
+		int dflt();
+	}
+
+	private long min;
+	private long max;
+	private long dflt;
 	private long value;
 
 	private FactoryLongSwing factorySwing;
 	private FactoryLongFx factoryFx;
 
+	public EditorLong() {
+	}
+
 	public EditorLong(long min, long max, long deflt, String label, String description) {
-		this.deflt = deflt;
+		this.dflt = deflt;
 		this.value = deflt;
 		this.min = min;
 		this.max = max;
@@ -47,11 +66,23 @@ public final class EditorLong extends EditorDefault<Long> {
 	}
 
 	@Override
+	public void initFor(Field field) {
+		EdOptsLong annotation = field.getAnnotation(EdOptsLong.class);
+		if (annotation == null) {
+			throw new IllegalArgumentException("Field must have an EdOptsLong annotation to use this editor: " + field.getName());
+		}
+		min = annotation.min();
+		max = annotation.max();
+		dflt = annotation.dflt();
+		value = dflt;
+	}
+
+	@Override
 	public void setConfig(JsonElement config) {
 		if (config != null && config.isJsonPrimitive() && config.getAsJsonPrimitive().isNumber()) {
 			value = config.getAsInt();
 		} else {
-			value = deflt;
+			value = dflt;
 		}
 		fillComponent();
 	}
@@ -118,7 +149,7 @@ public final class EditorLong extends EditorDefault<Long> {
 	}
 
 	public long getDeflt() {
-		return deflt;
+		return dflt;
 	}
 
 	@Override

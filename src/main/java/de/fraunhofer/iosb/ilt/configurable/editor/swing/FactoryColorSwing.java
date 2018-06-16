@@ -28,6 +28,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *
@@ -69,6 +71,14 @@ public final class FactoryColorSwing implements GuiFactorySwing {
 		button.addActionListener((ActionEvent e) -> openPicker());
 		swComponent.add(button, new GridBagConstraints());
 		fillComponent();
+		ChangeListener cl = (ChangeEvent e) -> {
+			readComponent();
+			swComponent.setBackground(new Color(parentEditor.getRed(), parentEditor.getGreen(), parentEditor.getBlue()));
+		};
+		swModelRed.addChangeListener(cl);
+		swModelGreen.addChangeListener(cl);
+		swModelBlue.addChangeListener(cl);
+		swModelAlpha.addChangeListener(cl);
 	}
 
 	private void openPicker() {

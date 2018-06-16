@@ -23,8 +23,8 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryMapFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryMapSwing;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,14 +52,16 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		public final ConfigEditor<V> editor;
 		public final boolean optional;
 		public final int colwidth;
-		public final String name;
+		public final String jsonName;
+		public final String fieldName;
 		public final String label;
 
-		public Item(final String name, final ConfigEditor<V> editor, final boolean optional, final int colwidth) {
-			this.name = name;
+		public Item(final String fieldName, final String jsonName, final ConfigEditor<V> editor, final boolean optional, final int colwidth) {
+			this.fieldName = fieldName;
+			this.jsonName = jsonName;
 			final String edLabel = editor.getLabel();
 			if (edLabel == null || edLabel.isEmpty()) {
-				label = name;
+				label = jsonName;
 			} else {
 				label = edLabel;
 			}
@@ -67,7 +71,7 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		}
 
 		public String getName() {
-			return name;
+			return jsonName;
 		}
 
 		@Override
@@ -112,24 +116,38 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		setDescription(description);
 	}
 
+	/**
+	 * Add an option (Field) to the Map.
+	 *
+	 * @param name The name to use for the option in the JSON config.
+	 * @param editor The editor to use for editing the option.
+	 * @param optional Flag indicating the option is optional.
+	 */
 	public void addOption(String name, ConfigEditor editor, boolean optional) {
-		if (options.containsKey(name)) {
-			throw new IllegalArgumentException("Map already contains an editor for " + name);
-		}
-		options.put(name, new Item<>(name, editor, optional, 1));
-		if (optional) {
-			optionalOptions.add(name);
-		} else {
-			addItem(name);
-		}
+		addOption(name, name, editor, optional, 1);
 	}
 
+	/**
+	 * Add an option (Field) to the Map.
+	 *
+	 * @param name The name to use for the option in the JSON config.
+	 * @param editor The editor to use for editing the option.
+	 * @param optional Flag indicating the option is optional.
+	 * @param width The number of columns the editor should take in the GUI.
+	 */
 	public void addOption(String name, ConfigEditor editor, boolean optional, int width) {
-		options.put(name, new Item<>(name, editor, optional, width));
+		addOption(name, name, editor, optional, width);
+	}
+
+	public void addOption(String fieldName, String jsonName, ConfigEditor editor, boolean optional, int width) {
+		if (options.containsKey(jsonName)) {
+			throw new IllegalArgumentException("Map already contains an editor for " + jsonName);
+		}
+		options.put(jsonName, new Item<>(fieldName, jsonName, editor, optional, width));
 		if (optional) {
-			optionalOptions.add(name);
+			optionalOptions.add(jsonName);
 		} else {
-			addItem(name);
+			addItem(jsonName);
 		}
 	}
 
@@ -201,20 +219,20 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		return factoryFx;
 	}
 
-	public void addItem(final String key) {
-		value.add(key);
+	public void addItem(final String jsonName) {
+		value.add(jsonName);
 		if (factorySwing != null) {
-			factorySwing.addItem(key);
+			factorySwing.addItem(jsonName);
 		}
 		if (factoryFx != null) {
-			factoryFx.addItem(key);
+			factoryFx.addItem(jsonName);
 		}
 	}
 
-	public void removeItem(final String key) {
-		final Item<V> item = options.get(key);
+	public void removeItem(final String jsonName) {
+		final Item<V> item = options.get(jsonName);
 		if (item.optional) {
-			value.remove(key);
+			value.remove(jsonName);
 			if (factorySwing != null) {
 				factorySwing.removeItem(item);
 			}
@@ -225,51 +243,46 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	}
 
 	/**
-	 * For each of the keys in the map, tries to call set{Keyname}(keyValue) on
-	 * the target.
+	 * For each of the keys in the map, tries set the value of the field on the
+	 * target object. It first tries to set the field with the fieldName
+	 * directly. If that does not work, it tries to call the setter
+	 * set{fieldName}(fieldValue) on the target.
 	 *
-	 * @param target The target to call the setters on.
+	 * @param target The target to set the fields, or call the setters on.
 	 */
 	public void setContentsOn(final Object target) {
-		for (String key : value) {
-			Object val = options.get(key).editor.getValue();
+		for (Item<V> item : options.values()) {
+			Object val = item.editor.getValue();
 			if (val == null) {
 				continue;
 			}
+			String fieldName = item.fieldName;
 
-			String methodName = "set" + key.substring(0, 1).toUpperCase(Locale.ROOT) + key.substring(1);
-			AbstractEditorMap.callMethodOn(methodName, target, val);
+			String methodName = "set" + fieldName.substring(0, 1).toUpperCase(Locale.ROOT) + fieldName.substring(1);
+			if (AbstractEditorMap.callMethodOn(methodName, target, val)) {
+				// using setting worked.
+				continue;
+			}
+
+			Field field = FieldUtils.getField(target.getClass(), fieldName, true);
+			try {
+				FieldUtils.writeField(field, target, val, true);
+				continue;
+			} catch (IllegalAccessException ex) {
+				LOGGER.trace("Exception:", ex);
+			}
+			LOGGER.warn("Could not set field {}.", field);
 		}
 	}
 
 	private static boolean callMethodOn(final String methodName, final Object target, final Object val) {
-		final Class<? extends Object> aClass = target.getClass();
-		final Class<? extends Object> vClass = val.getClass();
 		try {
-			Class<? extends Object> current = aClass;
-			while (current.getSuperclass() != null) {
-				final Method[] declaredMethods = current.getDeclaredMethods();
-				for (final Method method : declaredMethods) {
-					final String mName = method.getName();
-					final int pCount = method.getParameterCount();
-					if (pCount == 1 && mName.equals(methodName)) {
-						final Class<?> pt0 = method.getParameterTypes()[0];
-						// unfortunately this does not do autoboxing.
-						final boolean assignable = pt0.isAssignableFrom(vClass);
-						if (assignable) {
-							method.invoke(target, val);
-							return true;
-						} else {
-							LOGGER.debug("Method found, but wrong parameter.");
-						}
-					}
-				}
-				current = current.getSuperclass();
-			}
-		} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | UnsupportedOperationException exc) {
-			LOGGER.debug("", exc);
+			MethodUtils.invokeMethod(target, methodName, val);
+			return true;
+		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException exc) {
+			LOGGER.trace("Failed to call setter.", exc);
 		}
-		LOGGER.debug("Failed call method {} on {}.", methodName, aClass.getName());
+		LOGGER.debug("Failed call method {} on {}.", methodName, target.getClass().getName());
 		return false;
 	}
 

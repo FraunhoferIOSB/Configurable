@@ -16,12 +16,17 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
-import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryStringFx;
-import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryStringSwing;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryStringFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryStringSwing;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 
 /**
  *
@@ -29,21 +34,39 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
  */
 public class EditorString extends EditorDefault<String> {
 
-	private final String deflt;
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public static @interface EdOptsString {
+
+		/**
+		 * @return The number of lines to show in the editor.
+		 */
+		int lines() default 1;
+
+		/**
+		 * @return The default value.
+		 */
+		String dflt() default "";
+	}
+
+	private String dflt;
 	private String value;
-	private int lines = 5;
+	private int lines = 1;
 
 	private FactoryStringSwing factorySwing;
 	private FactoryStringFx factoryFx;
 
+	public EditorString() {
+	}
+
 	public EditorString(String deflt, int lines) {
-		this.deflt = deflt;
+		this.dflt = deflt;
 		this.value = deflt;
 		this.lines = lines;
 	}
 
 	public EditorString(String deflt, int lines, String label, String description) {
-		this.deflt = deflt;
+		this.dflt = deflt;
 		this.value = deflt;
 		this.lines = lines;
 		setLabel(label);
@@ -51,11 +74,22 @@ public class EditorString extends EditorDefault<String> {
 	}
 
 	@Override
+	public void initFor(Field field) {
+		EdOptsString annotation = field.getAnnotation(EdOptsString.class);
+		if (annotation == null) {
+			throw new IllegalArgumentException("Field must have an EdOptsString annotation to use this editor: " + field.getName());
+		}
+		lines = annotation.lines();
+		dflt = annotation.dflt();
+		value = dflt;
+	}
+
+	@Override
 	public void setConfig(JsonElement config) {
 		if (config != null && config.isJsonPrimitive()) {
 			value = config.getAsJsonPrimitive().getAsString();
 		} else {
-			value = deflt;
+			value = dflt;
 		}
 		fillComponent();
 	}

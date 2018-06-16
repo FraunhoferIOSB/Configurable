@@ -18,6 +18,7 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import java.awt.event.ActionEvent;
+import java.lang.reflect.Field;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -44,6 +45,11 @@ public abstract class EditorDefault<T> implements ConfigEditor<T> {
 	 */
 	private static JFrame helpFrame;
 	private static JTextPane textPane;
+
+	@Override
+	public void initFor(Field field) {
+		throw new UnsupportedOperationException("Not supported yet for " + getClass().getName());
+	}
 
 	/**
 	 * The human readable label for this editor.

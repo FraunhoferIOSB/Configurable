@@ -22,6 +22,11 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryIntFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryIntSwing;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 
 /**
  *
@@ -29,18 +34,33 @@ import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryIntSwing;
  */
 public final class EditorInt extends EditorDefault<Integer> {
 
-	private final int min;
-	private final int max;
-	private final int step;
-	private final int deflt;
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public static @interface EdOptsInt {
+
+		int min();
+
+		int max();
+
+		int step();
+
+		int dflt();
+	}
+	private int min;
+	private int max;
+	private int step;
+	private int dflt;
 	private int value;
 
 	private FactoryIntSwing factorySwing;
 	private FactoryIntFx factoryFx;
 
-	public EditorInt(int min, int max, int step, int deflt, String label, String description) {
-		this.deflt = deflt;
-		this.value = deflt;
+	public EditorInt() {
+	}
+
+	public EditorInt(int min, int max, int step, int dflt, String label, String description) {
+		this.dflt = dflt;
+		this.value = dflt;
 		this.min = min;
 		this.max = max;
 		this.step = step;
@@ -49,11 +69,24 @@ public final class EditorInt extends EditorDefault<Integer> {
 	}
 
 	@Override
+	public void initFor(Field field) {
+		EdOptsInt annotation = field.getAnnotation(EdOptsInt.class);
+		if (annotation == null) {
+			throw new IllegalArgumentException("Field must have an EdIntOpts annotation to use this editor: " + field.getName());
+		}
+		min = annotation.min();
+		max = annotation.max();
+		step = annotation.step();
+		dflt = annotation.dflt();
+		value = dflt;
+	}
+
+	@Override
 	public void setConfig(JsonElement config) {
 		if (config != null && config.isJsonPrimitive() && config.getAsJsonPrimitive().isNumber()) {
 			value = config.getAsInt();
 		} else {
-			value = deflt;
+			value = dflt;
 		}
 		fillComponent();
 	}
@@ -111,8 +144,8 @@ public final class EditorInt extends EditorDefault<Integer> {
 		return max;
 	}
 
-	public int getDeflt() {
-		return deflt;
+	public int getDflt() {
+		return dflt;
 	}
 
 	public int getStep() {

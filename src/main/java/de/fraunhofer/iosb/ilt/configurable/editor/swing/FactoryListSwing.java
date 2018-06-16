@@ -56,10 +56,10 @@ public final class FactoryListSwing<U, T extends ConfigEditor<U>> implements Gui
 
 	private void createComponent() {
 		JPanel controls = new JPanel(new BorderLayout());
-		controls.add(new JLabel("Add item", SwingConstants.RIGHT), BorderLayout.CENTER);
+		controls.add(new JLabel("Add item", SwingConstants.LEFT), BorderLayout.CENTER);
 		JButton addButton = new JButton("+");
 		addButton.addActionListener((event) -> parentEditor.addItem());
-		controls.add(addButton, BorderLayout.EAST);
+		controls.add(addButton, BorderLayout.WEST);
 		swListHolder = new JPanel(new GridBagLayout());
 		swComponent = new JPanel(new BorderLayout());
 		swComponent.setBorder(new EtchedBorder());

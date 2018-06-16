@@ -22,8 +22,14 @@ import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.EditorFactory;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryListFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryListSwing;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -37,11 +43,34 @@ import java.util.List;
  */
 public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List<U>> implements Iterable<T> {
 
-	private final EditorFactory<T> factory;
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public static @interface EdOptsList {
+
+		/**
+		 * The class to use as editor for the items in the list. The editor
+		 * should also supply an annotation type to use for defining further
+		 * parameters. An annotation of this type should also be set on the
+		 * field.
+		 *
+		 * This means you can not nest lists, since that would result in two
+		 * EdListOpts annotations on the same field.
+		 *
+		 * @return The class to use as editor for the list items.
+		 */
+		Class<? extends ConfigEditor> editor();
+	}
+
+	private Object context;
+	private Object edtCtx;
+	private EditorFactory<T> factory;
 	private final List<T> value = new ArrayList<>();
 
 	private FactoryListSwing factorySwing;
 	private FactoryListFx factoryFx;
+
+	public EditorList() {
+	}
 
 	public EditorList(EditorFactory<T> factory) {
 		this.factory = factory;
@@ -51,6 +80,36 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		this.factory = factory;
 		setLabel(label);
 		setDescription(description);
+	}
+
+	/**
+	 * The contexts to pass on to item editors. Only needed when using
+	 * annotations, since then the factory is not externally supplied.
+	 *
+	 * @param context the context.
+	 * @param edtCtx the edit context.
+	 */
+	public final void setContexts(final Object context, final Object edtCtx) {
+		this.context = context;
+		this.edtCtx = edtCtx;
+	}
+
+	@Override
+	public void initFor(final Field field) {
+		final EdOptsList annotation = field.getAnnotation(EdOptsList.class);
+		if (annotation == null) {
+			throw new IllegalArgumentException("Field must have an EdListOpts annotation to use this editor: " + field.getName());
+		}
+		// TODO: find a way to check this cast
+		final Class<T> editorClass = (Class<T>) annotation.editor();
+		factory = () -> {
+			try {
+				T editor = AnnotationHelper.createEditor(editorClass, field, context, edtCtx);
+				return editor;
+			} catch (InstantiationException | IllegalAccessException ex) {
+				throw new IllegalArgumentException("Can not create new editor.", ex);
+			}
+		};
 	}
 
 	@Override

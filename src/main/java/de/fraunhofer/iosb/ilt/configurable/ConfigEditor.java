@@ -17,6 +17,7 @@
 package de.fraunhofer.iosb.ilt.configurable;
 
 import com.google.gson.JsonElement;
+import java.lang.reflect.Field;
 
 /**
  * Interface defining configuration editors.
@@ -75,16 +76,34 @@ public interface ConfigEditor<T> {
 	 *
 	 * @return The label to use for this editor.
 	 */
-	default String getLabel() {
-		return "";
-	}
+	public String getLabel();
+
+	/**
+	 * The human readable label for this editor.
+	 *
+	 * @param label the label to set
+	 */
+	public void setLabel(String label);
 
 	/**
 	 * Get the description for this editor. Can return an empty string.
 	 *
 	 * @return The description to use for this editor.
 	 */
-	default String getDescription() {
-		return "";
-	}
+	public String getDescription();
+
+	/**
+	 * The longer description for this editor.
+	 *
+	 * @param description the description to set
+	 */
+	public void setDescription(String description);
+
+	/**
+	 * Initialise the editor for the given Field, using the Field name and type
+	 * and any annotations present on the Field.
+	 *
+	 * @param field the Field to initialise the editor for.
+	 */
+	public void initFor(Field field);
 }

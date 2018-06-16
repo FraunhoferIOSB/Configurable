@@ -22,6 +22,11 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryDoubleFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryDoubleSwing;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 
 /**
  *
@@ -29,17 +34,32 @@ import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryDoubleSwing;
  */
 public class EditorDouble extends EditorDefault<Double> {
 
-	private final double min;
-	private final double max;
-	private final double step;
-	private final double deflt;
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public static @interface EdOptsDouble {
+
+		double min();
+
+		double max();
+
+		double step();
+
+		double dflt();
+	}
+	private double min;
+	private double max;
+	private double step;
+	private double dflt;
 	private double value;
 
 	private FactoryDoubleSwing factorySwing;
 	private FactoryDoubleFx factoryFx;
 
+	public EditorDouble() {
+	}
+
 	public EditorDouble(double min, double max, double step, double deflt) {
-		this.deflt = deflt;
+		this.dflt = deflt;
 		this.value = deflt;
 		this.min = min;
 		this.max = max;
@@ -47,7 +67,7 @@ public class EditorDouble extends EditorDefault<Double> {
 	}
 
 	public EditorDouble(double min, double max, double step, double deflt, String label, String description) {
-		this.deflt = deflt;
+		this.dflt = deflt;
 		this.value = deflt;
 		this.min = min;
 		this.max = max;
@@ -57,11 +77,24 @@ public class EditorDouble extends EditorDefault<Double> {
 	}
 
 	@Override
+	public void initFor(Field field) {
+		EdOptsDouble annotation = field.getAnnotation(EdOptsDouble.class);
+		if (annotation == null) {
+			throw new IllegalArgumentException("Field must have an EdOptsDouble annotation to use this editor: " + field.getName());
+		}
+		min = annotation.min();
+		max = annotation.max();
+		step = annotation.step();
+		dflt = annotation.dflt();
+		value = dflt;
+	}
+
+	@Override
 	public void setConfig(JsonElement config) {
 		if (config != null && config.isJsonPrimitive()) {
 			value = config.getAsDouble();
 		} else {
-			value = deflt;
+			value = dflt;
 		}
 		fillComponent();
 	}
@@ -120,7 +153,7 @@ public class EditorDouble extends EditorDefault<Double> {
 	}
 
 	public double getDeflt() {
-		return deflt;
+		return dflt;
 	}
 
 	public double getStep() {

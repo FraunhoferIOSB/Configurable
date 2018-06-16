@@ -22,6 +22,11 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryBooleanFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryBooleanSwing;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,23 +37,43 @@ import org.slf4j.LoggerFactory;
  */
 public final class EditorBoolean extends EditorDefault<Boolean> {
 
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public static @interface EdOptsBool {
+
+		boolean dflt() default false;
+	}
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditorBoolean.class.getName());
-	private final boolean deflt;
+	private boolean dflt;
 	private boolean value;
 
 	private FactoryBooleanSwing factorySwing;
 	private FactoryBooleanFx factoryFx;
 
+	public EditorBoolean() {
+	}
+
 	public EditorBoolean(boolean deflt) {
 		this.value = deflt;
-		this.deflt = deflt;
+		this.dflt = deflt;
 	}
 
 	public EditorBoolean(boolean deflt, String label, String description) {
 		this.value = deflt;
-		this.deflt = deflt;
+		this.dflt = deflt;
 		setLabel(label);
 		setDescription(description);
+	}
+
+	@Override
+	public void initFor(Field field) {
+		EdOptsBool annotation = field.getAnnotation(EdOptsBool.class);
+		if (annotation == null) {
+			throw new IllegalArgumentException("Field must have an EdOptsBool annotation to use this editor: " + field.getName());
+		}
+		dflt = annotation.dflt();
+		value = dflt;
 	}
 
 	@Override
@@ -56,7 +81,7 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 		try {
 			value = config.getAsBoolean();
 		} catch (ClassCastException | IllegalStateException e) {
-			value = deflt;
+			value = dflt;
 			LOGGER.trace("", e);
 			LOGGER.debug("Value is not a boolean: {}.", config.toString());
 		}

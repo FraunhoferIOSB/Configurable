@@ -27,6 +27,11 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactorySubclsFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactorySubclsSwing;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import org.slf4j.Logger;
@@ -43,6 +48,17 @@ import org.slf4j.LoggerFactory;
  */
 public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	public static @interface EdOptsSubclass {
+
+		Class<?> iface();
+
+		boolean merge() default false;
+
+		String nameField() default KEY_CLASSNAME;
+	}
+
 	private static final String KEY_CLASSNAME = "className";
 	private static final String KEY_CLASSCONFIG = "classConfig";
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditorSubclass.class);
@@ -50,7 +66,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	 * The interface or superclass that the selectable classes must
 	 * implement/extend.
 	 */
-	private final Class<?> iface;
+	private Class<?> iface;
 	/**
 	 * The flag indicating the selected class name and the configuration of this
 	 * class should be merged into one JSON object.
@@ -70,6 +86,9 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 
 	private FactorySubclsSwing factorySwing;
 	private FactorySubclsFx factoryFx;
+
+	public EditorSubclass() {
+	}
 
 	public EditorSubclass(final C context, final D edtCtx, Class<?> iface, boolean merge, String nameField) {
 		this.iface = iface;
@@ -102,6 +121,17 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		setLabel(label);
 		setDescription(description);
 		setContexts(context, edtCtx);
+	}
+
+	@Override
+	public void initFor(Field field) {
+		final EdOptsSubclass annotation = field.getAnnotation(EdOptsSubclass.class);
+		if (annotation == null) {
+			throw new IllegalArgumentException("Field must have an EdOptsSubclass annotation to use this editor: " + field.getName());
+		}
+		iface = annotation.iface();
+		merge = annotation.merge();
+		nameField = annotation.nameField();
 	}
 
 	public final void setContexts(final C context, final D edtCtx) {

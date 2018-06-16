@@ -36,6 +36,10 @@ Configurable is hosted on Bintray. If you add the bintray repository to your pom
 
 ## Manual
 
+There are two ways to use Configurable: direct, or using annotations. This manual
+shows the direct method, since it shows the inner workings of the library much better
+than the annotation method. It is also possible to mix the two methods.
+
 In essence, Configurable is an interface. It revolves around classes, or instances of classes,
 that can be configured with a JSON object, and that supply the GUI to generate this configuration.
 

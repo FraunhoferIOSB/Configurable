@@ -3,11 +3,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.fraunhofer.iosb.ilt</groupId>
-    <artifactId>ConfigurableExample</artifactId>
+    <artifactId>AnnotationExample</artifactId>
     <version>0.1</version>
     <packaging>jar</packaging>
 
-    <name>ConfigurableExample</name>
+    <name>AnnotationExample</name>
     <description>An example of the use of the Configurable framework.</description>
     <url>https://github.com/FraunhoferIOSB/Configurable</url>
     <inceptionYear>2018</inceptionYear>
