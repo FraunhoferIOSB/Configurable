@@ -19,9 +19,11 @@ package de.fraunhofer.iosb.ilt.configurable.editor.swing;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorSubclass;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorSubclass.classItem;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.util.Set;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -37,7 +39,7 @@ import javax.swing.border.EtchedBorder;
 public final class FactorySubclsSwing implements GuiFactorySwing {
 
 	private final EditorSubclass<?, ?, ?> parentEditor;
-	private String displayName = "";
+	private classItem item;
 	private String selectLabel = "Available Classes:";
 	private JPanel swComponent;
 	private JPanel swItemHolder;
@@ -56,20 +58,21 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 	}
 
 	private void createGui() {
-		String[] classes = parentEditor.getClasses();
-		displayName = parentEditor.getClassName();
-		if (!displayName.isEmpty()) {
-			displayName = displayName.substring(parentEditor.getPrefix().length());
-		}
-		createComponent(classes);
+		String jsonName = parentEditor.getJsonName();
+		item = parentEditor.findClassItem(jsonName);
+		createComponent();
 	}
 
-	private void createComponent(String[] classes) {
+	private void createComponent() {
+		Set<String> classes = parentEditor.getClassesByDisplayName().keySet();
+
 		JPanel controls = new JPanel(new BorderLayout());
 		controls.add(new JLabel(selectLabel), BorderLayout.WEST);
-		swItems = new JComboBox<>(classes);
+		swItems = new JComboBox<>(classes.toArray(new String[classes.size()]));
 		controls.add(swItems, BorderLayout.CENTER);
-		swItems.setSelectedItem(displayName);
+		if (item != null) {
+			swItems.setSelectedItem(item.displayName);
+		}
 		JButton addButton = new JButton("Set");
 		addButton.addActionListener((ActionEvent e) -> {
 			setItem();
@@ -86,21 +89,21 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 	private void setItem() {
 		int idx = swItems.getSelectedIndex();
 		if (idx >= 0) {
-			String cName = swItems.getModel().getElementAt(idx);
-			parentEditor.setClassName(parentEditor.getPrefix() + cName);
+			String displayName = swItems.getModel().getElementAt(idx);
+			item = parentEditor.getClassesByDisplayName().get(displayName);
+			parentEditor.setJsonName(item.jsonName);
 		}
 	}
 
 	public void fillComponent() {
 		String label;
-		String className = parentEditor.getClassName();
-		String prefix = parentEditor.getPrefix();
+		String jsonName = parentEditor.getJsonName();
+		item = parentEditor.findClassItem(jsonName);
 		ConfigEditor classEditor = parentEditor.getClassEditor();
-		if (className == null || className.isEmpty()) {
+		if (item == null) {
 			label = "No Class selected.";
 		} else {
-			displayName = className.substring(prefix.length());
-			label = "Selected: " + className.substring(prefix.length());
+			label = "Selected: " + item.displayName;
 		}
 		swItemHolder.removeAll();
 		Dimension dim = new Dimension(5, 5);

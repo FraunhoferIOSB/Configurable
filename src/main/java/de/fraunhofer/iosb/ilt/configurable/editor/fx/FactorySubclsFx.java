@@ -20,6 +20,8 @@ import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.Styles;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorSubclass;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorSubclass.classItem;
+import java.util.Set;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -37,7 +39,7 @@ import javafx.scene.layout.Pane;
 public final class FactorySubclsFx implements GuiFactoryFx {
 
 	private final EditorSubclass<?, ?, ?> parentEditor;
-	private String displayName = "";
+	private classItem item;
 	private String selectLabel = "Available Classes:";
 	private BorderPane fxPaneRoot;
 	private BorderPane fxPaneItem;
@@ -56,20 +58,21 @@ public final class FactorySubclsFx implements GuiFactoryFx {
 	}
 
 	private void createGui() {
-		String[] classes = parentEditor.getClasses();
-		displayName = parentEditor.getClassName();
-		if (!displayName.isEmpty()) {
-			displayName = displayName.substring(parentEditor.getPrefix().length());
-		}
-		createPane(classes);
+		String jsonName = parentEditor.getJsonName();
+		item = parentEditor.findClassItem(jsonName);
+		createPane();
 	}
 
-	private void createPane(String[] classes) {
+	private void createPane() {
+		Set<String> values = parentEditor.getClassesByDisplayName().keySet();
+
 		FlowPane controls = new FlowPane();
 		controls.setAlignment(Pos.TOP_RIGHT);
 		controls.getChildren().add(new Label(selectLabel));
-		fxItems = new ComboBox<>(FXCollections.observableArrayList(classes));
-		fxItems.getSelectionModel().select(displayName);
+		fxItems = new ComboBox<>(FXCollections.observableArrayList(values));
+		if (item != null) {
+			fxItems.getSelectionModel().select(item.displayName);
+		}
 		controls.getChildren().add(fxItems);
 		Button addButton = new Button("set");
 		addButton.setOnAction((event) -> setItem());
@@ -84,23 +87,23 @@ public final class FactorySubclsFx implements GuiFactoryFx {
 	}
 
 	private void setItem() {
-		String cName = fxItems.getSelectionModel().getSelectedItem();
-		if (cName != null && !cName.isEmpty()) {
-			String prefix = parentEditor.getPrefix();
-			parentEditor.setClassName(prefix + cName);
-			displayName = cName;
+		String selected = fxItems.getSelectionModel().getSelectedItem();
+		if (selected != null && !selected.isEmpty()) {
+			item = parentEditor.getClassesByDisplayName().get(selected);
+			parentEditor.setJsonName(item.jsonName);
 		}
 	}
 
 	public void fillComponent() {
 		String label;
-		String className = parentEditor.getClassName();
-		String prefix = parentEditor.getPrefix();
+		String jsonName = parentEditor.getJsonName();
+		item = parentEditor.findClassItem(jsonName);
+
 		ConfigEditor classEditor = parentEditor.getClassEditor();
-		if (className == null || className.isEmpty()) {
+		if (jsonName == null || jsonName.isEmpty()) {
 			label = "No Class selected.";
 		} else {
-			label = "Selected: " + className.substring(prefix.length());
+			label = "Selected: " + item.displayName;
 		}
 		fxPaneItem.getChildren().clear();
 		fxPaneItem.setTop(new Label(label));

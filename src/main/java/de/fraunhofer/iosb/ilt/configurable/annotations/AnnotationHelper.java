@@ -37,7 +37,19 @@ public class AnnotationHelper {
 		// Can't be instantiated.
 	}
 
-	public static final <E, F> EditorMap<?> GenerateEditorFromAnnotations(Configurable<E, F> instance, E context, F edtCtx) {
+	/**
+	 * Generate the editor for the given configurable instance. The editor
+	 * settings will be taken from annotations on the Class of the instance, and
+	 * its super classes.
+	 *
+	 * @param <C> The class type that provides context at runtime.
+	 * @param <D> The class type that provides context while editing.
+	 * @param instance The configurable instance to generate an editor for.
+	 * @param context The instance that provides context at runtime.
+	 * @param edtCtx The instance that provides context while editing.
+	 * @return an editor for the given Configurable instance.
+	 */
+	public static final <C, D> EditorMap<?> GenerateEditorFromAnnotations(Configurable<C, D> instance, C context, D edtCtx) {
 		EditorMap<?> map = new EditorMap<>();
 
 		Field[] fields = FieldUtils.getAllFields(instance.getClass());

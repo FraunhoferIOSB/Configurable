@@ -37,5 +37,7 @@ public @interface ConfigurableClass {
 	 *
 	 * @return The value to use in EditorSubClass when specifying this class.
 	 */
-	String jsonName();
+	String jsonName() default "";
+
+	String displayName() default "";
 }
