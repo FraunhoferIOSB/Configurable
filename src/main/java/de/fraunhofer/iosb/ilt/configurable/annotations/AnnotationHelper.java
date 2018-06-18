@@ -65,8 +65,8 @@ public class AnnotationHelper {
 					fieldEditor.setLabel(annotation.label());
 					fieldEditor.setDescription(annotation.description());
 
-					String name = nameForField(field, annotation);
-					map.addOption(name, fieldEditor, annotation.optional());
+					String jsonName = jsonNameForField(field, annotation);
+					map.addOption(field.getName(), jsonName, fieldEditor, annotation.optional(), 1, annotation.merge());
 
 				} catch (InstantiationException | IllegalAccessException ex) {
 					LOGGER.error("could not instantiate give editor: {}", editorClass);
@@ -90,7 +90,7 @@ public class AnnotationHelper {
 		return fieldEditor;
 	}
 
-	private static String nameForField(Field field, ConfigurableField annotation) {
+	private static String jsonNameForField(Field field, ConfigurableField annotation) {
 		if (annotation.jsonField().isEmpty()) {
 			return field.getName();
 		}

@@ -64,4 +64,14 @@ public @interface ConfigurableField {
 	String jsonField() default "";
 
 	boolean optional() default false;
+
+	/**
+	 * Merge the configuration of the field into the configuration of the Map
+	 * holding the field. This only works for fields that have a configuration
+	 * of the JSON type Object.
+	 *
+	 * @return Merge the configuration of the field into the configuration of
+	 * the Map holding the field.
+	 */
+	boolean merge() default false;
 }

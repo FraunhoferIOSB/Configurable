@@ -55,8 +55,9 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		public final String jsonName;
 		public final String fieldName;
 		public final String label;
+		public final boolean merge;
 
-		public Item(final String fieldName, final String jsonName, final ConfigEditor<V> editor, final boolean optional, final int colwidth) {
+		public Item(final String fieldName, final String jsonName, final ConfigEditor<V> editor, final boolean optional, final int colwidth, boolean merge) {
 			this.fieldName = fieldName;
 			this.jsonName = jsonName;
 			final String edLabel = editor.getLabel();
@@ -68,6 +69,7 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 			this.editor = editor;
 			this.optional = optional;
 			this.colwidth = colwidth;
+			this.merge = merge;
 		}
 
 		public String getName() {
@@ -140,10 +142,14 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	}
 
 	public void addOption(String fieldName, String jsonName, ConfigEditor editor, boolean optional, int width) {
+		addOption(fieldName, jsonName, editor, optional, width, false);
+	}
+
+	public void addOption(String fieldName, String jsonName, ConfigEditor editor, boolean optional, int width, boolean merge) {
 		if (options.containsKey(jsonName)) {
 			throw new IllegalArgumentException("Map already contains an editor for " + jsonName);
 		}
-		options.put(jsonName, new Item<>(fieldName, jsonName, editor, optional, width));
+		options.put(jsonName, new Item<>(fieldName, jsonName, editor, optional, width, merge));
 		if (optional) {
 			optionalOptions.add(jsonName);
 		} else {
@@ -156,26 +162,31 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		value.clear();
 
 		if (config != null && config.isJsonObject()) {
-			final JsonObject asObj = config.getAsJsonObject();
-			for (final Map.Entry<String, JsonElement> entry : asObj.entrySet()) {
-				final String key = entry.getKey();
-				final JsonElement itemConfig = entry.getValue();
-				final Item<V> item = options.get(key);
-				if (item == null) {
-					if (!"$type".equals(key)) {
-						LOGGER.debug("Unknown entry {} in configuration.", key);
-					}
+			final JsonObject configObj = config.getAsJsonObject();
+
+			for (final Map.Entry<String, Item<V>> entry : options.entrySet()) {
+				final String jsonName = entry.getKey();
+				final Item<V> item = entry.getValue();
+				if (item.merge) {
+					item.editor.setConfig(config);
+					value.add(jsonName);
 				} else {
-					item.editor.setConfig(itemConfig);
-					value.add(key);
+					JsonElement itemConfig = configObj.get(item.jsonName);
+					if (itemConfig != null) {
+						item.editor.setConfig(itemConfig);
+						value.add(jsonName);
+					} else if (!item.optional) {
+						value.add(jsonName);
+					}
 				}
 			}
-		}
-		for (final Map.Entry<String, Item<V>> entry : options.entrySet()) {
-			final String key = entry.getKey();
-			final Item<V> val = entry.getValue();
-			if (!val.optional) {
-				value.add(key);
+		} else {
+			for (final Map.Entry<String, Item<V>> entry : options.entrySet()) {
+				final String key = entry.getKey();
+				final Item<V> val = entry.getValue();
+				if (!val.optional) {
+					value.add(key);
+				}
 			}
 		}
 
@@ -192,7 +203,16 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		final JsonObject result = new JsonObject();
 		for (final String key : value) {
 			final Item<V> item = options.get(key);
-			result.add(key, item.editor.getConfig());
+			JsonElement itemConfig = item.editor.getConfig();
+			if (item.merge && itemConfig.isJsonObject()) {
+				// Handle merge
+				JsonObject itemObject = itemConfig.getAsJsonObject();
+				for (Map.Entry<String, JsonElement> entry : itemObject.entrySet()) {
+					result.add(entry.getKey(), entry.getValue());
+				}
+			} else {
+				result.add(key, itemConfig);
+			}
 		}
 		return result;
 	}

@@ -55,10 +55,22 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	@Target(ElementType.FIELD)
 	public static @interface EdOptsSubclass {
 
+		/**
+		 * @return The interface or superclass that the selectable classes must
+		 * implement/extend.
+		 */
 		Class<?> iface();
 
+		/**
+		 * @return The flag indicating the selected class name and the
+		 * configuration of this class should be merged into one JSON object.
+		 */
 		boolean merge() default false;
 
+		/**
+		 * @return The name of the json field that holds the name of the
+		 * selected class.
+		 */
 		String nameField() default KEY_CLASSNAME;
 	}
 
@@ -299,6 +311,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 			if (annotation != null) {
 				if (!annotation.jsonName().isEmpty()) {
 					item.jsonName = annotation.jsonName();
+					item.displayName = item.jsonName;
 				}
 				if (!annotation.displayName().isEmpty()) {
 					item.displayName = annotation.displayName();
