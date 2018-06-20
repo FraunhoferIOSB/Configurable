@@ -40,7 +40,7 @@ public final class FactorySubclsFx implements GuiFactoryFx {
 
 	private final EditorSubclass<?, ?, ?> parentEditor;
 	private classItem item;
-	private String selectLabel = "Available Classes:";
+	private String selectLabel = "Type:";
 	private BorderPane fxPaneRoot;
 	private BorderPane fxPaneItem;
 	private ComboBox<String> fxItems;
@@ -67,7 +67,7 @@ public final class FactorySubclsFx implements GuiFactoryFx {
 		Set<String> values = parentEditor.getClassesByDisplayName().keySet();
 
 		FlowPane controls = new FlowPane();
-		controls.setAlignment(Pos.TOP_RIGHT);
+		controls.setAlignment(Pos.TOP_CENTER);
 		controls.getChildren().add(new Label(selectLabel));
 		fxItems = new ComboBox<>(FXCollections.observableArrayList(values));
 		if (item != null) {

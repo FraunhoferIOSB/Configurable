@@ -128,7 +128,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	private ConfigEditor classEditor;
 	private C context;
 	private D edtCtx;
-	private String selectLabel = "Available Classes:";
+	private String selectLabel = "Type:";
 
 	private FactorySubclsSwing factorySwing;
 	private FactorySubclsFx factoryFx;

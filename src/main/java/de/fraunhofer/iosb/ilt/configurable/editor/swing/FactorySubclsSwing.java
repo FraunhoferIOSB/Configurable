@@ -22,6 +22,7 @@ import de.fraunhofer.iosb.ilt.configurable.editor.EditorSubclass;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorSubclass.classItem;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.util.Set;
 import javax.swing.Box;
@@ -40,7 +41,7 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 
 	private final EditorSubclass<?, ?, ?> parentEditor;
 	private classItem item;
-	private String selectLabel = "Available Classes:";
+	private String selectLabel = "Type:";
 	private JPanel swComponent;
 	private JPanel swItemHolder;
 	private JComboBox<String> swItems;
@@ -66,10 +67,10 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 	private void createComponent() {
 		Set<String> classes = parentEditor.getClassesByDisplayName().keySet();
 
-		JPanel controls = new JPanel(new BorderLayout());
-		controls.add(new JLabel(selectLabel), BorderLayout.WEST);
+		JPanel controls = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		controls.add(new JLabel(selectLabel));
 		swItems = new JComboBox<>(classes.toArray(new String[classes.size()]));
-		controls.add(swItems, BorderLayout.CENTER);
+		controls.add(swItems);
 		if (item != null) {
 			swItems.setSelectedItem(item.displayName);
 		}
@@ -77,7 +78,7 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 		addButton.addActionListener((ActionEvent e) -> {
 			setItem();
 		});
-		controls.add(addButton, BorderLayout.EAST);
+		controls.add(addButton);
 		swItemHolder = new JPanel(new BorderLayout());
 		swComponent = new JPanel(new BorderLayout());
 		swComponent.setBorder(new EtchedBorder());

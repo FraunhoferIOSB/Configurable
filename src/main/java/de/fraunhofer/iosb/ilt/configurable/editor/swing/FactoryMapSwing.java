@@ -19,6 +19,7 @@ package de.fraunhofer.iosb.ilt.configurable.editor.swing;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.AbstractEditorMap;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -60,9 +61,10 @@ public final class FactoryMapSwing implements GuiFactorySwing {
 	}
 
 	private void createComponent() {
-		JPanel controls = new JPanel(new BorderLayout());
+		JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		if (!parentEditor.getOptionalOptions().isEmpty()) {
-			controls.add(new JLabel("List of items:"), BorderLayout.WEST);
+			controls.add(new JLabel("Options:"));
+
 			List<AbstractEditorMap.Item> optionals = new ArrayList<>();
 			for (final String optionName : parentEditor.getOptionalOptions()) {
 				if (!parentEditor.getRawValue().contains(optionName)) {
@@ -72,10 +74,11 @@ public final class FactoryMapSwing implements GuiFactorySwing {
 			optionals.sort((final AbstractEditorMap.Item o1, final AbstractEditorMap.Item o2) -> o1.label.compareTo(o2.label));
 			swModel = new DefaultComboBoxModel<>(optionals.toArray(new AbstractEditorMap.Item[optionals.size()]));
 			swNames = new JComboBox<>(swModel);
-			controls.add(swNames, BorderLayout.CENTER);
+			controls.add(swNames);
+
 			final JButton addButton = new JButton("+");
 			addButton.addActionListener((event) -> addItem());
-			controls.add(addButton, BorderLayout.EAST);
+			controls.add(addButton);
 		}
 		swListHolder = new JPanel(new GridBagLayout());
 		swComponent = new JPanel(new BorderLayout());

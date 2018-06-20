@@ -66,7 +66,7 @@ public final class FactoryMapFx implements GuiFactoryFx {
 		FlowPane controls = new FlowPane();
 		controls.setAlignment(Pos.TOP_RIGHT);
 		if (!parentEditor.getOptionalOptions().isEmpty()) {
-			controls.getChildren().add(new Label("Available items:"));
+			controls.getChildren().add(new Label("Options:"));
 			List<AbstractEditorMap.Item> optionals = new ArrayList<>();
 			for (final String optionName : parentEditor.getOptionalOptions()) {
 				if (!parentEditor.getRawValue().contains(optionName)) {
