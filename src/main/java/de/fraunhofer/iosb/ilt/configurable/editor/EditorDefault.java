@@ -66,6 +66,7 @@ public abstract class EditorDefault<T> implements ConfigEditor<T> {
 	 *
 	 * @param label the label to set
 	 */
+	@Override
 	public void setLabel(String label) {
 		this.label = label;
 	}
@@ -85,6 +86,7 @@ public abstract class EditorDefault<T> implements ConfigEditor<T> {
 	 *
 	 * @param description the description to set
 	 */
+	@Override
 	public void setDescription(String description) {
 		this.description = description;
 	}

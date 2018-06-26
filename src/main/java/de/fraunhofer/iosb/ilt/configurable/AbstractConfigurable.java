@@ -27,7 +27,7 @@ import de.fraunhofer.iosb.ilt.configurable.editor.EditorMap;
  */
 public abstract class AbstractConfigurable<C, D> implements Configurable<C, D> {
 
-	private EditorMap<?> editor;
+	private transient EditorMap<?> editor;
 
 	@Override
 	public void configure(JsonElement config, C context, D edtCtx) {
