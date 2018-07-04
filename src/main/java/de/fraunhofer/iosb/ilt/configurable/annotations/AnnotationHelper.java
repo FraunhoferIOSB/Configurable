@@ -21,7 +21,6 @@ import de.fraunhofer.iosb.ilt.configurable.Configurable;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorMap;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.LoggerFactory;
@@ -55,10 +54,6 @@ public class AnnotationHelper {
 
 		Field[] fields = FieldUtils.getAllFields(instance.getClass());
 		for (Field field : fields) {
-			if (Modifier.isTransient(field.getModifiers())) {
-				LOGGER.debug("Field {} is transient.", field);
-				continue;
-			}
 			ConfigurableField annotation = field.getAnnotation(ConfigurableField.class);
 			if (annotation == null) {
 				LOGGER.debug("Field {} has no annotations.", field);
