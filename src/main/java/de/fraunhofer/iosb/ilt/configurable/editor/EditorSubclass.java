@@ -28,6 +28,7 @@ import de.fraunhofer.iosb.ilt.configurable.Reflection;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableClass;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactorySubclsFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactorySubclsSwing;
+import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -72,6 +73,31 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		 * selected class.
 		 */
 		String nameField() default KEY_CLASSNAME;
+
+		/**
+		 * @return An optional annotation that the presented classes must
+		 * implement.
+		 */
+		Class<? extends Annotation> requiredAnnotation() default NoFilter.class;
+	}
+
+	/**
+	 * The default requiredAnnotation that specifies that classes are not
+	 * filtered. Since annotation values can not be null.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public static @interface NoFilter {
+		// Empty by design.
+	}
+
+	/**
+	 * A simple annotation to use as requiredAnnotation.
+	 */
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.TYPE)
+	public static @interface Expose {
+		// Empty by design.
 	}
 
 	private static final String KEY_CLASSNAME = "className";
@@ -109,16 +135,24 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	private Map<String, classItem> classesByClassName = new HashMap<>();
 	private Map<String, classItem> classesByJsonName = new HashMap<>();
 	private Map<String, classItem> classesByDisplayName = new TreeMap<>();
+
 	/**
 	 * The interface or superclass that the selectable classes must
 	 * implement/extend.
 	 */
 	private Class<?> iface;
+
+	/**
+	 * An annotation that the presented classes must implement.
+	 */
+	private Class<? extends Annotation> requiredAnnotation = NoFilter.class;
+
 	/**
 	 * The flag indicating the selected class name and the configuration of this
 	 * class should be merged into one JSON object.
 	 */
 	private boolean merge = false;
+
 	/**
 	 * The name of the json field that holds the name of the selected class.
 	 */
@@ -178,6 +212,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		iface = annotation.iface();
 		merge = annotation.merge();
 		nameField = annotation.nameField();
+		requiredAnnotation = annotation.requiredAnnotation();
 	}
 
 	public final void setContexts(final C context, final D edtCtx) {
@@ -306,6 +341,11 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		}
 		List<Class<?>> subtypes = Reflection.getSubtypesOf(iface, false, true);
 		for (Class<?> subtype : subtypes) {
+			if (requiredAnnotation != NoFilter.class && subtype.getAnnotation(requiredAnnotation) == null) {
+				LOGGER.debug("Ignoring class {}, not annotated with {}.", subtype, requiredAnnotation);
+				continue;
+			}
+
 			classItem item = new classItem(subtype.getName());
 			ConfigurableClass annotation = subtype.getAnnotation(ConfigurableClass.class);
 			if (annotation != null) {
@@ -556,5 +596,23 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	 */
 	public void setNameField(String nameField) {
 		this.nameField = nameField;
+	}
+
+	/**
+	 * An annotation that the presented classes must implement.
+	 *
+	 * @return the required Annotation class
+	 */
+	public Class<? extends Annotation> getRequiredAnnotation() {
+		return requiredAnnotation;
+	}
+
+	/**
+	 * An annotation that the presented classes must implement.
+	 *
+	 * @param requiredAnnotation the required Annotation class
+	 */
+	public void setRequiredAnnotation(Class<? extends Annotation> requiredAnnotation) {
+		this.requiredAnnotation = requiredAnnotation;
 	}
 }
