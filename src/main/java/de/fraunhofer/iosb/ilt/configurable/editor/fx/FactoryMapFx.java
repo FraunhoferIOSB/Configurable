@@ -63,10 +63,12 @@ public final class FactoryMapFx implements GuiFactoryFx {
 	}
 
 	private void createPane() {
-		FlowPane controls = new FlowPane();
-		controls.setAlignment(Pos.TOP_RIGHT);
+
 		if (!parentEditor.getOptionalOptions().isEmpty()) {
+			FlowPane controls = new FlowPane();
+			controls.setAlignment(Pos.TOP_RIGHT);
 			controls.getChildren().add(new Label("Options:"));
+
 			List<AbstractEditorMap.Item> optionals = new ArrayList<>();
 			for (final String optionName : parentEditor.getOptionalOptions()) {
 				if (!parentEditor.getRawValue().contains(optionName)) {
@@ -79,11 +81,11 @@ public final class FactoryMapFx implements GuiFactoryFx {
 			Button addButton = new Button("+");
 			addButton.setOnAction((event) -> addItem());
 			controls.getChildren().add(addButton);
+			fxPaneRoot.setTop(controls);
 		}
 		fxPaneList = new GridPane();
 		fxPaneRoot = new BorderPane();
 		fxPaneRoot.setStyle(Styles.STYLE_BORDER);
-		fxPaneRoot.setTop(controls);
 		fxPaneRoot.setCenter(fxPaneList);
 		fillComponent();
 	}
