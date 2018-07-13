@@ -20,7 +20,7 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorEnum;
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
-import javafx.scene.control.Spinner;
+import javafx.scene.control.ChoiceBox;
 
 /**
  *
@@ -30,7 +30,7 @@ import javafx.scene.control.Spinner;
 public final class FactoryEnumFx<T extends Enum<T>> implements GuiFactoryFx {
 
 	private final EditorEnum<T> parentEditor;
-	private Spinner<T> fxNode;
+	private ChoiceBox<T> fxNode;
 	private final EditorEnum<T> outer;
 
 	public FactoryEnumFx(EditorEnum<T> parentEditor, final EditorEnum<T> outer) {
@@ -47,7 +47,7 @@ public final class FactoryEnumFx<T extends Enum<T>> implements GuiFactoryFx {
 	}
 
 	private void createComponent() {
-		fxNode = new Spinner<>(FXCollections.observableArrayList(outer.getSourceType().getEnumConstants()));
+		fxNode = new ChoiceBox<>(FXCollections.observableArrayList(outer.getSourceType().getEnumConstants()));
 		fillComponent();
 	}
 
@@ -55,7 +55,7 @@ public final class FactoryEnumFx<T extends Enum<T>> implements GuiFactoryFx {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		fxNode.getValueFactory().setValue(outer.getRawValue());
+		fxNode.setValue(outer.getRawValue());
 	}
 
 	public void readComponent() {
