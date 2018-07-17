@@ -63,7 +63,7 @@ public final class FactoryMapFx implements GuiFactoryFx {
 	}
 
 	private void createPane() {
-
+		fxPaneRoot = new BorderPane();
 		if (!parentEditor.getOptionalOptions().isEmpty()) {
 			FlowPane controls = new FlowPane();
 			controls.setAlignment(Pos.TOP_RIGHT);
@@ -84,7 +84,6 @@ public final class FactoryMapFx implements GuiFactoryFx {
 			fxPaneRoot.setTop(controls);
 		}
 		fxPaneList = new GridPane();
-		fxPaneRoot = new BorderPane();
 		fxPaneRoot.setStyle(Styles.STYLE_BORDER);
 		fxPaneRoot.setCenter(fxPaneList);
 		fillComponent();
