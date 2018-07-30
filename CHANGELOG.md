@@ -1,3 +1,9 @@
+# Release Version 0.9
+
+**Updates**
+* Improved layout: Fixed adding empty FlowPane to EditorMap with no optionals.
+* Use ChoiceBox instead of Spinner for FactoryEnumFx.
+
 
 # Release Version 0.9
 
