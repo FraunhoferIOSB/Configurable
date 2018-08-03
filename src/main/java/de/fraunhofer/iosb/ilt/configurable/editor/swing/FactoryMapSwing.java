@@ -136,18 +136,20 @@ public final class FactoryMapSwing implements GuiFactorySwing {
 		jLabel.setToolTipText(item.editor.getDescription());
 		swListHolder.add(jLabel, gbc);
 		gbc = new GridBagConstraints();
-		gbc.gridx = x1;
+		gbc.gridx = x2;
 		gbc.gridy = row;
 		gbc.gridwidth = width;
 		gbc.weightx = 1;
 		gbc.fill = GridBagConstraints.HORIZONTAL;
 		swListHolder.add(item.editor.getGuiFactorySwing().getComponent(), gbc);
 		if (!parentEditor.getOptionalOptions().isEmpty()) {
-			JButton removeButton = new JButton("-");
+			JButton removeButton = new JButton("❌");
+			removeButton.setMargin(new java.awt.Insets(1, 1, 1, 1));
 			removeButton.setEnabled(item.optional);
 			removeButton.addActionListener((event) -> parentEditor.removeItem(key));
 			gbc = new GridBagConstraints();
-			gbc.gridx = x2;
+			gbc.anchor = GridBagConstraints.NORTH;
+			gbc.gridx = x1;
 			gbc.gridy = row;
 			swListHolder.add(removeButton, gbc);
 		}
