@@ -90,12 +90,31 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		 */
 		String myKey() default "list-1";
 
+		/**
+		 * The minimum number of items the list must have.
+		 *
+		 * @return The minimum number of items the list must have.
+		 */
+		int minCount() default 0;
+
+		/**
+		 * The maximum number of items the list must have. Once the list has
+		 * this many items, the user can not add more items to the list. If a
+		 * configuration is loaded with more items, only this many items are
+		 * loaded, the rest is ignored.
+		 *
+		 * @return The maximum number of items the list may have.
+		 */
+		int maxCount() default Integer.MAX_VALUE;
+
 	}
 
 	private Object context;
 	private Object edtCtx;
 	private EditorFactory<T> factory;
 	private final List<T> value = new ArrayList<>();
+	private int minCount = 0;
+	private int maxCount = Integer.MAX_VALUE;
 
 	private FactoryListSwing factorySwing;
 	private FactoryListFx factoryFx;
@@ -144,6 +163,9 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		if (annotation == null) {
 			throw new IllegalArgumentException("Field must have an EdListOpts annotation to use this editor: " + field.getName());
 		}
+		minCount = annotation.minCount();
+		maxCount = annotation.maxCount();
+		final String editorKey = annotation.editorKey();
 		// TODO: find a way to check this cast
 		final Class<T> editorClass = (Class<T>) annotation.editor();
 		factory = () -> {
@@ -162,6 +184,9 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		if (config != null && config.isJsonArray()) {
 			JsonArray asArray = config.getAsJsonArray();
 			for (JsonElement subConf : asArray) {
+				if (value.size() >= maxCount) {
+					break;
+				}
 				T item = factory.createEditor();
 				item.setConfig(subConf);
 				value.add(item);
@@ -187,6 +212,7 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		if (factorySwing == null) {
 			factorySwing = new FactoryListSwing(this);
 		}
+		fillComponent();
 		return factorySwing;
 	}
 
@@ -198,10 +224,15 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		if (factoryFx == null) {
 			factoryFx = new FactoryListFx(this);
 		}
+		fillComponent();
 		return factoryFx;
 	}
 
 	private void fillComponent() {
+		while (value.size() < minCount) {
+			T item = factory.createEditor();
+			value.add(item);
+		}
 		if (factorySwing != null) {
 			factorySwing.fillComponent();
 		}
@@ -211,13 +242,18 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 	}
 
 	public void addItem() {
+		if (value.size() >= maxCount) {
+			return;
+		}
 		final T item = factory.createEditor();
 		value.add(item);
 		fillComponent();
 	}
 
 	public void removeItem(T item) {
-		value.remove(item);
+		if (value.size() > minCount) {
+			value.remove(item);
+		}
 		fillComponent();
 	}
 
@@ -242,6 +278,22 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 	@Override
 	public void setValue(List<U> value) {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	public int getMinCount() {
+		return minCount;
+	}
+
+	public void setMinCount(int minCount) {
+		this.minCount = minCount;
+	}
+
+	public int getMaxCount() {
+		return maxCount;
+	}
+
+	public void setMaxCount(int maxCount) {
+		this.maxCount = maxCount;
 	}
 
 }

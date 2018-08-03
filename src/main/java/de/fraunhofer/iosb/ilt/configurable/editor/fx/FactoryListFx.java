@@ -59,12 +59,20 @@ public final class FactoryListFx<U, T extends ConfigEditor<U>> implements GuiFac
 	private void createPane() {
 		FlowPane controls = new FlowPane();
 		controls.setAlignment(Pos.TOP_RIGHT);
-		Label addLabel = new Label("Add item");
-		addLabel.setAlignment(Pos.BASELINE_RIGHT);
-		controls.getChildren().add(addLabel);
-		Button addButton = new Button("+");
-		addButton.setOnAction((event) -> parentEditor.addItem());
-		controls.getChildren().add(addButton);
+
+		if (parentEditor.getMinCount() != parentEditor.getMaxCount()) {
+			Label addLabel = new Label("Add item");
+			addLabel.setAlignment(Pos.BASELINE_RIGHT);
+			controls.getChildren().add(addLabel);
+			Button addButton = new Button("+");
+			addButton.setOnAction((event) -> parentEditor.addItem());
+			controls.getChildren().add(addButton);
+		} else {
+			Label addLabel = new Label("Items:");
+			addLabel.setAlignment(Pos.BASELINE_RIGHT);
+			controls.getChildren().add(addLabel);
+		}
+
 		fxPaneList = new GridPane();
 		fxPaneRoot = new BorderPane();
 		fxPaneRoot.setStyle(Styles.STYLE_BORDER);
@@ -77,6 +85,9 @@ public final class FactoryListFx<U, T extends ConfigEditor<U>> implements GuiFac
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
+		if (fxPaneRoot == null) {
+			createPane();
+		}
 		fxPaneList.getChildren().clear();
 		if (parentEditor.getRawValue().isEmpty()) {
 			fxPaneList.add(new Label("No items added."), 0, 0);
@@ -85,10 +96,12 @@ public final class FactoryListFx<U, T extends ConfigEditor<U>> implements GuiFac
 		for (final T item : parentEditor.getRawValue()) {
 			Node pane = item.getGuiFactoryFx().getNode();
 			GridPane.setConstraints(pane, 0, row, 1, 1, HPos.LEFT, VPos.BASELINE, Priority.ALWAYS, Priority.SOMETIMES);
-			Button removeButton = new Button("-");
-			removeButton.setOnAction((event) -> parentEditor.removeItem(item));
-			GridPane.setConstraints(removeButton, 1, row, 1, 1, HPos.RIGHT, VPos.TOP, Priority.NEVER, Priority.NEVER);
-			fxPaneList.getChildren().addAll(pane, removeButton);
+			if (parentEditor.getMinCount() != parentEditor.getMaxCount()) {
+				Button removeButton = new Button("-");
+				removeButton.setOnAction((event) -> parentEditor.removeItem(item));
+				GridPane.setConstraints(removeButton, 1, row, 1, 1, HPos.RIGHT, VPos.TOP, Priority.NEVER, Priority.NEVER);
+				fxPaneList.getChildren().addAll(pane, removeButton);
+			}
 			row++;
 		}
 	}

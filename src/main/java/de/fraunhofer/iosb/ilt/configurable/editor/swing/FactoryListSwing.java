@@ -56,10 +56,15 @@ public final class FactoryListSwing<U, T extends ConfigEditor<U>> implements Gui
 
 	private void createComponent() {
 		JPanel controls = new JPanel(new BorderLayout());
-		controls.add(new JLabel("Add item", SwingConstants.LEFT), BorderLayout.CENTER);
-		JButton addButton = new JButton("+");
-		addButton.addActionListener((event) -> parentEditor.addItem());
-		controls.add(addButton, BorderLayout.WEST);
+
+		if (parentEditor.getMinCount() != parentEditor.getMaxCount()) {
+			controls.add(new JLabel("Add item", SwingConstants.LEFT), BorderLayout.CENTER);
+			JButton addButton = new JButton("+");
+			addButton.addActionListener((event) -> parentEditor.addItem());
+			controls.add(addButton, BorderLayout.WEST);
+		} else {
+			controls.add(new JLabel("Items:", SwingConstants.LEFT), BorderLayout.CENTER);
+		}
 		swListHolder = new JPanel(new GridBagLayout());
 		swComponent = new JPanel(new BorderLayout());
 		swComponent.setBorder(new EtchedBorder());
@@ -72,6 +77,9 @@ public final class FactoryListSwing<U, T extends ConfigEditor<U>> implements Gui
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
+		if (swComponent == null) {
+			createComponent();
+		}
 		swListHolder.removeAll();
 		if (parentEditor.getRawValue().isEmpty()) {
 			swListHolder.add(new JLabel("No items added."));
@@ -87,13 +95,17 @@ public final class FactoryListSwing<U, T extends ConfigEditor<U>> implements Gui
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 			gbc.insets = insets;
 			swListHolder.add(item.getGuiFactorySwing().getComponent(), gbc);
-			JButton removeButton = new JButton("-");
-			removeButton.addActionListener((event) -> parentEditor.removeItem(item));
-			gbc = new GridBagConstraints();
-			gbc.gridx = 1;
-			gbc.gridy = row;
-			gbc.insets = insets;
-			swListHolder.add(removeButton, gbc);
+
+			if (parentEditor.getMinCount() != parentEditor.getMaxCount()) {
+				JButton removeButton = new JButton("❌");
+				removeButton.setMargin(new Insets(1, 1, 1, 1));
+				removeButton.addActionListener((event) -> parentEditor.removeItem(item));
+				gbc = new GridBagConstraints();
+				gbc.gridx = 1;
+				gbc.gridy = row;
+				gbc.insets = insets;
+				swListHolder.add(removeButton, gbc);
+			}
 			row++;
 		}
 		swListHolder.invalidate();
