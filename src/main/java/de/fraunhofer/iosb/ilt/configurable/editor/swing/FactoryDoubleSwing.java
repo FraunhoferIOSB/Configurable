@@ -18,9 +18,12 @@ package de.fraunhofer.iosb.ilt.configurable.editor.swing;
 
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorDouble;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JComponent;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.JTextField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -28,9 +31,10 @@ import javax.swing.SpinnerNumberModel;
  */
 public final class FactoryDoubleSwing implements GuiFactorySwing {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(FactoryDoubleSwing.class.getName());
+
 	private final EditorDouble parentEditor;
-	private SpinnerNumberModel swModel;
-	private JSpinner swComponent;
+	private JTextField swComponent;
 
 	public FactoryDoubleSwing(EditorDouble parentEditor) {
 		this.parentEditor = parentEditor;
@@ -45,8 +49,16 @@ public final class FactoryDoubleSwing implements GuiFactorySwing {
 	}
 
 	private void createComponent() {
-		swModel = new SpinnerNumberModel(parentEditor.getRawValue(), parentEditor.getMin(), parentEditor.getMax(), parentEditor.getStep());
-		swComponent = new JSpinner(swModel);
+		if (parentEditor.getRawValue() < parentEditor.getMin() || parentEditor.getRawValue() > parentEditor.getMax()) {
+			parentEditor.setRawValue(Math.max(parentEditor.getMin(), Math.min(parentEditor.getRawValue(), parentEditor.getMax())));
+		}
+		swComponent = new JTextField();
+		swComponent.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				readComponent();
+			}
+		});
 		fillComponent();
 	}
 
@@ -54,12 +66,17 @@ public final class FactoryDoubleSwing implements GuiFactorySwing {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		swComponent.setValue(parentEditor.getRawValue());
+		swComponent.setText("" + parentEditor.getRawValue());
 	}
 
 	public void readComponent() {
 		if (swComponent != null) {
-			parentEditor.setRawValue(swModel.getNumber().doubleValue());
+			try {
+				parentEditor.setRawValue(Double.parseDouble(swComponent.getText()));
+			} catch (NumberFormatException exc) {
+				LOGGER.error("Failed to parse text to number: " + swComponent.getText());
+			}
+			fillComponent();
 		}
 	}
 

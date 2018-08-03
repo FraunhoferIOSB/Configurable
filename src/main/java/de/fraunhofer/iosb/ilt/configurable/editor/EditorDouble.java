@@ -38,11 +38,11 @@ public class EditorDouble extends EditorDefault<Double> {
 	@Target(ElementType.FIELD)
 	public static @interface EdOptsDouble {
 
-		double min();
+		double min() default Double.NEGATIVE_INFINITY;
 
-		double max();
+		double max() default Double.POSITIVE_INFINITY;
 
-		double step();
+		double step() default Double.MIN_VALUE;
 
 		double dflt();
 	}
@@ -165,6 +165,12 @@ public class EditorDouble extends EditorDefault<Double> {
 	}
 
 	public void setRawValue(double value) {
+		if (value < min) {
+			value = min;
+		}
+		if (value > max) {
+			value = max;
+		}
 		this.value = value;
 	}
 
