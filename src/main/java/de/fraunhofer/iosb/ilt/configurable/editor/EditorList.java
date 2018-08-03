@@ -26,6 +26,7 @@ import de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryListFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryListSwing;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -45,6 +46,14 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
+	public @interface EdOptsListList {
+
+		EdOptsList[] value();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	@Repeatable(EdOptsListList.class)
 	public static @interface EdOptsList {
 
 		/**
@@ -59,6 +68,28 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		 * @return The class to use as editor for the list items.
 		 */
 		Class<? extends ConfigEditor> editor();
+
+		/**
+		 * The key of the configuration for the nested ListEditor. This needs to
+		 * be set if you want to have a nested List inside another List. Since
+		 * you need multiple EdOptsList annotations on the field in this case.
+		 * The editorKey of the parent list must match the myKey of the child
+		 * list.
+		 *
+		 * @return The key of the configuration for the nested ListEditor.
+		 */
+		String editorKey() default "list-2";
+
+		/**
+		 * The key of the configuration for this ListEditor. This needs to be
+		 * set if you want to have a nested List inside another List. Since you
+		 * need multiple EdOptsList annotations on the field in this case. The
+		 * editorKey of the parent list must match the myKey of the child list.
+		 *
+		 * @return The key of the configuration for this ListEditor.
+		 */
+		String myKey() default "list-1";
+
 	}
 
 	private Object context;
@@ -96,7 +127,20 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 
 	@Override
 	public void initFor(final Field field) {
-		final EdOptsList annotation = field.getAnnotation(EdOptsList.class);
+		initFor(field, "list-1");
+	}
+
+	@Override
+	public void initFor(final Field field, String key) {
+		final EdOptsList[] annotations = field.getAnnotationsByType(EdOptsList.class);
+		EdOptsList annotation = null;
+		for (EdOptsList a : annotations) {
+			if (a.myKey().equalsIgnoreCase(key)) {
+				annotation = a;
+				break;
+			}
+		}
+
 		if (annotation == null) {
 			throw new IllegalArgumentException("Field must have an EdListOpts annotation to use this editor: " + field.getName());
 		}
@@ -104,7 +148,7 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		final Class<T> editorClass = (Class<T>) annotation.editor();
 		factory = () -> {
 			try {
-				T editor = AnnotationHelper.createEditor(editorClass, field, context, edtCtx);
+				T editor = AnnotationHelper.createEditor(editorClass, field, context, edtCtx, editorKey);
 				return editor;
 			} catch (InstantiationException | IllegalAccessException ex) {
 				throw new IllegalArgumentException("Can not create new editor.", ex);

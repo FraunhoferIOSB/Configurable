@@ -90,6 +90,18 @@ public class AnnotationHelper {
 		return fieldEditor;
 	}
 
+	public static <E, F, T extends ConfigEditor> T createEditor(Class<T> editorClass, Field field, E context, F edtCtx, String key) throws IllegalAccessException, InstantiationException {
+		T fieldEditor = editorClass.newInstance();
+		try {
+			MethodUtils.invokeMethod(fieldEditor, "setContexts", context, edtCtx);
+		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException exc) {
+			// editor needs no context.
+			LOGGER.trace("", exc);
+		}
+		fieldEditor.initFor(field, key);
+		return fieldEditor;
+	}
+
 	private static String jsonNameForField(Field field, ConfigurableField annotation) {
 		if (annotation.jsonField().isEmpty()) {
 			return field.getName();

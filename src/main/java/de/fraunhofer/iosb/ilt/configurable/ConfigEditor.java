@@ -106,4 +106,16 @@ public interface ConfigEditor<T> {
 	 * @param field the Field to initialise the editor for.
 	 */
 	public void initFor(Field field);
+
+	/**
+	 * Initialise the editor for the given Field, using the Field name and type
+	 * and the annotation on the Field, identified by the given key.
+	 *
+	 * @param field the Field to initialise the editor for.
+	 * @param key the key to use to identify the annotation to load the
+	 * configuration from.
+	 */
+	public default void initFor(Field field, String key) {
+		initFor(field);
+	}
 }
