@@ -21,6 +21,8 @@ import com.google.gson.JsonObject;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
+import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableField;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryMapFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryMapSwing;
 import java.lang.reflect.Field;
@@ -56,8 +58,12 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		public final String fieldName;
 		public final String label;
 		public final boolean merge;
+		public final Set<String> profilesSave;
+		public final Set<String> profilesGui;
 
-		public Item(final String fieldName, final String jsonName, final ConfigEditor<V> editor, final boolean optional, final int colwidth, boolean merge) {
+		public Item(final String fieldName, final String jsonName, final ConfigEditor<V> editor,
+				final boolean optional, final int colwidth, boolean merge,
+				String profilesSave, String profilesGui) {
 			this.fieldName = fieldName;
 			this.jsonName = jsonName;
 			final String edLabel = editor.getLabel();
@@ -70,10 +76,20 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 			this.optional = optional;
 			this.colwidth = colwidth;
 			this.merge = merge;
+			this.profilesSave = csvToReadOnlySet(profilesSave);
+			this.profilesGui = csvToReadOnlySet(profilesGui);
 		}
 
 		public String getName() {
 			return jsonName;
+		}
+
+		public boolean hasGuiProfile(String profile) {
+			return profilesGui.contains(profile);
+		}
+
+		public boolean hasSaveProfile(String profile) {
+			return profilesSave.contains(profile);
 		}
 
 		@Override
@@ -100,6 +116,9 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	 * How many columns we want to have. Defaults to 1.
 	 */
 	private final int columns;
+
+	public Set<String> profilesEdit = csvToReadOnlySet("");
+	private String profile = DEFAULT_PROFILE_NAME;
 
 	private FactoryMapSwing factorySwing;
 	private FactoryMapFx factoryFx;
@@ -146,15 +165,27 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	}
 
 	public void addOption(String fieldName, String jsonName, ConfigEditor editor, boolean optional, int width, boolean merge) {
+		addOption(fieldName, jsonName, editor, optional, width, merge, "", "");
+	}
+
+	public void addOption(String fieldName, String jsonName, ConfigEditor editor,
+			boolean optional, int width, boolean merge,
+			String profilesSave, String profilesGui) {
 		if (options.containsKey(jsonName)) {
 			throw new IllegalArgumentException("Map already contains an editor for " + jsonName);
 		}
-		options.put(jsonName, new Item<>(fieldName, jsonName, editor, optional, width, merge));
+		editor.setProfile(profile);
+		Item item = new Item<>(fieldName, jsonName, editor, optional, width, merge, profilesSave, profilesGui);
+		options.put(jsonName, item);
 		if (optional) {
 			optionalOptions.add(jsonName);
 		} else {
 			addItem(jsonName);
 		}
+	}
+
+	public void addOption(String fieldName, String jsonName, ConfigEditor editor, ConfigurableField annotation) {
+		this.addOption(fieldName, jsonName, editor, annotation.optional(), 1, annotation.merge(), annotation.profilesSave(), annotation.profilesGui());
 	}
 
 	@Override
@@ -237,6 +268,15 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 			factoryFx = new FactoryMapFx(this);
 		}
 		return factoryFx;
+	}
+
+	public void fillComponent() {
+		if (factorySwing != null) {
+			factorySwing.fillComponent();
+		}
+		if (factoryFx != null) {
+			factoryFx.fillComponent();
+		}
 	}
 
 	public void addItem(final String jsonName) {
@@ -350,6 +390,29 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 
 	public Map<String, Item<V>> getOptions() {
 		return options;
+	}
+
+	public String getProfile() {
+		return profile;
+	}
+
+	@Override
+	public void setProfile(String profile) {
+		this.profile = profile.toLowerCase();
+		for (Item<V> item : options.values()) {
+			item.editor.setProfile(this.profile);
+		}
+		fillComponent();
+	}
+
+	public void setProfilesEdit(String csv) {
+		profilesEdit = csvToReadOnlySet(csv);
+		fillComponent();
+	}
+
+	@Override
+	public boolean canEdit() {
+		return profilesEdit.contains(profile);
 	}
 
 }

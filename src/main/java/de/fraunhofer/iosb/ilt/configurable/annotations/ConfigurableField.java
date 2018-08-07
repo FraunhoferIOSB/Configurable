@@ -74,4 +74,22 @@ public @interface ConfigurableField {
 	 * the Map holding the field.
 	 */
 	boolean merge() default false;
+
+	/**
+	 * A comma separated, case insensitive list of profile names. This field is
+	 * only included in the output json when one of these profiles is active.
+	 * The "default" profile is automatically added to the list.
+	 *
+	 * @return A comma separated, case insensitive list of profile names.
+	 */
+	String profilesSave() default "";
+
+	/**
+	 * A comma separated, case insensitive list of profile names. This field is
+	 * only included in the GUI when one of these profiles is active. The
+	 * "default" profile is automatically added to the list.
+	 *
+	 * @return A comma separated, case insensitive list of profile names.
+	 */
+	String profilesGui() default "";
 }

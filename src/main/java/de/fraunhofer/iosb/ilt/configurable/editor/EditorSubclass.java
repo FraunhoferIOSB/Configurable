@@ -25,6 +25,7 @@ import de.fraunhofer.iosb.ilt.configurable.Configurable;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableClass;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactorySubclsFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactorySubclsSwing;
@@ -37,6 +38,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +81,15 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		 * implement.
 		 */
 		Class<? extends Annotation> requiredAnnotation() default NoFilter.class;
+
+		/**
+		 * A comma separated, case insensitive list of profile names. This field
+		 * is only editable when one of these profiles is active. The "default"
+		 * profile is automatically added to the list.
+		 *
+		 * @return A comma separated, case insensitive list of profile names.
+		 */
+		String profilesEdit() default "";
 	}
 
 	/**
@@ -164,24 +175,21 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	private D edtCtx;
 	private String selectLabel = "Type:";
 
+	public Set<String> profilesEdit = csvToReadOnlySet("");
+	private String profile = DEFAULT_PROFILE_NAME;
+
 	private FactorySubclsSwing factorySwing;
 	private FactorySubclsFx factoryFx;
 
 	public EditorSubclass() {
 	}
 
-	public EditorSubclass(final C context, final D edtCtx, Class<?> iface, boolean merge, String nameField) {
-		this.iface = iface;
-		this.merge = merge;
-		this.nameField = nameField;
-		setContexts(context, edtCtx);
+	public EditorSubclass(final C context, final D edtCtx, Class<? extends T> iface, boolean merge, String nameField) {
+		this(context, edtCtx, iface, "", "", merge, nameField);
 	}
 
 	public EditorSubclass(final C context, final D edtCtx, final Class<? extends T> iface, final String label, final String description) {
-		this.iface = iface;
-		setLabel(label);
-		setDescription(description);
-		setContexts(context, edtCtx);
+		this(context, edtCtx, iface, label, description, false, KEY_CLASSNAME);
 	}
 
 	/**
@@ -213,6 +221,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		merge = annotation.merge();
 		nameField = annotation.nameField();
 		requiredAnnotation = annotation.requiredAnnotation();
+		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
 
 	public final void setContexts(final C context, final D edtCtx) {
@@ -445,6 +454,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 			Configurable confInstance = (Configurable) instance;
 			classEditor = confInstance.getConfigEditor(context, edtCtx);
 			classEditor.setConfig(classConfig);
+			classEditor.setProfile(profile);
 		} else {
 			LOGGER.warn("Class {} is not configurable.", className);
 			classEditor = null;
@@ -615,4 +625,21 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	public void setRequiredAnnotation(Class<? extends Annotation> requiredAnnotation) {
 		this.requiredAnnotation = requiredAnnotation;
 	}
+
+	public void setProfilesEdit(String csv) {
+		profilesEdit = csvToReadOnlySet(csv);
+	}
+
+	@Override
+	public void setProfile(String profile) {
+		this.profile = profile;
+		if (classEditor != null) {
+			classEditor.setProfile(profile);
+		}
+	}
+
+	public boolean canEdit() {
+		return profilesEdit.contains(profile);
+	}
+
 }

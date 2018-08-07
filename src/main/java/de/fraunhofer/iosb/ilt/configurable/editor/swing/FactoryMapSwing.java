@@ -47,6 +47,7 @@ public final class FactoryMapSwing implements GuiFactorySwing {
 	private JPanel swListHolder;
 	private JComboBox<AbstractEditorMap.Item> swNames;
 	private MutableComboBoxModel<AbstractEditorMap.Item> swModel;
+	private JPanel controls;
 
 	public FactoryMapSwing(AbstractEditorMap<?, ?> parentEditor) {
 		this.parentEditor = parentEditor;
@@ -61,7 +62,7 @@ public final class FactoryMapSwing implements GuiFactorySwing {
 	}
 
 	private void createComponent() {
-		JPanel controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		if (!parentEditor.getOptionalOptions().isEmpty()) {
 			controls.add(new JLabel("Options:"));
 
@@ -92,16 +93,30 @@ public final class FactoryMapSwing implements GuiFactorySwing {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
+		boolean canEdit = parentEditor.canEdit();
+		controls.setVisible(canEdit);
 		swListHolder.removeAll();
 		int row = 0;
 		int endCol = -1;
+		String profile = parentEditor.getProfile();
+		// clear the dropdown
+		while (swModel != null && swModel.getSize() > 0) {
+			swModel.removeElementAt(0);
+		}
 		// Iterate over the options so the order is fixed.
 		for (Map.Entry<String, ? extends AbstractEditorMap.Item<?>> entry : parentEditor.getOptions().entrySet()) {
 			final String key = entry.getKey();
-			if (!parentEditor.getRawValue().contains(key)) {
+			final AbstractEditorMap.Item<?> item = entry.getValue();
+			if (canEdit && !parentEditor.getRawValue().contains(key)) {
+				if (item.hasGuiProfile(profile) && swModel != null) {
+					// Item is not selected, but is not profile-excluded.
+					swModel.addElement(item);
+				}
 				continue;
 			}
-			final AbstractEditorMap.Item<?> item = entry.getValue();
+			if (!item.hasGuiProfile(profile)) {
+				continue;
+			}
 			endCol += item.colwidth;
 			if (endCol >= parentEditor.getColumns()) {
 				endCol = item.colwidth - 1;
@@ -145,7 +160,7 @@ public final class FactoryMapSwing implements GuiFactorySwing {
 		if (!parentEditor.getOptionalOptions().isEmpty()) {
 			JButton removeButton = new JButton("❌");
 			removeButton.setMargin(new java.awt.Insets(1, 1, 1, 1));
-			removeButton.setEnabled(item.optional);
+			removeButton.setEnabled(item.optional && parentEditor.canEdit());
 			removeButton.addActionListener((event) -> parentEditor.removeItem(key));
 			gbc = new GridBagConstraints();
 			gbc.anchor = GridBagConstraints.NORTH;

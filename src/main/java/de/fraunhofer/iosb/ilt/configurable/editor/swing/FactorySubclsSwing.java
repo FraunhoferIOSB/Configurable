@@ -45,6 +45,7 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 	private JPanel swComponent;
 	private JPanel swItemHolder;
 	private JComboBox<String> swItems;
+	private JPanel controls;
 
 	public FactorySubclsSwing(EditorSubclass<?, ?, ?> parentEditor) {
 		this.parentEditor = parentEditor;
@@ -67,7 +68,7 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 	private void createComponent() {
 		Set<String> classes = parentEditor.getClassesByDisplayName().keySet();
 
-		JPanel controls = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		controls = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		controls.add(new JLabel(selectLabel));
 		swItems = new JComboBox<>(classes.toArray(new String[classes.size()]));
 		controls.add(swItems);
@@ -97,10 +98,11 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 	}
 
 	public void fillComponent() {
-		String label;
+		controls.setVisible(parentEditor.canEdit());
 		String jsonName = parentEditor.getJsonName();
 		item = parentEditor.findClassItem(jsonName);
 		ConfigEditor classEditor = parentEditor.getClassEditor();
+		String label;
 		if (item == null) {
 			label = "No Class selected.";
 		} else {

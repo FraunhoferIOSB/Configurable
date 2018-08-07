@@ -70,6 +70,7 @@ public final class FactoryStringSwing implements GuiFactorySwing {
 	 * Ensure the swComponent represents the current value.
 	 */
 	public void fillComponent() {
+		swText.setEditable(parentEditor.canEdit());
 		swText.setText(parentEditor.getRawValue());
 	}
 

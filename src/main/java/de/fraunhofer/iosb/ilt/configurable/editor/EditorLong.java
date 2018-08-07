@@ -38,11 +38,11 @@ public final class EditorLong extends EditorDefault<Long> {
 	@Target(ElementType.FIELD)
 	public static @interface EdOptsLong {
 
-		int min();
+		long min() default Long.MIN_VALUE;
 
-		int max();
+		long max() default Long.MAX_VALUE;
 
-		int dflt();
+		long dflt();
 	}
 
 	private long min;
@@ -137,6 +137,12 @@ public final class EditorLong extends EditorDefault<Long> {
 	}
 
 	public void setRawValue(long value) {
+		if (value < min) {
+			value = min;
+		}
+		if (value > max) {
+			value = max;
+		}
 		this.value = value;
 	}
 

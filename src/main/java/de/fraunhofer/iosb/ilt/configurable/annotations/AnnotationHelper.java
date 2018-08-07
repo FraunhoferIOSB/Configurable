@@ -21,6 +21,9 @@ import de.fraunhofer.iosb.ilt.configurable.Configurable;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorMap;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.LoggerFactory;
@@ -52,6 +55,16 @@ public class AnnotationHelper {
 	public static final <C, D> EditorMap<?> GenerateEditorFromAnnotations(Configurable<C, D> instance, C context, D edtCtx) {
 		EditorMap<?> map = new EditorMap<>();
 
+		Class<?> clazz = instance.getClass();
+		while (clazz != null) {
+			ConfigurableClass classAnnotation = clazz.getAnnotation(ConfigurableClass.class);
+			if (classAnnotation != null && !classAnnotation.profilesEdit().isEmpty()) {
+				map.setProfilesEdit(classAnnotation.profilesEdit());
+				break;
+			}
+			clazz = clazz.getSuperclass();
+		}
+
 		Field[] fields = FieldUtils.getAllFields(instance.getClass());
 		for (Field field : fields) {
 			ConfigurableField annotation = field.getAnnotation(ConfigurableField.class);
@@ -66,7 +79,7 @@ public class AnnotationHelper {
 					fieldEditor.setDescription(annotation.description());
 
 					String jsonName = jsonNameForField(field, annotation);
-					map.addOption(field.getName(), jsonName, fieldEditor, annotation.optional(), 1, annotation.merge());
+					map.addOption(field.getName(), jsonName, fieldEditor, annotation);
 
 				} catch (InstantiationException | IllegalAccessException ex) {
 					LOGGER.error("could not instantiate give editor: {}", editorClass);
@@ -108,4 +121,18 @@ public class AnnotationHelper {
 		}
 		return annotation.jsonField();
 	}
+
+	public static Set<String> csvToReadOnlySet(String csv) {
+		Set<String> set = new HashSet<>();
+		set.add(ConfigEditor.DEFAULT_PROFILE_NAME);
+		String[] split = csv.split(",");
+		for (String item : split) {
+			String lcItem = item.trim().toLowerCase();
+			if (!lcItem.isEmpty()) {
+				set.add(lcItem);
+			}
+		}
+		return Collections.unmodifiableSet(set);
+	}
+
 }

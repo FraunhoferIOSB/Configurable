@@ -41,9 +41,20 @@ public final class FactoryListSwing<U, T extends ConfigEditor<U>> implements Gui
 	private final EditorList<U, T> parentEditor;
 	private JPanel swComponent;
 	private JPanel swListHolder;
+	private JButton addButton;
+	private boolean vertical = true;
+	private String text = "Add item";
 
-	public FactoryListSwing(EditorList<U, T> parentEditor) {
+	public FactoryListSwing(EditorList<U, T> parentEditor, boolean vertical) {
 		this.parentEditor = parentEditor;
+		this.vertical = vertical;
+		if (parentEditor.getMinCount() != parentEditor.getMaxCount()) {
+			text = "Items:";
+		}
+	}
+
+	public void setText(String text) {
+		this.text = text;
 	}
 
 	@Override
@@ -56,15 +67,10 @@ public final class FactoryListSwing<U, T extends ConfigEditor<U>> implements Gui
 
 	private void createComponent() {
 		JPanel controls = new JPanel(new BorderLayout());
-
-		if (parentEditor.getMinCount() != parentEditor.getMaxCount()) {
-			controls.add(new JLabel("Add item", SwingConstants.LEFT), BorderLayout.CENTER);
-			JButton addButton = new JButton("+");
-			addButton.addActionListener((event) -> parentEditor.addItem());
-			controls.add(addButton, BorderLayout.WEST);
-		} else {
-			controls.add(new JLabel("Items:", SwingConstants.LEFT), BorderLayout.CENTER);
-		}
+		controls.add(new JLabel(text, SwingConstants.LEFT), BorderLayout.CENTER);
+		addButton = new JButton("+");
+		addButton.addActionListener((event) -> parentEditor.addItem());
+		controls.add(addButton, BorderLayout.WEST);
 		swListHolder = new JPanel(new GridBagLayout());
 		swComponent = new JPanel(new BorderLayout());
 		swComponent.setBorder(new EtchedBorder());
@@ -80,6 +86,7 @@ public final class FactoryListSwing<U, T extends ConfigEditor<U>> implements Gui
 		if (swComponent == null) {
 			createComponent();
 		}
+		addButton.setVisible(parentEditor.canEdit());
 		swListHolder.removeAll();
 		if (parentEditor.getRawValue().isEmpty()) {
 			swListHolder.add(new JLabel("No items added."));
@@ -89,20 +96,20 @@ public final class FactoryListSwing<U, T extends ConfigEditor<U>> implements Gui
 		Insets insets = new Insets(1, 1, 1, 1);
 		for (final T item : parentEditor.getRawValue()) {
 			gbc = new GridBagConstraints();
-			gbc.gridx = 0;
-			gbc.gridy = row;
+			gbc.gridx = vertical ? 0 : row;
+			gbc.gridy = vertical ? row : 0;
 			gbc.weightx = 1;
 			gbc.fill = GridBagConstraints.HORIZONTAL;
 			gbc.insets = insets;
 			swListHolder.add(item.getGuiFactorySwing().getComponent(), gbc);
 
-			if (parentEditor.getMinCount() != parentEditor.getMaxCount()) {
+			if (parentEditor.canEdit()) {
 				JButton removeButton = new JButton("❌");
 				removeButton.setMargin(new Insets(1, 1, 1, 1));
 				removeButton.addActionListener((event) -> parentEditor.removeItem(item));
 				gbc = new GridBagConstraints();
-				gbc.gridx = 1;
-				gbc.gridy = row;
+				gbc.gridx = vertical ? 1 : row;
+				gbc.gridy = vertical ? row : 1;
 				gbc.insets = insets;
 				swListHolder.add(removeButton, gbc);
 			}

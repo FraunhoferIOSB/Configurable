@@ -16,6 +16,7 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
+import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
@@ -23,6 +24,7 @@ import de.fraunhofer.iosb.ilt.configurable.EditorFactory;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryListFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryListSwing;
 import java.lang.annotation.ElementType;
@@ -34,6 +36,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An editor for a list of editors, all of the same type.
@@ -44,6 +47,9 @@ import java.util.List;
  */
 public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List<U>> implements Iterable<T> {
 
+	/**
+	 * Container for repeated EdOptsList annotations.
+	 */
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	public @interface EdOptsListList {
@@ -107,6 +113,28 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		 */
 		int maxCount() default Integer.MAX_VALUE;
 
+		/**
+		 * Flag indicating the editor should be laid out horizontally.
+		 *
+		 * @return true if the editor should be laid out horizontally.
+		 */
+		boolean horizontal() default false;
+
+		/**
+		 * The text to display next to the "add" button.
+		 *
+		 * @return The text to display next to the "add" button.
+		 */
+		String labelText() default "";
+
+		/**
+		 * A comma separated, case insensitive list of profile names. This field
+		 * is only editable when one of these profiles is active. The "default"
+		 * profile is automatically added to the list.
+		 *
+		 * @return A comma separated, case insensitive list of profile names.
+		 */
+		String profilesEdit() default "";
 	}
 
 	private Object context;
@@ -115,6 +143,11 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 	private final List<T> value = new ArrayList<>();
 	private int minCount = 0;
 	private int maxCount = Integer.MAX_VALUE;
+	private boolean horizontal = false;
+	private String labelText = "";
+
+	public Set<String> profilesEdit = csvToReadOnlySet("");
+	private String profile = DEFAULT_PROFILE_NAME;
 
 	private FactoryListSwing factorySwing;
 	private FactoryListFx factoryFx;
@@ -165,6 +198,10 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		}
 		minCount = annotation.minCount();
 		maxCount = annotation.maxCount();
+		horizontal = annotation.horizontal();
+		labelText = annotation.labelText();
+		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
+
 		final String editorKey = annotation.editorKey();
 		// TODO: find a way to check this cast
 		final Class<T> editorClass = (Class<T>) annotation.editor();
@@ -189,6 +226,7 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 				}
 				T item = factory.createEditor();
 				item.setConfig(subConf);
+				item.setProfile(profile);
 				value.add(item);
 			}
 		}
@@ -210,7 +248,10 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
 		if (factorySwing == null) {
-			factorySwing = new FactoryListSwing(this);
+			factorySwing = new FactoryListSwing(this, !horizontal);
+			if (!Strings.isNullOrEmpty(labelText)) {
+				factorySwing.setText(labelText);
+			}
 		}
 		fillComponent();
 		return factorySwing;
@@ -222,7 +263,10 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 			throw new IllegalArgumentException("Can not mix different types of editors.");
 		}
 		if (factoryFx == null) {
-			factoryFx = new FactoryListFx(this);
+			factoryFx = new FactoryListFx(this, !horizontal);
+			if (!Strings.isNullOrEmpty(labelText)) {
+				factoryFx.setText(labelText);
+			}
 		}
 		fillComponent();
 		return factoryFx;
@@ -231,6 +275,7 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 	private void fillComponent() {
 		while (value.size() < minCount) {
 			T item = factory.createEditor();
+			item.setProfile(profile);
 			value.add(item);
 		}
 		if (factorySwing != null) {
@@ -246,6 +291,7 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 			return;
 		}
 		final T item = factory.createEditor();
+		item.setProfile(profile);
 		value.add(item);
 		fillComponent();
 	}
@@ -269,7 +315,7 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 	@Override
 	public List<U> getValue() {
 		List<U> valList = new ArrayList<>();
-		for (T val : this) {
+		for (T val : value) {
 			valList.add(val.getValue());
 		}
 		return valList;
@@ -296,4 +342,20 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		this.maxCount = maxCount;
 	}
 
+	public void setProfilesEdit(String csv) {
+		profilesEdit = csvToReadOnlySet(csv);
+	}
+
+	@Override
+	public void setProfile(String profile) {
+		this.profile = profile.toLowerCase();
+		for (T val : value) {
+			val.setProfile(this.profile);
+		}
+	}
+
+	@Override
+	public boolean canEdit() {
+		return profilesEdit.contains(profile) && minCount != maxCount;
+	}
 }

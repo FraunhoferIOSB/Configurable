@@ -18,6 +18,8 @@ package de.fraunhofer.iosb.ilt.configurable.editor.swing;
 
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorLong;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import org.slf4j.Logger;
@@ -51,6 +53,12 @@ public final class FactoryLongSwing implements GuiFactorySwing {
 			parentEditor.setRawValue(Math.max(parentEditor.getMin(), Math.min(parentEditor.getRawValue(), parentEditor.getMax())));
 		}
 		swComponent = new JTextField();
+		swComponent.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				readComponent();
+			}
+		});
 		fillComponent();
 	}
 
@@ -68,6 +76,7 @@ public final class FactoryLongSwing implements GuiFactorySwing {
 			} catch (NumberFormatException exc) {
 				LOGGER.error("Failed to parse text to number: " + swComponent.getText());
 			}
+			fillComponent();
 		}
 	}
 }

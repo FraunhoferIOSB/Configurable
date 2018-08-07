@@ -19,7 +19,6 @@ package de.fraunhofer.iosb.ilt.configurable.editor.fx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.Styles;
 import de.fraunhofer.iosb.ilt.configurable.editor.AbstractEditorMap;
-import java.awt.GridBagConstraints;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +48,7 @@ public final class FactoryMapFx implements GuiFactoryFx {
 	private BorderPane fxPaneRoot;
 	private GridPane fxPaneList;
 	private ComboBox<AbstractEditorMap.Item> fxBoxNames;
+	private FlowPane controls;
 
 	public FactoryMapFx(AbstractEditorMap<?, ?> parentEditor) {
 		this.parentEditor = parentEditor;
@@ -65,7 +65,7 @@ public final class FactoryMapFx implements GuiFactoryFx {
 	private void createPane() {
 		fxPaneRoot = new BorderPane();
 		if (!parentEditor.getOptionalOptions().isEmpty()) {
-			FlowPane controls = new FlowPane();
+			controls = new FlowPane();
 			controls.setAlignment(Pos.TOP_RIGHT);
 			controls.getChildren().add(new Label("Options:"));
 
@@ -93,17 +93,26 @@ public final class FactoryMapFx implements GuiFactoryFx {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
+		controls.setVisible(parentEditor.canEdit());
 		fxPaneList.getChildren().clear();
-		GridBagConstraints gbc;
 		int row = 0;
 		int endCol = -1;
+		String profile = parentEditor.getProfile();
+		fxBoxNames.getItems().clear();
 		// Iterate over the options so the order is fixed.
 		for (Map.Entry<String, ? extends AbstractEditorMap.Item<?>> entry : parentEditor.getOptions().entrySet()) {
 			final String key = entry.getKey();
+			final AbstractEditorMap.Item<?> item = entry.getValue();
 			if (!parentEditor.getRawValue().contains(key)) {
+				if (item.hasGuiProfile(profile)) {
+					// Item is not selected, but is not profile-excluded.
+					fxBoxNames.getItems().add(item);
+				}
 				continue;
 			}
-			final AbstractEditorMap.Item<?> item = entry.getValue();
+			if (!item.hasGuiProfile(profile)) {
+				continue;
+			}
 			endCol += item.colwidth;
 			if (endCol >= parentEditor.getColumns()) {
 				endCol = item.colwidth - 1;

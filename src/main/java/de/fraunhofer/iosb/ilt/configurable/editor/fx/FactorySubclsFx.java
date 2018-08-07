@@ -44,6 +44,7 @@ public final class FactorySubclsFx implements GuiFactoryFx {
 	private BorderPane fxPaneRoot;
 	private BorderPane fxPaneItem;
 	private ComboBox<String> fxItems;
+	private FlowPane controls;
 
 	public FactorySubclsFx(EditorSubclass<?, ?, ?> parentEditor) {
 		this.parentEditor = parentEditor;
@@ -66,7 +67,7 @@ public final class FactorySubclsFx implements GuiFactoryFx {
 	private void createPane() {
 		Set<String> values = parentEditor.getClassesByDisplayName().keySet();
 
-		FlowPane controls = new FlowPane();
+		controls = new FlowPane();
 		controls.setAlignment(Pos.TOP_CENTER);
 		controls.getChildren().add(new Label(selectLabel));
 		fxItems = new ComboBox<>(FXCollections.observableArrayList(values));
@@ -95,11 +96,12 @@ public final class FactorySubclsFx implements GuiFactoryFx {
 	}
 
 	public void fillComponent() {
-		String label;
+		controls.setVisible(parentEditor.canEdit());
 		String jsonName = parentEditor.getJsonName();
 		item = parentEditor.findClassItem(jsonName);
 
 		ConfigEditor classEditor = parentEditor.getClassEditor();
+		String label;
 		if (jsonName == null || jsonName.isEmpty()) {
 			label = "No Class selected.";
 		} else {

@@ -18,8 +18,10 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryStringFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryStringSwing;
 import java.lang.annotation.ElementType;
@@ -27,6 +29,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.Set;
 
 /**
  *
@@ -47,11 +50,23 @@ public class EditorString extends EditorDefault<String> {
 		 * @return The default value.
 		 */
 		String dflt() default "";
+
+		/**
+		 * A comma separated, case insensitive list of profile names. This field
+		 * is only editable when one of these profiles is active. The "default"
+		 * profile is automatically added to the list.
+		 *
+		 * @return A comma separated, case insensitive list of profile names.
+		 */
+		String profilesEdit() default "";
 	}
 
 	private String dflt;
 	private String value;
 	private int lines = 1;
+
+	public Set<String> profilesEdit = csvToReadOnlySet("");
+	private String profile = DEFAULT_PROFILE_NAME;
 
 	private FactoryStringSwing factorySwing;
 	private FactoryStringFx factoryFx;
@@ -60,9 +75,7 @@ public class EditorString extends EditorDefault<String> {
 	}
 
 	public EditorString(String deflt, int lines) {
-		this.dflt = deflt;
-		this.value = deflt;
-		this.lines = lines;
+		this(deflt, lines, "", "");
 	}
 
 	public EditorString(String deflt, int lines, String label, String description) {
@@ -82,6 +95,7 @@ public class EditorString extends EditorDefault<String> {
 		lines = annotation.lines();
 		dflt = annotation.dflt();
 		value = dflt;
+		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
 
 	@Override
@@ -162,6 +176,21 @@ public class EditorString extends EditorDefault<String> {
 	public void setValue(String value) {
 		this.value = value;
 		fillComponent();
+	}
+
+	@Override
+	public void setProfile(String profile) {
+		this.profile = profile;
+		fillComponent();
+	}
+
+	public void setProfilesEdit(String csv) {
+		profilesEdit = csvToReadOnlySet(csv);
+	}
+
+	@Override
+	public boolean canEdit() {
+		return profilesEdit.contains(profile);
 	}
 
 }

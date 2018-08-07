@@ -61,6 +61,8 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	private JsonElement classConfig;
 	private ConfigEditor classEditor;
 
+	private String profile = DEFAULT_PROFILE_NAME;
+
 	private FactoryClassSwing factorySwing;
 	private FactoryClassFx factoryFx;
 
@@ -163,6 +165,7 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 			classEditor = new EditorString("", 6);
 			classEditor.setConfig(classConfig);
 		}
+		classEditor.setProfile(profile);
 
 		fillComponent();
 	}
@@ -212,6 +215,7 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 				final Configurable confInstance = (Configurable) instance;
 				confInstance.configure(classConfig, context, edtCtx);
 				classEditor = confInstance.getConfigEditor(context, edtCtx);
+				classEditor.setProfile(profile);
 				fillComponent();
 			}
 			return (T) instance;
@@ -225,6 +229,14 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	@Override
 	public void setValue(T value) {
 		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void setProfile(String profile) {
+		this.profile = profile;
+		if (classEditor != null) {
+			classEditor.setProfile(profile);
+		}
 	}
 
 }

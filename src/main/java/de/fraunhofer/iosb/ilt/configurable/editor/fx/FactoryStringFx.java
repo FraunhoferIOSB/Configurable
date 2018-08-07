@@ -59,6 +59,7 @@ public final class FactoryStringFx implements GuiFactoryFx {
 	 * Ensure the swComponent represents the current value.
 	 */
 	public void fillComponent() {
+		fxNode.setEditable(parentEditor.canEdit());
 		fxNode.setText(parentEditor.getRawValue());
 	}
 

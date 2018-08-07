@@ -27,6 +27,8 @@ import java.lang.reflect.Field;
  */
 public interface ConfigEditor<T> {
 
+	public static final String DEFAULT_PROFILE_NAME = "default";
+
 	/**
 	 * Load the given configuration into this editor.
 	 *
@@ -117,5 +119,23 @@ public interface ConfigEditor<T> {
 	 */
 	public default void initFor(Field field, String key) {
 		initFor(field);
+	}
+
+	/**
+	 * Sets the currently active profile.
+	 *
+	 * @param profile the currently active profile.
+	 */
+	public default void setProfile(String profile) {
+		// does nothing by default.
+	}
+
+	/**
+	 * True if the component is editable in the current profile.
+	 *
+	 * @return True if the component is editable in the current profile.
+	 */
+	public default boolean canEdit() {
+		return true;
 	}
 }

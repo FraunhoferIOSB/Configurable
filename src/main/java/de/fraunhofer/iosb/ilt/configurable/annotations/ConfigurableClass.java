@@ -40,4 +40,15 @@ public @interface ConfigurableClass {
 	String jsonName() default "";
 
 	String displayName() default "";
+
+	/**
+	 * A comma separated, case insensitive list of profile names. Items can only
+	 * be added or removed from the EditorMap generated for this class, when one
+	 * of these profiles is active. The "default" profile is automatically added
+	 * to the list.
+	 *
+	 * @return A comma separated, case insensitive list of profile names.
+	 */
+	String profilesEdit() default "";
+
 }
