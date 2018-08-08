@@ -64,25 +64,27 @@ public final class FactoryMapFx implements GuiFactoryFx {
 
 	private void createPane() {
 		fxPaneRoot = new BorderPane();
-		if (!parentEditor.getOptionalOptions().isEmpty()) {
-			controls = new FlowPane();
-			controls.setAlignment(Pos.TOP_RIGHT);
-			controls.getChildren().add(new Label("Options:"));
+		controls = new FlowPane();
+		controls.setAlignment(Pos.BASELINE_LEFT);
 
-			List<AbstractEditorMap.Item> optionals = new ArrayList<>();
-			for (final String optionName : parentEditor.getOptionalOptions()) {
-				if (!parentEditor.getRawValue().contains(optionName)) {
-					optionals.add(parentEditor.getOptions().get(optionName));
-				}
+		List<AbstractEditorMap.Item> optionals = new ArrayList<>();
+		for (final String optionName : parentEditor.getOptionalOptions()) {
+			if (!parentEditor.getRawValue().contains(optionName)) {
+				optionals.add(parentEditor.getOptions().get(optionName));
 			}
-			optionals.sort((final AbstractEditorMap.Item o1, final AbstractEditorMap.Item o2) -> o1.label.compareTo(o2.label));
-			fxBoxNames = new ComboBox<>(FXCollections.observableArrayList(optionals));
-			controls.getChildren().add(fxBoxNames);
-			Button addButton = new Button("+");
-			addButton.setOnAction((event) -> addItem());
-			controls.getChildren().add(addButton);
-			fxPaneRoot.setTop(controls);
 		}
+		optionals.sort((final AbstractEditorMap.Item o1, final AbstractEditorMap.Item o2) -> o1.label.compareTo(o2.label));
+		fxBoxNames = new ComboBox<>(FXCollections.observableArrayList(optionals));
+		controls.getChildren().add(fxBoxNames);
+		Button addButton = new Button("+");
+		addButton.setOnAction((event) -> addItem());
+		controls.getChildren().add(addButton);
+		fxPaneRoot.setTop(controls);
+
+		if (parentEditor.getOptionalOptions().isEmpty()) {
+			controls.setVisible(false);
+		}
+
 		fxPaneList = new GridPane();
 		fxPaneRoot.setStyle(Styles.STYLE_BORDER);
 		fxPaneRoot.setCenter(fxPaneList);
@@ -93,7 +95,7 @@ public final class FactoryMapFx implements GuiFactoryFx {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		controls.setVisible(parentEditor.canEdit());
+		controls.setVisible(parentEditor.canEdit() && !parentEditor.getOptionalOptions().isEmpty());
 		fxPaneList.getChildren().clear();
 		int row = 0;
 		int endCol = -1;
