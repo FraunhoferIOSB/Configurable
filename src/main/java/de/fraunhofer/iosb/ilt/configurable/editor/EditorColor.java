@@ -19,8 +19,10 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryColorFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryColorSwing;
 import java.awt.Color;
@@ -29,6 +31,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.Set;
 
 /**
  *
@@ -72,13 +75,26 @@ public class EditorColor extends EditorDefault<Color> {
 		 * @return Flag indicating the alpha value can be edited.
 		 */
 		boolean editAlpha() default true;
+
+		/**
+		 * A comma separated, case insensitive list of profile names. This field
+		 * is only editable when one of these profiles is active. The "default"
+		 * profile is automatically added to the list.
+		 *
+		 * @return A comma separated, case insensitive list of profile names.
+		 */
+		String profilesEdit() default "";
 	}
 
+	private Color dflt;
 	private boolean editAlpla = true;
 	private int red;
 	private int green;
 	private int blue;
 	private int alpha = 255;
+
+	public Set<String> profilesEdit = csvToReadOnlySet("");
+	private String profile = DEFAULT_PROFILE_NAME;
 
 	private FactoryColorSwing factorySwing;
 	private FactoryColorFx factoryFx;
@@ -86,11 +102,12 @@ public class EditorColor extends EditorDefault<Color> {
 	public EditorColor() {
 	}
 
-	public EditorColor(Color deflt) {
-		this.red = deflt.getRed();
-		this.green = deflt.getGreen();
-		this.blue = deflt.getBlue();
-		this.alpha = deflt.getAlpha();
+	public EditorColor(Color dflt) {
+		this.dflt = dflt;
+		this.red = dflt.getRed();
+		this.green = dflt.getGreen();
+		this.blue = dflt.getBlue();
+		this.alpha = dflt.getAlpha();
 	}
 
 	public EditorColor(Color deflt, boolean editAlpha) {
@@ -115,6 +132,7 @@ public class EditorColor extends EditorDefault<Color> {
 		green = annotation.green();
 		blue = annotation.blue();
 		alpha = annotation.alpha();
+		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
 
 	private static int getInt(JsonObject confObj, int dflt, String... names) {
@@ -238,4 +256,29 @@ public class EditorColor extends EditorDefault<Color> {
 	public void setValue(Color value) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
+
+	@Override
+	public void setProfile(String profile) {
+		this.profile = profile;
+		fillComponent();
+	}
+
+	public void setProfilesEdit(String csv) {
+		profilesEdit = csvToReadOnlySet(csv);
+	}
+
+	@Override
+	public boolean canEdit() {
+		return profilesEdit.contains(profile);
+	}
+
+	@Override
+	public boolean isDefault() {
+		readComponent();
+		return dflt.getRed() == red
+				&& dflt.getGreen() == green
+				&& dflt.getBlue() == blue
+				&& dflt.getAlpha() == alpha;
+	}
+
 }

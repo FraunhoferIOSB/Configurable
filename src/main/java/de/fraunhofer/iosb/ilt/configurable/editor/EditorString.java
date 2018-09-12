@@ -193,4 +193,10 @@ public class EditorString extends EditorDefault<String> {
 		return profilesEdit.contains(profile);
 	}
 
+	@Override
+	public boolean isDefault() {
+		readComponent();
+		return dflt.equals(value);
+	}
+
 }

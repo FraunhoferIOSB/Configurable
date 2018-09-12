@@ -99,13 +99,14 @@ public final class FactoryMapFx implements GuiFactoryFx {
 		fxPaneList.getChildren().clear();
 		int row = 0;
 		int endCol = -1;
+		boolean canEdit = parentEditor.canEdit();
 		String profile = parentEditor.getProfile();
 		fxBoxNames.getItems().clear();
 		// Iterate over the options so the order is fixed.
 		for (Map.Entry<String, ? extends AbstractEditorMap.Item<?>> entry : parentEditor.getOptions().entrySet()) {
 			final String key = entry.getKey();
 			final AbstractEditorMap.Item<?> item = entry.getValue();
-			if (!parentEditor.getRawValue().contains(key)) {
+			if (canEdit && !parentEditor.getRawValue().contains(key)) {
 				if (item.hasGuiProfile(profile)) {
 					// Item is not selected, but is not profile-excluded.
 					fxBoxNames.getItems().add(item);
@@ -114,6 +115,14 @@ public final class FactoryMapFx implements GuiFactoryFx {
 			}
 			if (!item.hasGuiProfile(profile)) {
 				continue;
+			}
+			if (!item.editor.canEdit() && item.editor.isDefault()) {
+				continue;
+			}
+			if (!canEdit && !parentEditor.getRawValue().contains(key)) {
+				// Item is not selected, and since we can't edit it can't be selected.
+				// Therefore we now select it.
+				parentEditor.getRawValue().add(key);
 			}
 			endCol += item.colwidth;
 			if (endCol >= parentEditor.getColumns()) {

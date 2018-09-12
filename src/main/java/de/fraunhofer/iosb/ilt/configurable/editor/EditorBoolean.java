@@ -18,8 +18,10 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryBooleanFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryBooleanSwing;
 import java.lang.annotation.ElementType;
@@ -27,6 +29,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,11 +45,23 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 	public static @interface EdOptsBool {
 
 		boolean dflt() default false;
+
+		/**
+		 * A comma separated, case insensitive list of profile names. This field
+		 * is only editable when one of these profiles is active. The "default"
+		 * profile is automatically added to the list.
+		 *
+		 * @return A comma separated, case insensitive list of profile names.
+		 */
+		String profilesEdit() default "";
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditorBoolean.class.getName());
 	private boolean dflt;
 	private boolean value;
+
+	public Set<String> profilesEdit = csvToReadOnlySet("");
+	private String profile = DEFAULT_PROFILE_NAME;
 
 	private FactoryBooleanSwing factorySwing;
 	private FactoryBooleanFx factoryFx;
@@ -74,6 +89,7 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 		}
 		dflt = annotation.dflt();
 		value = dflt;
+		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
 
 	@Override
@@ -149,6 +165,26 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 	public void setValue(Boolean value) {
 		this.value = value;
 		fillComponent();
+	}
+
+	@Override
+	public void setProfile(String profile) {
+		this.profile = profile;
+		fillComponent();
+	}
+
+	public void setProfilesEdit(String csv) {
+		profilesEdit = csvToReadOnlySet(csv);
+	}
+
+	@Override
+	public boolean canEdit() {
+		return profilesEdit.contains(profile);
+	}
+
+	@Override
+	public boolean isDefault() {
+		return dflt == isSelected();
 	}
 
 }

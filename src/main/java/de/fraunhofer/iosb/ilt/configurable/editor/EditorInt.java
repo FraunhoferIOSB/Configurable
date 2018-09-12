@@ -18,8 +18,10 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryIntFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryIntSwing;
 import java.lang.annotation.ElementType;
@@ -27,6 +29,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.Set;
 
 /**
  *
@@ -45,12 +48,25 @@ public final class EditorInt extends EditorDefault<Integer> {
 		int step();
 
 		int dflt();
+
+		/**
+		 * A comma separated, case insensitive list of profile names. This field
+		 * is only editable when one of these profiles is active. The "default"
+		 * profile is automatically added to the list.
+		 *
+		 * @return A comma separated, case insensitive list of profile names.
+		 */
+		String profilesEdit() default "";
 	}
+
 	private int min;
 	private int max;
 	private int step;
 	private int dflt;
 	private int value;
+
+	public Set<String> profilesEdit = csvToReadOnlySet("");
+	private String profile = DEFAULT_PROFILE_NAME;
 
 	private FactoryIntSwing factorySwing;
 	private FactoryIntFx factoryFx;
@@ -79,6 +95,7 @@ public final class EditorInt extends EditorDefault<Integer> {
 		step = annotation.step();
 		dflt = annotation.dflt();
 		value = dflt;
+		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
 
 	@Override
@@ -171,4 +188,26 @@ public final class EditorInt extends EditorDefault<Integer> {
 		this.value = value;
 		fillComponent();
 	}
+
+	@Override
+	public void setProfile(String profile) {
+		this.profile = profile;
+		fillComponent();
+	}
+
+	public void setProfilesEdit(String csv) {
+		profilesEdit = csvToReadOnlySet(csv);
+	}
+
+	@Override
+	public boolean canEdit() {
+		return profilesEdit.contains(profile);
+	}
+
+	@Override
+	public boolean isDefault() {
+		readComponent();
+		return dflt == value;
+	}
+
 }

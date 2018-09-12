@@ -117,6 +117,14 @@ public final class FactoryMapSwing implements GuiFactorySwing {
 			if (!item.hasGuiProfile(profile)) {
 				continue;
 			}
+			if (!item.editor.canEdit() && item.editor.isDefault()) {
+				continue;
+			}
+			if (!canEdit && !parentEditor.getRawValue().contains(key)) {
+				// Item is not selected, and since we can't edit it can't be selected.
+				// Therefore we now select it.
+				parentEditor.getRawValue().add(key);
+			}
 			endCol += item.colwidth;
 			if (endCol >= parentEditor.getColumns()) {
 				endCol = item.colwidth - 1;

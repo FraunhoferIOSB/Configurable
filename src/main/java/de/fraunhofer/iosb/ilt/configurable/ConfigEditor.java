@@ -138,4 +138,8 @@ public interface ConfigEditor<T> {
 	public default boolean canEdit() {
 		return true;
 	}
+
+	public default boolean isDefault() {
+		return false;
+	}
 }
