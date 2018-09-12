@@ -170,6 +170,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	private String nameField = KEY_CLASSNAME;
 	private String jsonName = "";
 	private JsonElement classConfig;
+	private T instance;
 	private ConfigEditor classEditor;
 	private C context;
 	private D edtCtx;
@@ -246,28 +247,27 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 
 	@Override
 	public void setConfig(JsonElement config) {
+		String name = null;
+		jsonName = null;
 		if (config != null && config.isJsonObject()) {
 			JsonObject confObj = config.getAsJsonObject();
 			if (merge) {
 				JsonElement classNameElem = confObj.get(nameField);
 				if (classNameElem != null && classNameElem.isJsonPrimitive()) {
-					jsonName = classNameElem.getAsString();
+					name = classNameElem.getAsString();
 				}
 
 				classConfig = confObj;
 			} else {
 				JsonElement classNameElem = confObj.get(KEY_CLASSNAME);
 				if (classNameElem != null && classNameElem.isJsonPrimitive()) {
-					jsonName = classNameElem.getAsString();
+					name = classNameElem.getAsString();
 				}
 
 				classConfig = confObj.get(KEY_CLASSCONFIG);
 			}
 		}
-		if (jsonName == null || jsonName.isEmpty()) {
-			LOGGER.info("Empty class name.");
-		}
-		setJsonName(jsonName);
+		setJsonName(name);
 	}
 
 	/**
@@ -416,37 +416,50 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		return prefix.substring(0, idx + 1);
 	}
 
-	public void setJsonName(final String name) {
-		jsonName = name;
-		String className = jsonName;
-		if (name == null || name.isEmpty()) {
-			return;
+	private Class<? extends T> loadClass() {
+		if (Strings.isNullOrEmpty(jsonName)) {
+			return null;
 		}
-		Class<?> loadedClass = null;
-		Object instance = null;
+		String name = jsonName;
+
+		Class<? extends T> loadedClass = null;
 		ClassLoader cl = getClass().getClassLoader();
 		try {
-			loadedClass = cl.loadClass(className);
+			loadedClass = (Class<? extends T>) cl.loadClass(name);
 		} catch (ClassNotFoundException e) {
-			LOGGER.trace("Could not find class {}. Not a full class name?", className);
+			LOGGER.trace("Could not find class {}. Not a full class name?", name);
 			LOGGER.trace("Exception loading class.", e);
 		}
 
 		if (loadedClass == null) {
-			className = findClassName(className);
+			name = findClassName(name);
 			try {
-				loadedClass = cl.loadClass(className);
+				loadedClass = (Class<? extends T>) cl.loadClass(name);
 			} catch (ClassNotFoundException e) {
 				LOGGER.warn("Exception loading class.", e);
 			}
 		}
+		return loadedClass;
+	}
 
+	public void setJsonName(final String name) {
+		if (Strings.isNullOrEmpty(name)) {
+			LOGGER.info("Empty class name.");
+			return;
+		}
+		if (name.equals(jsonName)) {
+			return;
+		}
+		jsonName = name;
+		Class<? extends T> loadedClass = loadClass();
+
+		instance = null;
 		if (loadedClass != null) {
 			try {
 				instance = loadedClass.newInstance();
 			} catch (InstantiationException | IllegalAccessException e) {
-				LOGGER.warn("Exception instantiating class {}.", className);
-				LOGGER.trace("Exception instantiating class.", e);
+				LOGGER.warn("Exception instantiating class {}.", jsonName);
+				LOGGER.debug("Exception instantiating class.", e);
 			}
 		}
 
@@ -456,7 +469,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 			classEditor.setConfig(classConfig);
 			classEditor.setProfile(profile);
 		} else {
-			LOGGER.warn("Class {} is not configurable.", className);
+			LOGGER.warn("Class {} is not configurable.", jsonName);
 			classEditor = null;
 		}
 
@@ -500,24 +513,25 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	@Override
 	public T getValue() {
 		readComponent();
-		try {
-			ClassLoader cl = getClass().getClassLoader();
-			if (Strings.isNullOrEmpty(jsonName)) {
+		if (instance == null) {
+			try {
+				Class<? extends T> loadedClass = loadClass();
+				if (loadedClass == null) {
+					return null;
+				}
+				instance = loadedClass.newInstance();
+
+			} catch (InstantiationException | IllegalAccessException e) {
+				LOGGER.warn("Exception instantiating class {}.", jsonName);
+				LOGGER.debug("Exception instantiating class.", e);
 				return null;
 			}
-			Class<?> loadedClass = cl.loadClass(jsonName);
-			Object instance = loadedClass.newInstance();
-
-			if (instance instanceof Configurable) {
-				Configurable confInstance = (Configurable) instance;
-				confInstance.configure(classConfig, context, edtCtx);
-			}
-			return (T) instance;
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-			LOGGER.warn("Exception instantiating class {}.", jsonName);
-			LOGGER.trace("Exception instantiating class.", e);
-			return null;
 		}
+		if (instance instanceof Configurable) {
+			Configurable confInstance = (Configurable) instance;
+			confInstance.configure(classConfig, context, edtCtx);
+		}
+		return instance;
 	}
 
 	@Override
@@ -638,6 +652,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		}
 	}
 
+	@Override
 	public boolean canEdit() {
 		return profilesEdit.contains(profile);
 	}
