@@ -43,6 +43,7 @@ public final class FactoryColorSwing implements GuiFactorySwing {
 	private SpinnerNumberModel swModelBlue;
 	private SpinnerNumberModel swModelGreen;
 	private SpinnerNumberModel swModelRed;
+	private boolean filling = false;
 
 	public FactoryColorSwing(EditorColor parentEditor) {
 		this.parentEditor = parentEditor;
@@ -66,10 +67,12 @@ public final class FactoryColorSwing implements GuiFactorySwing {
 		swComponent.add(new JSpinner(swModelGreen), new GridBagConstraints());
 		swComponent.add(new JSpinner(swModelBlue), new GridBagConstraints());
 		swComponent.add(new JSpinner(swModelAlpha), new GridBagConstraints());
+
 		JButton button = new JButton("…");
 		button.setMargin(new java.awt.Insets(0, 2, 0, 2));
 		button.addActionListener((ActionEvent e) -> openPicker());
 		swComponent.add(button, new GridBagConstraints());
+
 		fillComponent();
 		ChangeListener cl = (ChangeEvent e) -> {
 			readComponent();
@@ -98,6 +101,7 @@ public final class FactoryColorSwing implements GuiFactorySwing {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
+		filling = true;
 		swModelRed.setValue(parentEditor.getRed());
 		swModelGreen.setValue(parentEditor.getGreen());
 		swModelBlue.setValue(parentEditor.getBlue());
@@ -108,6 +112,9 @@ public final class FactoryColorSwing implements GuiFactorySwing {
 	}
 
 	public void readComponent() {
+		if (filling) {
+			return;
+		}
 		parentEditor.setRed(swModelRed.getNumber().intValue());
 		parentEditor.setGreen(swModelGreen.getNumber().intValue());
 		parentEditor.setBlue(swModelBlue.getNumber().intValue());

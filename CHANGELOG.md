@@ -1,12 +1,13 @@
 # Release Version 0.11
 
 **Updates**
-* Added support for nested Lists
-* Added min and max item count options for Lists
+* Added support for nested Lists.
+* Added min and max item count options for Lists.
 * Added "profiles" and annotations to configure them.
 * Changed EditorDouble to text field, from spinner.
-* Added editor for BigDecimal
-* Added input verification to Double and BigDecimal editors
+* Added editor for BigDecimal.
+* Added input verification to Double and BigDecimal editors.
+* Fixed Swing colour picker.
 
 
 # Release Version 0.10
