@@ -485,6 +485,9 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	}
 
 	public classItem findClassItem(String from) {
+		if (Strings.isNullOrEmpty(from)) {
+			return null;
+		}
 		initClasses();
 		classItem item = classesByJsonName.get(from);
 		if (item != null) {

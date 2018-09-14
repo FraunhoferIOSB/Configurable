@@ -21,7 +21,9 @@ import de.fraunhofer.iosb.ilt.configurable.editor.EditorBigDecimal;
 import java.math.BigDecimal;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextInputControl;
+import javafx.util.converter.BigDecimalStringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,6 +62,7 @@ public final class FactoryBigDecimalFx implements GuiFactoryFx {
 			parentEditor.setRawValue(min);
 		}
 		fxNode = new TextField();
+		fxNode.setTextFormatter(new TextFormatter(new BigDecimalStringConverter()));
 		fillComponent();
 	}
 

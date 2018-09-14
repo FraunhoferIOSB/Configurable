@@ -20,7 +20,9 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorDouble;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.control.TextInputControl;
+import javafx.util.converter.BigDecimalStringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +54,7 @@ public final class FactoryDoubleFx implements GuiFactoryFx {
 			parentEditor.setRawValue(Math.max(parentEditor.getMin(), Math.min(parentEditor.getRawValue(), parentEditor.getMax())));
 		}
 		fxNode = new TextField();
+		fxNode.setTextFormatter(new TextFormatter(new BigDecimalStringConverter()));
 		fillComponent();
 	}
 

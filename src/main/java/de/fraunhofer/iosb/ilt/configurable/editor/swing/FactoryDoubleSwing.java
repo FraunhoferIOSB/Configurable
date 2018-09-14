@@ -20,6 +20,8 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorDouble;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import org.slf4j.Logger;
@@ -53,6 +55,19 @@ public final class FactoryDoubleSwing implements GuiFactorySwing {
 			parentEditor.setRawValue(Math.max(parentEditor.getMin(), Math.min(parentEditor.getRawValue(), parentEditor.getMax())));
 		}
 		swComponent = new JTextField();
+		swComponent.setInputVerifier(new InputVerifier() {
+			@Override
+			public boolean verify(JComponent input) {
+				try {
+					BigDecimal unused = new BigDecimal(((JTextField) input).getText());
+					return true;
+				} catch (NumberFormatException exc) {
+					LOGGER.trace("Not a decimal.", exc);
+					return false;
+				}
+			}
+		;
+		});
 		swComponent.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {

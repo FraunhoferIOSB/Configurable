@@ -20,6 +20,7 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorBigDecimal;
 import java.awt.event.ActionEvent;
 import java.math.BigDecimal;
+import javax.swing.InputVerifier;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import org.slf4j.Logger;
@@ -60,6 +61,19 @@ public final class FactoryBigDecimalSwing implements GuiFactorySwing {
 			parentEditor.setRawValue(min);
 		}
 		swComponent = new JTextField();
+		swComponent.setInputVerifier(new InputVerifier() {
+			@Override
+			public boolean verify(JComponent input) {
+				try {
+					BigDecimal unused = new BigDecimal(((JTextField) input).getText());
+					return true;
+				} catch (NumberFormatException exc) {
+					LOGGER.trace("Not a decimal.", exc);
+					return false;
+				}
+			}
+		;
+		});
 		swComponent.addActionListener((ActionEvent e) -> {
 			readComponent();
 		});
