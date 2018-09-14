@@ -56,7 +56,7 @@ public class Reflection {
 	 * Returns all subtypes of the given class or interface.
 	 *
 	 * @param parent The class or interface to get subtypes of.
-	 * @return
+	 * @return The list of classes.
 	 */
 	public static Set<Class<?>> getSubtypesOf(Class parent) {
 		return getReflections().getSubTypesOf(parent);
@@ -68,7 +68,7 @@ public class Reflection {
 	 *
 	 * @param parent The class or interface to find subclasses of.
 	 * @param interfaces Should interfaces and abstract classes be included.
-	 * @return
+	 * @return The list of classes.
 	 */
 	public static List<Class<?>> getSubtypesOf(Class parent, boolean interfaces) {
 		return getSubtypesOf(parent, interfaces, false);
