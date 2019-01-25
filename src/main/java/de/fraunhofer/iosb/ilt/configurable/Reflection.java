@@ -19,13 +19,12 @@ package de.fraunhofer.iosb.ilt.configurable;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import org.reflections.Reflections;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.reflections8.Reflections;
+import org.reflections8.util.ClasspathHelper;
+import org.reflections8.util.ConfigurationBuilder;
 
 /**
  * Utility methods for Reflections.
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Reflection {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Reflection.class.getName());
 	private static Reflections reflections;
 
 	public static synchronized Reflections getReflections() {
@@ -43,9 +41,10 @@ public class Reflection {
 			try {
 				reflections = new Reflections(config);
 			} finally {
-				final ExecutorService executorService = config.getExecutorService();
-				if (executorService != null) {
-					executorService.shutdown();
+
+				Optional<ExecutorService> executorService = config.getExecutorService();
+				if (executorService.isPresent()) {
+					executorService.get().shutdown();
 				}
 			}
 		}

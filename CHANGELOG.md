@@ -1,3 +1,9 @@
+# Release Version 0.12
+
+**Updates**
+* Fixed build for Java 9+
+
+
 # Release Version 0.11
 
 **Updates**

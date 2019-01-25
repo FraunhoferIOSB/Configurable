@@ -16,13 +16,13 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
-import com.google.common.base.Strings;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.EditorFactory;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.Utils;
 import de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryListFx;
@@ -249,7 +249,7 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		}
 		if (factorySwing == null) {
 			factorySwing = new FactoryListSwing(this, !horizontal);
-			if (!Strings.isNullOrEmpty(labelText)) {
+			if (!Utils.isNullOrEmpty(labelText)) {
 				factorySwing.setText(labelText);
 			}
 		}
@@ -264,7 +264,7 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		}
 		if (factoryFx == null) {
 			factoryFx = new FactoryListFx(this, !horizontal);
-			if (!Strings.isNullOrEmpty(labelText)) {
+			if (!Utils.isNullOrEmpty(labelText)) {
 				factoryFx.setText(labelText);
 			}
 		}

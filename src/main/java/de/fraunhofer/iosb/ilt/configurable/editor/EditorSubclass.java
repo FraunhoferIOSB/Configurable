@@ -16,7 +16,6 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
-import com.google.common.base.Strings;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -25,6 +24,7 @@ import de.fraunhofer.iosb.ilt.configurable.Configurable;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
+import de.fraunhofer.iosb.ilt.configurable.Utils;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableClass;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactorySubclsFx;
@@ -417,7 +417,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	}
 
 	private Class<? extends T> loadClass() {
-		if (Strings.isNullOrEmpty(jsonName)) {
+		if (Utils.isNullOrEmpty(jsonName)) {
 			return null;
 		}
 		String name = jsonName;
@@ -443,7 +443,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	}
 
 	public void setJsonName(final String name) {
-		if (Strings.isNullOrEmpty(name)) {
+		if (Utils.isNullOrEmpty(name)) {
 			LOGGER.info("Empty class name.");
 			return;
 		}
@@ -485,7 +485,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	}
 
 	public classItem findClassItem(String from) {
-		if (Strings.isNullOrEmpty(from)) {
+		if (Utils.isNullOrEmpty(from)) {
 			return null;
 		}
 		initClasses();
