@@ -17,7 +17,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <configurable.version>0.12</configurable.version>
+        <configurable.version>0.13</configurable.version>
         <logback.version>1.1.8</logback.version>
     </properties>
 
