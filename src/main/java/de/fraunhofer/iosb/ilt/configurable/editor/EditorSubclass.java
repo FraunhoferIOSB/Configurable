@@ -21,6 +21,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
+import de.fraunhofer.iosb.ilt.configurable.ConfigurableFactory;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
@@ -52,7 +53,7 @@ import org.slf4j.LoggerFactory;
  * @param <D> The class type that provides context while editing.
  * @param <T> The type of object returned by getValue.
  */
-public class EditorSubclass<C, D, T> extends EditorDefault< T> {
+public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
@@ -416,32 +417,6 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		return prefix.substring(0, idx + 1);
 	}
 
-	private Class<? extends T> loadClass() {
-		if (Utils.isNullOrEmpty(jsonName)) {
-			return null;
-		}
-		String name = jsonName;
-
-		Class<? extends T> loadedClass = null;
-		ClassLoader cl = getClass().getClassLoader();
-		try {
-			loadedClass = (Class<? extends T>) cl.loadClass(name);
-		} catch (ClassNotFoundException e) {
-			LOGGER.trace("Could not find class {}. Not a full class name?", name);
-			LOGGER.trace("Exception loading class.", e);
-		}
-
-		if (loadedClass == null) {
-			name = findClassName(name);
-			try {
-				loadedClass = (Class<? extends T>) cl.loadClass(name);
-			} catch (ClassNotFoundException e) {
-				LOGGER.warn("Exception loading class.", e);
-			}
-		}
-		return loadedClass;
-	}
-
 	public void setJsonName(final String name) {
 		if (Utils.isNullOrEmpty(name)) {
 			LOGGER.info("Empty class name.");
@@ -451,16 +426,10 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 			return;
 		}
 		jsonName = name;
-		Class<? extends T> loadedClass = loadClass();
 
 		instance = null;
-		if (loadedClass != null) {
-			try {
-				instance = loadedClass.newInstance();
-			} catch (InstantiationException | IllegalAccessException e) {
-				LOGGER.warn("Exception instantiating class {}.", jsonName);
-				LOGGER.debug("Exception instantiating class.", e);
-			}
+		if (!Utils.isNullOrEmpty(jsonName)) {
+			instance = (T) findFactory(context, edtCtx).instantiate(jsonName, classConfig, context, edtCtx);
 		}
 
 		if (instance != null && instance instanceof Configurable) {
@@ -517,20 +486,8 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 	public T getValue() {
 		readComponent();
 		if (instance == null) {
-			try {
-				Class<? extends T> loadedClass = loadClass();
-				if (loadedClass == null) {
-					return null;
-				}
-				instance = loadedClass.newInstance();
-
-			} catch (InstantiationException | IllegalAccessException e) {
-				LOGGER.warn("Exception instantiating class {}.", jsonName);
-				LOGGER.debug("Exception instantiating class.", e);
-				return null;
-			}
-		}
-		if (instance instanceof Configurable) {
+			instance = (T) findFactory(context, edtCtx).instantiate(jsonName, classConfig, context, edtCtx);
+		} else if (instance instanceof Configurable) {
 			Configurable confInstance = (Configurable) instance;
 			confInstance.configure(classConfig, context, edtCtx);
 		}
@@ -660,4 +617,74 @@ public class EditorSubclass<C, D, T> extends EditorDefault< T> {
 		return profilesEdit.contains(profile);
 	}
 
+	private ConfigurableFactory findFactory(final C context, final D edtCtx) {
+		if (edtCtx instanceof ConfigurableFactory) {
+			return (ConfigurableFactory) edtCtx;
+		}
+		if (context instanceof ConfigurableFactory) {
+			return (ConfigurableFactory) context;
+		}
+		return new FactoryImp();
+	}
+
+	private class FactoryImp implements ConfigurableFactory {
+
+		private Class<? extends T> loadClass() {
+			if (Utils.isNullOrEmpty(jsonName)) {
+				return null;
+			}
+			String name = jsonName;
+
+			Class<? extends T> loadedClass = null;
+			ClassLoader cl = getClass().getClassLoader();
+			try {
+				loadedClass = (Class<? extends T>) cl.loadClass(name);
+			} catch (ClassNotFoundException e) {
+				LOGGER.trace("Could not find class {}. Not a full class name?", name);
+				LOGGER.trace("Exception loading class.", e);
+			}
+
+			if (loadedClass == null) {
+				name = findClassName(name);
+				try {
+					loadedClass = (Class<? extends T>) cl.loadClass(name);
+				} catch (ClassNotFoundException e) {
+					LOGGER.warn("Exception loading class.", e);
+				}
+			}
+			return loadedClass;
+		}
+
+		@Override
+		public Object instantiate(String className, JsonElement config, Object context, Object edtCtx) {
+			try {
+				Class<? extends T> loadedClass = loadClass();
+				if (loadedClass == null) {
+					return null;
+				}
+				return instantiate(loadedClass, config, context, edtCtx);
+			} catch (SecurityException e) {
+				LOGGER.warn("Exception loading class {}.", jsonName);
+				LOGGER.debug("Exception loading class.", e);
+				return null;
+			}
+		}
+
+		@Override
+		public <T> T instantiate(Class<? extends T> clazz, JsonElement config, Object context, Object edtCtx) {
+			try {
+				T newInstance = clazz.getDeclaredConstructor().newInstance();
+				if (newInstance instanceof Configurable) {
+					Configurable confInstance = (Configurable) newInstance;
+					confInstance.configure(classConfig, context, edtCtx);
+				}
+				return newInstance;
+
+			} catch (ReflectiveOperationException | SecurityException e) {
+				LOGGER.warn("Exception instantiating class {}.", jsonName);
+				LOGGER.debug("Exception instantiating class.", e);
+				return null;
+			}
+		}
+	}
 }

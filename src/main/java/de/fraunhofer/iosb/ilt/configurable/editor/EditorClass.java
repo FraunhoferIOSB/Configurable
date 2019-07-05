@@ -19,6 +19,7 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 import com.google.gson.JsonElement;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
+import de.fraunhofer.iosb.ilt.configurable.ConfigurableFactory;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryClassFx;
@@ -149,12 +150,7 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	 */
 	public void initClass() {
 		Object instance = null;
-		try {
-			instance = clazz.newInstance();
-		} catch (InstantiationException | IllegalAccessException exc) {
-			LOGGER.warn("Exception instantiating class {}.", clazz.getName());
-			LOGGER.trace("Exception instantiating class.", exc);
-		}
+		instance = findFactory(context, edtCtx).instantiate(clazz, classConfig, context, edtCtx);
 
 		if (instance instanceof Configurable) {
 			final Configurable confInstance = (Configurable) instance;
@@ -208,22 +204,15 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	@Override
 	public T getValue() {
 		readComponent();
-		try {
-			final Object instance = clazz.newInstance();
+		final T instance = findFactory(context, edtCtx).instantiate(clazz, classConfig, context, edtCtx);
 
-			if (instance instanceof Configurable) {
-				final Configurable confInstance = (Configurable) instance;
-				confInstance.configure(classConfig, context, edtCtx);
-				classEditor = confInstance.getConfigEditor(context, edtCtx);
-				classEditor.setProfile(profile);
-				fillComponent();
-			}
-			return (T) instance;
-		} catch (InstantiationException | IllegalAccessException | ClassCastException exc) {
-			LOGGER.warn("Exception instantiating class {}.", clazz.getName());
-			LOGGER.trace("Exception instantiating class.", exc);
-			return null;
+		if (instance instanceof Configurable) {
+			final Configurable confInstance = (Configurable) instance;
+			classEditor = confInstance.getConfigEditor(context, edtCtx);
+			classEditor.setProfile(profile);
+			fillComponent();
 		}
+		return instance;
 	}
 
 	@Override
@@ -236,6 +225,41 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 		this.profile = profile;
 		if (classEditor != null) {
 			classEditor.setProfile(profile);
+		}
+	}
+
+	private ConfigurableFactory findFactory(final C context, final D edtCtx) {
+		if (edtCtx instanceof ConfigurableFactory) {
+			return (ConfigurableFactory) edtCtx;
+		}
+		if (context instanceof ConfigurableFactory) {
+			return (ConfigurableFactory) context;
+		}
+		return new FactoryImp();
+	}
+
+	private class FactoryImp implements ConfigurableFactory {
+
+		@Override
+		public <T> T instantiate(Class<? extends T> clazz, JsonElement config, Object context, Object edtCtx) {
+			try {
+				T newInstance = clazz.getDeclaredConstructor().newInstance();
+				if (newInstance instanceof Configurable) {
+					Configurable confInstance = (Configurable) newInstance;
+					confInstance.configure(classConfig, context, edtCtx);
+				}
+				return newInstance;
+
+			} catch (ReflectiveOperationException | SecurityException e) {
+				LOGGER.warn("Exception instantiating class {}.", clazz);
+				LOGGER.debug("Exception instantiating class.", e);
+				return null;
+			}
+		}
+
+		@Override
+		public Object instantiate(String className, JsonElement config, Object context, Object edtCtx) {
+			throw new UnsupportedOperationException("Not supported.");
 		}
 	}
 

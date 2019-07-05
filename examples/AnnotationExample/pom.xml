@@ -4,7 +4,7 @@
 
     <groupId>de.fraunhofer.iosb.ilt</groupId>
     <artifactId>AnnotationExample</artifactId>
-    <version>0.12</version>
+    <version>0.14-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>AnnotationExample</name>
@@ -17,7 +17,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <configurable.version>0.13</configurable.version>
+        <configurable.version>0.14-SNAPSHOT</configurable.version>
         <logback.version>1.1.8</logback.version>
     </properties>
 
