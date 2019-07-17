@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
+import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
@@ -116,10 +117,14 @@ public class ExampleGui extends javax.swing.JFrame {
 	}
 
 	private void useConfig() {
-		JsonElement config = editor.getConfig();
-		FlagShapeList flag = new FlagShapeList();
-		flag.configure(config, null, null);
-		flag.wave();
+		try {
+			JsonElement config = editor.getConfig();
+			FlagShapeList flag = new FlagShapeList();
+			flag.configure(config, null, null);
+			flag.wave();
+		} catch (ConfigurationException ex) {
+			LOGGER.error("Could not configure the flag!", ex);
+		}
 	}
 
 	private void printConfig() {

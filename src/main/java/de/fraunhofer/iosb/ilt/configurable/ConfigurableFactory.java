@@ -31,11 +31,13 @@ public interface ConfigurableFactory {
 	 *
 	 * @param className The name of the class to instantiate.
 	 * @param config The configuration of the class.
-	 * @param context The runtime context for the instance.
-	 * @param edtCtx The edit context for the instance.
+	 * @param runtimeContext The runtime context for the instance.
+	 * @param editContext The edit context for the instance.
 	 * @return an instance of the given class
+	 * @throws ConfigurationException if there is a problem instantiating the
+	 * class.
 	 */
-	public Object instantiate(String className, JsonElement config, Object context, Object edtCtx);
+	public Object instantiate(String className, JsonElement config, Object runtimeContext, Object editContext) throws ConfigurationException;
 
 	/**
 	 * Create an instance of the given class.
@@ -43,9 +45,13 @@ public interface ConfigurableFactory {
 	 * @param <T> The class type.
 	 * @param clazz The class to instantiate.
 	 * @param config The configuration of the class.
-	 * @param context The runtime context for the instance.
-	 * @param edtCtx The edit context for the instance.
+	 * @param runtimeContext The runtime context for the instance.
+	 * @param editContext The edit context for the instance.
 	 * @return an instance of the given class
+	 * @throws ConfigurationException if there is a problem instantiating the
+	 * class.
 	 */
-	public <T> T instantiate(Class<? extends T> clazz, JsonElement config, Object context, Object edtCtx);
+	public default <T> T instantiate(Class<? extends T> clazz, JsonElement config, Object runtimeContext, Object editContext) throws ConfigurationException {
+		return clazz.cast(instantiate(clazz.getName(), config, runtimeContext, editContext));
+	}
 }

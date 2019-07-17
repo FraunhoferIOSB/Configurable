@@ -9,6 +9,7 @@ import com.google.gson.JsonElement;
 
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
+import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.EditorFactory;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorInt;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorList;
@@ -39,7 +40,7 @@ public class FlagShapeList implements Configurable<Object, Object> {
     }
 
     @Override
-    public void configure(JsonElement config, Object context, Object edtCtx) {
+    public void configure(JsonElement config, Object context, Object edtCtx) throws ConfigurationException {
         getConfigEditor(context, edtCtx);
         configEditor.setConfig(config);
         width = editorWidth.getValue();

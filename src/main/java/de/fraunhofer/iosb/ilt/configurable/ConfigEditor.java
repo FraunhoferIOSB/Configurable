@@ -47,8 +47,10 @@ public interface ConfigEditor<T> {
 	 * Get the value configured in the editor.
 	 *
 	 * @return the value configured in the editor.
+	 * @throws ConfigurationException when the configuration can not be used to
+	 * create a value.
 	 */
-	public T getValue();
+	public T getValue() throws ConfigurationException;
 
 	/**
 	 * Set the value in the editor. Used for saving an (externally) updated

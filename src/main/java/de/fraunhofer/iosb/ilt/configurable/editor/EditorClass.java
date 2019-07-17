@@ -20,6 +20,7 @@ import com.google.gson.JsonElement;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurableFactory;
+import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryClassFx;
@@ -150,14 +151,17 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	 */
 	public void initClass() {
 		Object instance = null;
-		instance = findFactory(context, edtCtx).instantiate(clazz, classConfig, context, edtCtx);
-
+		try {
+			instance = findFactory(context, edtCtx).instantiate(clazz, classConfig, context, edtCtx);
+		} catch (ConfigurationException exc) {
+			throw new RuntimeException(exc);
+		}
 		if (instance instanceof Configurable) {
 			final Configurable confInstance = (Configurable) instance;
 			classEditor = confInstance.getConfigEditor(context, edtCtx);
 			classEditor.setConfig(classConfig);
 		} else {
-			LOGGER.warn("Class {} is not configurable.", clazz.getName());
+			LOGGER.warn("Class {} is not configurable.", clazz);
 			classEditor = new EditorString("", 6);
 			classEditor.setConfig(classConfig);
 		}
@@ -202,10 +206,9 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	}
 
 	@Override
-	public T getValue() {
+	public T getValue() throws ConfigurationException {
 		readComponent();
 		final T instance = findFactory(context, edtCtx).instantiate(clazz, classConfig, context, edtCtx);
-
 		if (instance instanceof Configurable) {
 			final Configurable confInstance = (Configurable) instance;
 			classEditor = confInstance.getConfigEditor(context, edtCtx);
@@ -241,20 +244,18 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	private class FactoryImp implements ConfigurableFactory {
 
 		@Override
-		public <T> T instantiate(Class<? extends T> clazz, JsonElement config, Object context, Object edtCtx) {
+		public <T> T instantiate(Class<? extends T> clazz, JsonElement config, Object context, Object edtCtx) throws ConfigurationException {
+			T newInstance;
 			try {
-				T newInstance = clazz.getDeclaredConstructor().newInstance();
-				if (newInstance instanceof Configurable) {
-					Configurable confInstance = (Configurable) newInstance;
-					confInstance.configure(classConfig, context, edtCtx);
-				}
-				return newInstance;
-
-			} catch (ReflectiveOperationException | SecurityException e) {
-				LOGGER.warn("Exception instantiating class {}.", clazz);
-				LOGGER.debug("Exception instantiating class.", e);
-				return null;
+				newInstance = clazz.getDeclaredConstructor().newInstance();
+			} catch (ReflectiveOperationException | SecurityException exc) {
+				throw new ConfigurationException(exc);
 			}
+			if (newInstance instanceof Configurable) {
+				Configurable confInstance = (Configurable) newInstance;
+				confInstance.configure(classConfig, context, edtCtx);
+			}
+			return newInstance;
 		}
 
 		@Override

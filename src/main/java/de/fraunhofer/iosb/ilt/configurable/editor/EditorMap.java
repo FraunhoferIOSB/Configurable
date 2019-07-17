@@ -16,6 +16,7 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
+import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,7 +38,7 @@ public class EditorMap<T> extends AbstractEditorMap<Map<String, T>, T> {
 	}
 
 	@Override
-	public Map<String, T> getValue() {
+	public Map<String, T> getValue() throws ConfigurationException {
 		Map<String, T> result = new HashMap<>();
 		for (String name : value) {
 			Item<T> item = options.get(name);
@@ -47,7 +48,7 @@ public class EditorMap<T> extends AbstractEditorMap<Map<String, T>, T> {
 		return result;
 	}
 
-	public double getDouble(String name, double deflt) {
+	public double getDouble(String name, double deflt) throws ConfigurationException {
 		Item<T> item = options.get(name);
 		Object result = item.editor.getValue();
 		if (result instanceof Number) {
@@ -56,7 +57,7 @@ public class EditorMap<T> extends AbstractEditorMap<Map<String, T>, T> {
 		return deflt;
 	}
 
-	public long getLong(String name, long deflt) {
+	public long getLong(String name, long deflt) throws ConfigurationException {
 		Item<T> item = options.get(name);
 		Object result = item.editor.getValue();
 		if (result instanceof Number) {
@@ -65,7 +66,7 @@ public class EditorMap<T> extends AbstractEditorMap<Map<String, T>, T> {
 		return deflt;
 	}
 
-	public Map<String, Long> getLongMap() {
+	public Map<String, Long> getLongMap() throws ConfigurationException {
 		Map<String, Long> result = new HashMap<>();
 		for (String name : value) {
 			result.put(name, getLong(name, 0));

@@ -22,6 +22,7 @@ import com.google.gson.JsonPrimitive;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurableFactory;
+import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
@@ -429,10 +430,15 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 
 		instance = null;
 		if (!Utils.isNullOrEmpty(jsonName)) {
-			instance = (T) findFactory(context, edtCtx).instantiate(jsonName, classConfig, context, edtCtx);
+			try {
+				instance = (T) findFactory(context, edtCtx).instantiate(jsonName, classConfig, context, edtCtx);
+			} catch (ConfigurationException exc) {
+				LOGGER.warn("Exception instantiating class {}.", jsonName);
+				LOGGER.debug("Exception instantiating class.", exc);
+			}
 		}
 
-		if (instance != null && instance instanceof Configurable) {
+		if (instance instanceof Configurable) {
 			Configurable confInstance = (Configurable) instance;
 			classEditor = confInstance.getConfigEditor(context, edtCtx);
 			classEditor.setConfig(classConfig);
@@ -483,7 +489,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 	}
 
 	@Override
-	public T getValue() {
+	public T getValue() throws ConfigurationException {
 		readComponent();
 		if (instance == null) {
 			instance = (T) findFactory(context, edtCtx).instantiate(jsonName, classConfig, context, edtCtx);
@@ -629,9 +635,9 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 
 	private class FactoryImp implements ConfigurableFactory {
 
-		private Class<? extends T> loadClass() {
+		private Class<? extends T> loadClass() throws ReflectiveOperationException, ConfigurationException {
 			if (Utils.isNullOrEmpty(jsonName)) {
-				return null;
+				throw new ConfigurationException("No class specified.");
 			}
 			String name = jsonName;
 
@@ -646,45 +652,34 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 
 			if (loadedClass == null) {
 				name = findClassName(name);
-				try {
-					loadedClass = (Class<? extends T>) cl.loadClass(name);
-				} catch (ClassNotFoundException e) {
-					LOGGER.warn("Exception loading class.", e);
-				}
+				loadedClass = (Class<? extends T>) cl.loadClass(name);
 			}
 			return loadedClass;
 		}
 
 		@Override
-		public Object instantiate(String className, JsonElement config, Object context, Object edtCtx) {
+		public Object instantiate(String className, JsonElement config, Object context, Object edtCtx) throws ConfigurationException {
 			try {
 				Class<? extends T> loadedClass = loadClass();
-				if (loadedClass == null) {
-					return null;
-				}
 				return instantiate(loadedClass, config, context, edtCtx);
-			} catch (SecurityException e) {
-				LOGGER.warn("Exception loading class {}.", jsonName);
-				LOGGER.debug("Exception loading class.", e);
-				return null;
+			} catch (ReflectiveOperationException | SecurityException exc) {
+				throw new ConfigurationException(exc);
 			}
 		}
 
 		@Override
-		public <T> T instantiate(Class<? extends T> clazz, JsonElement config, Object context, Object edtCtx) {
+		public <T> T instantiate(Class<? extends T> clazz, JsonElement config, Object context, Object edtCtx) throws ConfigurationException {
+			T newInstance;
 			try {
-				T newInstance = clazz.getDeclaredConstructor().newInstance();
-				if (newInstance instanceof Configurable) {
-					Configurable confInstance = (Configurable) newInstance;
-					confInstance.configure(classConfig, context, edtCtx);
-				}
-				return newInstance;
-
-			} catch (ReflectiveOperationException | SecurityException e) {
-				LOGGER.warn("Exception instantiating class {}.", jsonName);
-				LOGGER.debug("Exception instantiating class.", e);
-				return null;
+				newInstance = clazz.getDeclaredConstructor().newInstance();
+			} catch (ReflectiveOperationException | SecurityException exc) {
+				throw new ConfigurationException(exc);
 			}
+			if (newInstance instanceof Configurable) {
+				Configurable confInstance = (Configurable) newInstance;
+				confInstance.configure(classConfig, context, edtCtx);
+			}
+			return newInstance;
 		}
 	}
 }

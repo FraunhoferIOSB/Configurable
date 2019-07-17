@@ -19,6 +19,7 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
+import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.EditorFactory;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
@@ -313,7 +314,7 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 	}
 
 	@Override
-	public List<U> getValue() {
+	public List<U> getValue() throws ConfigurationException {
 		List<U> valList = new ArrayList<>();
 		for (T val : value) {
 			valList.add(val.getValue());
