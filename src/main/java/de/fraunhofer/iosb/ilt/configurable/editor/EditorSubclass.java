@@ -491,6 +491,10 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 	@Override
 	public T getValue() throws ConfigurationException {
 		readComponent();
+		if (Utils.isNullOrEmpty(jsonName)) {
+			// Nothing configured, nothing to return.
+			return null;
+		}
 		if (instance == null) {
 			instance = (T) findFactory(context, edtCtx).instantiate(jsonName, classConfig, context, edtCtx);
 		} else if (instance instanceof Configurable) {
