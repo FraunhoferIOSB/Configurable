@@ -1,3 +1,13 @@
+# Release Version 0.14
+
+**Updates**
+* Introduced a ConfigurableFactory interface that can instantiate classes.
+  If any of the contexts implement this interface, they will be used to
+  create instances.
+* If configuration of a class fails because a class can not be instantiated,
+  the error is no longer silently ignored, but an exception is thrown.
+
+
 # Release Version 0.13
 
 **Updates**
