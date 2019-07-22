@@ -210,7 +210,7 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 			try {
 				T editor = AnnotationHelper.createEditor(editorClass, field, context, edtCtx, editorKey);
 				return editor;
-			} catch (InstantiationException | IllegalAccessException ex) {
+			} catch (ReflectiveOperationException ex) {
 				throw new IllegalArgumentException("Can not create new editor.", ex);
 			}
 		};

@@ -25,8 +25,8 @@ package de.fraunhofer.iosb.ilt.configurable;
 public interface ContentConfigEditor<T> extends ConfigEditor<T> {
 
 	/**
-	 * For any configurable content, tries to set the configured value on the target
-	 * object.
+	 * For any configurable content, tries to set the configured value on the
+	 * target object.
 	 *
 	 * @param target The target instance to use.
 	 * @throws ConfigurationException if any of the values could not be loaded.

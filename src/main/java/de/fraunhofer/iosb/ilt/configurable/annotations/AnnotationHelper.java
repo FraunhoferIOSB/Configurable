@@ -69,18 +69,18 @@ public class AnnotationHelper {
 	}
 
 	/**
-	 * Generate the editor for the given configurable instance. The editor settings
-	 * will be taken from annotations on the configurable Class, and its super
-	 * classes.
+	 * Generate the editor for the given configurable instance. The editor
+	 * settings will be taken from annotations on the configurable Class, and
+	 * its super classes.
 	 *
-	 * @param                   <C> The class type that provides context at runtime.
-	 * @param                   <D> The class type that provides context while
-	 *                          editing.
-	 * @param configurableClass The configurable class to generate an editor for.
-	 * @param context           The instance that provides context at runtime.
-	 * @param edtCtx            The instance that provides context while editing.
-	 * @return an editor for the given Configurable class, or an empty optional if
-	 *         no Configurable annotations exist.
+	 * @param <C> The class type that provides context at runtime.
+	 * @param <D> The class type that provides context while editing.
+	 * @param configurableClass The configurable class to generate an editor
+	 * for.
+	 * @param context The instance that provides context at runtime.
+	 * @param edtCtx The instance that provides context while editing.
+	 * @return an editor for the given Configurable class, or an empty optional
+	 * if no Configurable annotations exist.
 	 */
 	public static final <C, D> Optional<EditorMap<?>> generateEditorFromAnnotations(final Class<?> configurableClass,
 			final C context, final D edtCtx) {
@@ -115,22 +115,26 @@ public class AnnotationHelper {
 					final String jsonName = jsonNameForField(field, annotation);
 					map.addOption(field.getName(), jsonName, fieldEditor, annotation);
 
-				} catch (InstantiationException | IllegalAccessException ex) {
+				} catch (ReflectiveOperationException ex) {
 					LOGGER.error("could not instantiate give editor: {}", editorClass);
 					LOGGER.info("Exception", ex);
 				}
 			}
 		}
 
-		if (!annotated)
+		if (!annotated) {
 			annotated = hasConfigurableConstructorAnnotation(configurableClass);
+		}
 
 		return annotated ? Optional.of(map) : Optional.empty();
 	}
 
-	public static <E, F, T extends ConfigEditor> T createEditor(final Class<T> editorClass, final Field field,
-			final E context, final F edtCtx) throws IllegalAccessException, InstantiationException {
-		final T fieldEditor = editorClass.newInstance();
+	public static <E, F, T extends ConfigEditor> T createEditor(
+			final Class<T> editorForClass,
+			final Field field,
+			final E context,
+			final F edtCtx) throws ReflectiveOperationException {
+		final T fieldEditor = editorForClass.getDeclaredConstructor().newInstance();
 		try {
 			MethodUtils.invokeMethod(fieldEditor, "setContexts", context, edtCtx);
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException exc) {
@@ -141,12 +145,16 @@ public class AnnotationHelper {
 		return fieldEditor;
 	}
 
-	public static <E, F, T extends ConfigEditor> T createEditor(final Class<T> editorClass, final Field field,
-			final E context, final F edtCtx, final String key) throws IllegalAccessException, InstantiationException {
-		final T fieldEditor = editorClass.newInstance();
+	public static <E, F, T extends ConfigEditor> T createEditor(
+			final Class<T> editorForClass,
+			final Field field,
+			final E context,
+			final F edtCtx,
+			final String key) throws IllegalAccessException, ReflectiveOperationException {
+		final T fieldEditor = editorForClass.getDeclaredConstructor().newInstance();
 		try {
 			MethodUtils.invokeMethod(fieldEditor, "setContexts", context, edtCtx);
-		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException exc) {
+		} catch (ReflectiveOperationException exc) {
 			// editor needs no context.
 			LOGGER.trace("", exc);
 		}
@@ -174,14 +182,14 @@ public class AnnotationHelper {
 		return Collections.unmodifiableSet(set);
 	}
 
-
 	public static boolean hasConfigurableConstructorAnnotation(final Class<?> configurableClass) {
 		return getConfigurableConstructor(configurableClass).isPresent();
 	}
 
 	public static Optional<Constructor<?>> getConfigurableConstructor(final Class<?> configurableClass) {
 		return Arrays.stream(configurableClass.getConstructors())
-				.filter(ctor -> Objects.nonNull(ctor.getAnnotation(ConfigurableConstructor.class))).findFirst();
+				.filter(ctor -> Objects.nonNull(ctor.getAnnotation(ConfigurableConstructor.class)))
+				.findFirst();
 	}
 
 	public static <T, R, E> T instantiateFrom(final Constructor<?> configurableConstructor,
@@ -190,55 +198,56 @@ public class AnnotationHelper {
 
 		// we'd expect to deal with a ContentConfigEditor here
 		final ContentConfigEditor<?> editor = (ContentConfigEditor<?>) ConfigEditors
-				.buildEditorFromClass(configurableConstructor.getDeclaringClass(), runtimeContext, editorContext).get();
+				.buildEditorFromClass(configurableConstructor.getDeclaringClass(), runtimeContext, editorContext)
+				.get();
 		editor.setConfig(classConfig);
 
-		final T instance = instantiateFrom(configurableConstructor, classConfig, editor, runtimeContext, editorContext);
-		((Configurable) instance).configure(classConfig, runtimeContext, editorContext); // TODO configure should take
-																							// editor as optional
-																							// argument so that we can
-																							// reuse the built editor!
+		final T instance = instantiateFrom(configurableConstructor, classConfig, editor, runtimeContext);
+		((Configurable) instance).configure(classConfig, runtimeContext, editorContext);
+		// TODO configure should take editor as optional
+		// argument so that we can reuse the built editor!
 
 		return instance;
 	}
 
-	private static <T, R, E> T instantiateFrom(final Constructor<?> configurableConstructor,
-			final JsonElement classConfig, final ContentConfigEditor<?> editor, final R runtimeContext,
-			final E editorContext)
+	private static <T, R, E> T instantiateFrom(
+			final Constructor<?> configurableConstructor,
+			final JsonElement classConfig,
+			final ContentConfigEditor<?> editor,
+			final R runtimeContext)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-		final Object[] initargs = buildConstructorInitargs(configurableConstructor, classConfig, editor,
-				runtimeContext);
+		final Object[] initargs = buildConstructorInitargs(configurableConstructor, classConfig, editor, runtimeContext);
 		return (T) configurableConstructor.newInstance(initargs);
 	}
 
-	private static <R> Object[] buildConstructorInitargs(final Constructor<?> configurableConstructor,
-			final JsonElement classConfig, final ContentConfigEditor<?> editor, final R runtimeContext) {
+	private static <R> Object[] buildConstructorInitargs(final Constructor<?> configurableConstructor, final JsonElement classConfig, final ContentConfigEditor<?> editor, final R runtimeContext) {
 		return Arrays.stream(configurableConstructor.getParameters())
-				.map(param -> buildConstructorInitarg(param, classConfig, editor, runtimeContext)).toArray();
+				.map(param -> buildConstructorInitarg(param, classConfig, editor, runtimeContext))
+				.toArray();
 	}
 
-	private static <R> Object buildConstructorInitarg(final Parameter parameter, final JsonElement classConfig,
-			final ContentConfigEditor<?> editor, final R runtimeContext) {
+	private static <R> Object buildConstructorInitarg(final Parameter parameter, final JsonElement classConfig, final ContentConfigEditor<?> editor, final R runtimeContext) {
 		try {
 			final ConfigurableParameter annotation = parameter.getAnnotation(ConfigurableParameter.class);
-			if (annotation == null)
+			if (annotation == null) {
 				return null;
+			}
 
 			switch (annotation.type()) {
-			case RUNTIME_CONTEXT:
-				return runtimeContext;
-			case CLASS_CONFIG:
-				return classConfig;
-			case JSON_FIELD: {
-				final String jsonField = annotation.jsonField();
-				if (Utils.isNullOrEmpty(jsonField))
-					return null; // usually this is an error
-
-				return editor.getValue(jsonField);
-			}
-			default:
-				return null;
+				case RUNTIME_CONTEXT:
+					return runtimeContext;
+				case CLASS_CONFIG:
+					return classConfig;
+				case JSON_FIELD: {
+					final String jsonField = annotation.jsonField();
+					if (Utils.isNullOrEmpty(jsonField)) {
+						return null; // usually this is an error
+					}
+					return editor.getValue(jsonField);
+				}
+				default:
+					return null;
 			}
 		} catch (final ConfigurationException exc) {
 			throw new IllegalArgumentException(exc);
@@ -246,15 +255,18 @@ public class AnnotationHelper {
 	}
 
 	public static boolean hasConfigurableConstructorParameter(final Object instance, final String jsonField) {
-		if (instance == null)
+		if (instance == null) {
 			return false;
+		}
 
 		final Optional<Constructor<?>> configurableConstructor = getConfigurableConstructor(instance.getClass());
-		if (configurableConstructor.isEmpty())
+		if (configurableConstructor.isEmpty()) {
 			return false;
+		}
 
 		return Arrays.stream(configurableConstructor.get().getParameters())
-				.map(parameter -> parameter.getAnnotation(ConfigurableParameter.class)).filter(Objects::nonNull)
+				.map(parameter -> parameter.getAnnotation(ConfigurableParameter.class))
+				.filter(Objects::nonNull)
 				.anyMatch(config -> config.jsonField().equals(jsonField));
 	}
 }

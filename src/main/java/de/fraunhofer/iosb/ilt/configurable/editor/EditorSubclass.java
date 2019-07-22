@@ -446,13 +446,14 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 				LOGGER.debug("Exception loading class.", exc);
 			}
 
-			if (classEditor == null)
+			if (classEditor == null) {
 				try {
 					instance = (T) factory.instantiate(jsonName, classConfig, context, edtCtx);
 				} catch (final ConfigurationException exc) {
 					LOGGER.warn("Exception instantiating class {}.", jsonName);
 					LOGGER.debug("Exception instantiating class.", exc);
 				}
+			}
 		}
 
 		if (instance instanceof Configurable) {
@@ -538,11 +539,13 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		final ConfigurableFactory factory = findFactory(context, edtCtx);
 		final Class<?> subclassClass = factory.loadClass(jsonName);
 		final Optional<Constructor<?>> configurableConstructor = getConfigurableConstructor(subclassClass);
-		if (configurableConstructor.isPresent())
+		if (configurableConstructor.isPresent()) {
 			return instantiateFrom(configurableConstructor.get(), classConfig, context, edtCtx);
+		}
 
 		return (T) factory.instantiate(jsonName, classConfig, context, edtCtx);
 	}
+
 	@Override
 	public void setValue(T value) {
 		throw new UnsupportedOperationException("Not supported yet.");

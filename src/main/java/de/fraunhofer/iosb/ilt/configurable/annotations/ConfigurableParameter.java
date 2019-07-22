@@ -36,15 +36,13 @@ public @interface ConfigurableParameter {
 	}
 
 	ConfigurableParameterType type() default ConfigurableParameterType.JSON_FIELD;
-
-	// boolean runtimeContext() default false;
-
 	/**
-	 * The name of the field in the configuration JSON to use for storing the value
-	 * of the annotated field. Defaults to the field name (case sensitive).
+	 * The name of the field in the configuration JSON to use for storing the
+	 * value of the annotated field. Defaults to the field name (case
+	 * sensitive).
 	 *
-	 * @return The name of the field in the configuration JSON to use for storing
-	 *         the value of the annotated field.
+	 * @return The name of the field in the configuration JSON to use for
+	 * storing the value of the annotated field.
 	 */
 	String jsonField() default "";
 }

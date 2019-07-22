@@ -15,7 +15,6 @@ import com.google.gson.JsonElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * An example Configurable class.
  *
@@ -23,43 +22,48 @@ import org.slf4j.LoggerFactory;
  */
 public class Circle extends AbstractShape {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Circle.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Circle.class);
 
-    @ConfigurableField(editor = EditorDouble.class, label = "X-Coordinate", description = "The X-Coordinate of the centre of the circle.")
-    @EditorDouble.EdOptsDouble(min = 0, max = 1000, step = 0.1, dflt = 10)
-    private double x;
+	@ConfigurableField(editor = EditorDouble.class,
+			label = "X-Coordinate",
+			description = "The X-Coordinate of the centre of the circle.")
+	@EditorDouble.EdOptsDouble(min = 0, max = 1000, step = 0.1, dflt = 10)
+	private double x;
 
-    @ConfigurableField(editor = EditorDouble.class, label = "Y-Coordinate", description = "The Y-Coordinate of the centre of the circle.")
-    @EditorDouble.EdOptsDouble(min = 0, max = 1000, step = 0.1, dflt = 10)
-    private double y;
+	@ConfigurableField(editor = EditorDouble.class,
+			label = "Y-Coordinate",
+			description = "The Y-Coordinate of the centre of the circle.")
+	@EditorDouble.EdOptsDouble(min = 0, max = 1000, step = 0.1, dflt = 10)
+	private double y;
 
-    @ConfigurableField(editor = EditorInt.class, label = "Radius", description = "The radius of our circle")
-    @EditorInt.EdOptsInt(min = 1, max = 100, step = 1, dflt = 10)
-    private int r;
+	@ConfigurableField(editor = EditorInt.class,
+			label = "Radius",
+			description = "The radius of our circle")
+	@EditorInt.EdOptsInt(min = 1, max = 100, step = 1, dflt = 10)
+	private int r;
 
+	@ConfigurableConstructor
+	public Circle(
+			@ConfigurableParameter(type = ConfigurableParameterType.RUNTIME_CONTEXT) final Void runtimeContext,
+			@ConfigurableParameter(type = ConfigurableParameterType.CLASS_CONFIG) final JsonElement classConfig,
+			@ConfigurableParameter(jsonField = "shape") final Shape nestedShape) {
+		shape = nestedShape;
+	}
 
-    @ConfigurableConstructor
-    public Circle(@ConfigurableParameter(type = ConfigurableParameterType.RUNTIME_CONTEXT) final Void runtimeContext, @ConfigurableParameter(type = ConfigurableParameterType.CLASS_CONFIG) final JsonElement classConfig, @ConfigurableParameter(jsonField = "shape") final Shape nestedShape) {
-        shape = nestedShape;
-    }
+	public static ContentConfigEditor<?> getSingeltonConfigEditor(final Void context, final Void edtCtx) {
+		return AnnotationHelper.generateEditorFromAnnotations(Circle.class, context, edtCtx).get();
+	}
 
+	@Override
+	public ConfigEditor<?> getConfigEditor(final Void context, final Void edtCtx) {
+		throw new UnsupportedOperationException("force usage of singelton config editor");
+	}
 
-    public static ContentConfigEditor<?> getSingeltonConfigEditor(final Void context, final Void edtCtx) {
-        return AnnotationHelper.generateEditorFromAnnotations(Circle.class, context, edtCtx).get();
-    }
-
-
-    @Override
-    public ConfigEditor<?> getConfigEditor(final Void context, final Void edtCtx) {
-        throw new UnsupportedOperationException("force usage of singelton config editor");
-    }
-
-
-    @Override
-    public void paintMe() {
-        // paint to some device...
-        LOGGER.info("I'm a circle at {}, {} with radius {} and color {}!", x, y, r, getColor());
-        super.paintMe();
-    }
+	@Override
+	public void paintMe() {
+		// paint to some device...
+		LOGGER.info("I'm a circle at {}, {} with radius {} and color {}!", x, y, r, getColor());
+		super.paintMe();
+	}
 
 }

@@ -16,11 +16,14 @@ import java.awt.Color;
  * @author scf
  */
 public abstract class AbstractShape implements Shape {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractShape.class);
 
-    @ConfigurableField(editor = EditorSubclass.class, label = "Shape", description = "The sub-shape to put on this Shape")
-    @EditorSubclass.EdOptsSubclass(iface = Shape.class)
-    protected Shape shape;
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractShape.class);
+
+	@ConfigurableField(editor = EditorSubclass.class,
+			label = "Shape",
+			description = "The sub-shape to put on this Shape")
+	@EditorSubclass.EdOptsSubclass(iface = Shape.class)
+	protected Shape shape;
 
 	@ConfigurableField(editor = EditorColor.class,
 			label = "Color",
@@ -33,13 +36,12 @@ public abstract class AbstractShape implements Shape {
 		return color;
 	}
 
+	@Override
+	public void paintMe() {
+		if (shape != null) {
+			LOGGER.info("I have a sub-shape!");
+			shape.paintMe();
+		}
 
-    @Override
-    public void paintMe() {
-        if (shape != null) {
-            LOGGER.info("I have a sub-shape!");
-            shape.paintMe();
-        }
-
-    }
+	}
 }

@@ -141,8 +141,8 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	/**
 	 * Add an option (Field) to the Map.
 	 *
-	 * @param name     The name to use for the option in the JSON config.
-	 * @param editor   The editor to use for editing the option.
+	 * @param name The name to use for the option in the JSON config.
+	 * @param editor The editor to use for editing the option.
 	 * @param optional Flag indicating the option is optional.
 	 */
 	public void addOption(final String name, final ConfigEditor editor, final boolean optional) {
@@ -152,10 +152,10 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	/**
 	 * Add an option (Field) to the Map.
 	 *
-	 * @param name     The name to use for the option in the JSON config.
-	 * @param editor   The editor to use for editing the option.
+	 * @param name The name to use for the option in the JSON config.
+	 * @param editor The editor to use for editing the option.
 	 * @param optional Flag indicating the option is optional.
-	 * @param width    The number of columns the editor should take in the GUI.
+	 * @param width The number of columns the editor should take in the GUI.
 	 */
 	public void addOption(final String name, final ConfigEditor editor, final boolean optional, final int width) {
 		addOption(name, name, editor, optional, width);
@@ -309,17 +309,18 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 
 	/**
 	 * For each of the keys in the map, tries set the value of the field on the
-	 * target object.It first tries to set the field with the fieldName directly. If
-	 * that does not work, it tries to call the setter set{fieldName}(fieldValue) on
-	 * the target.
+	 * target object.It first tries to set the field with the fieldName
+	 * directly. If that does not work, it tries to call the setter
+	 * set{fieldName}(fieldValue) on the target.
 	 *
 	 * @param target The target to set the fields, or call the setters on.
 	 * @throws ConfigurationException if any of the values could not be loaded.
 	 */
 	public void setContentsOn(final Object target) throws ConfigurationException {
 		for (final Item<V> item : options.values()) {
-			if (hasConfigurableConstructorParameter(target, item.fieldName))
+			if (hasConfigurableConstructorParameter(target, item.fieldName)) {
 				continue;
+			}
 			final Object val = item.editor.getValue();
 			if (val == null) {
 				continue;

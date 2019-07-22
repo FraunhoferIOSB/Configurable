@@ -26,7 +26,7 @@ import com.google.gson.JsonElement;
  */
 public interface Configurable<C, D> {
 
-	public static final String SINGLETON_CONFIG_EDITOR_FACTORY_METHOD_NAME = "getSingeltonConfigEditor";
+	public static final String CLASS_CONFIG_EDITOR_FACTORY_METHOD_NAME = "getClassConfigEditor";
 
 	/**
 	 * Configure the instance using the given configuration.
