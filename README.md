@@ -57,8 +57,11 @@ public interface Configurable<C, D> {
 	 * @param config The configuration to use for this instance.
 	 * @param context the object that defines the context at runtime.
 	 * @param edtCtx the object that defines the context while editing.
+	 * @param configEditor optional {@code ConfigEditor} that may be used to
+	 * access and assign configured contents.
+	 * @throws ConfigurationException If the configuration can not be loaded.
 	 */
-	public void configure(JsonElement config, C context, D edtCtx);
+	public void configure(JsonElement config, C context, D edtCtx, ConfigEditor<?> configEditor) throws ConfigurationException;
 
 	/**
 	 * Returns an editor for this class. Changing the configuration of this

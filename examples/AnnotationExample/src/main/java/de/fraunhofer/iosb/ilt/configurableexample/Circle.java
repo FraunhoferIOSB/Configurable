@@ -50,15 +50,6 @@ public class Circle extends AbstractShape {
 		shape = nestedShape;
 	}
 
-	public static ContentConfigEditor<?> getSingeltonConfigEditor(final Void context, final Void edtCtx) {
-		return AnnotationHelper.generateEditorFromAnnotations(Circle.class, context, edtCtx).get();
-	}
-
-	@Override
-	public ConfigEditor<?> getConfigEditor(final Void context, final Void edtCtx) {
-		throw new UnsupportedOperationException("force usage of singelton config editor");
-	}
-
 	@Override
 	public void paintMe() {
 		// paint to some device...

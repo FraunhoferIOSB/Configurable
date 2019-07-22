@@ -1,3 +1,16 @@
+# Release Version 0.15
+
+**Updates**
+* Reworked the instantiation system to allow  for a static getConfigEditor method
+  called getClassConfigEditor. This avoids unnecessary instantiation of the
+  Configurable class.
+* Added the option to configure the constructor of the Configurable class, so that
+  the run-time context, the configuration or fields can be passed to the constructor. 
+* Added the config editor as parameter to the configure() method, so that when a
+  config editor is already present, the class does not have to create a new one
+  just to configure itself.
+
+
 # Release Version 0.14
 
 **Updates**
