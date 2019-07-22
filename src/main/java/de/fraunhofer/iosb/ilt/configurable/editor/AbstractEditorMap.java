@@ -23,6 +23,7 @@ import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.hasConfigurableConstructorParameter;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableField;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryMapFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryMapSwing;
@@ -50,7 +51,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implements Iterable<String> {
 
-	public static final class Item< V> {
+	public static final class Item<V> {
 
 		public final ConfigEditor<V> editor;
 		public final boolean optional;
@@ -62,9 +63,8 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		public final Set<String> profilesSave;
 		public final Set<String> profilesGui;
 
-		public Item(final String fieldName, final String jsonName, final ConfigEditor<V> editor,
-				final boolean optional, final int colwidth, boolean merge,
-				String profilesSave, String profilesGui) {
+		public Item(final String fieldName, final String jsonName, final ConfigEditor<V> editor, final boolean optional,
+				final int colwidth, final boolean merge, final String profilesSave, final String profilesGui) {
 			this.fieldName = fieldName;
 			this.jsonName = jsonName;
 			final String edLabel = editor.getLabel();
@@ -85,11 +85,11 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 			return jsonName;
 		}
 
-		public boolean hasGuiProfile(String profile) {
+		public boolean hasGuiProfile(final String profile) {
 			return profilesGui.contains(profile);
 		}
 
-		public boolean hasSaveProfile(String profile) {
+		public boolean hasSaveProfile(final String profile) {
 			return profilesSave.contains(profile);
 		}
 
@@ -128,11 +128,11 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		columns = 1;
 	}
 
-	public AbstractEditorMap(int columns) {
+	public AbstractEditorMap(final int columns) {
 		this.columns = columns;
 	}
 
-	public AbstractEditorMap(int columns, String label, String description) {
+	public AbstractEditorMap(final int columns, final String label, final String description) {
 		this.columns = columns;
 		setLabel(label);
 		setDescription(description);
@@ -141,42 +141,44 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	/**
 	 * Add an option (Field) to the Map.
 	 *
-	 * @param name The name to use for the option in the JSON config.
-	 * @param editor The editor to use for editing the option.
+	 * @param name     The name to use for the option in the JSON config.
+	 * @param editor   The editor to use for editing the option.
 	 * @param optional Flag indicating the option is optional.
 	 */
-	public void addOption(String name, ConfigEditor editor, boolean optional) {
+	public void addOption(final String name, final ConfigEditor editor, final boolean optional) {
 		addOption(name, name, editor, optional, 1);
 	}
 
 	/**
 	 * Add an option (Field) to the Map.
 	 *
-	 * @param name The name to use for the option in the JSON config.
-	 * @param editor The editor to use for editing the option.
+	 * @param name     The name to use for the option in the JSON config.
+	 * @param editor   The editor to use for editing the option.
 	 * @param optional Flag indicating the option is optional.
-	 * @param width The number of columns the editor should take in the GUI.
+	 * @param width    The number of columns the editor should take in the GUI.
 	 */
-	public void addOption(String name, ConfigEditor editor, boolean optional, int width) {
+	public void addOption(final String name, final ConfigEditor editor, final boolean optional, final int width) {
 		addOption(name, name, editor, optional, width);
 	}
 
-	public void addOption(String fieldName, String jsonName, ConfigEditor editor, boolean optional, int width) {
+	public void addOption(final String fieldName, final String jsonName, final ConfigEditor editor,
+			final boolean optional, final int width) {
 		addOption(fieldName, jsonName, editor, optional, width, false);
 	}
 
-	public void addOption(String fieldName, String jsonName, ConfigEditor editor, boolean optional, int width, boolean merge) {
+	public void addOption(final String fieldName, final String jsonName, final ConfigEditor editor,
+			final boolean optional, final int width, final boolean merge) {
 		addOption(fieldName, jsonName, editor, optional, width, merge, "", "");
 	}
 
-	public void addOption(String fieldName, String jsonName, ConfigEditor editor,
-			boolean optional, int width, boolean merge,
-			String profilesSave, String profilesGui) {
+	public void addOption(final String fieldName, final String jsonName, final ConfigEditor editor,
+			final boolean optional, final int width, final boolean merge, final String profilesSave,
+			final String profilesGui) {
 		if (options.containsKey(jsonName)) {
 			throw new IllegalArgumentException("Map already contains an editor for " + jsonName);
 		}
 		editor.setProfile(profile);
-		Item item = new Item<>(fieldName, jsonName, editor, optional, width, merge, profilesSave, profilesGui);
+		final Item item = new Item<>(fieldName, jsonName, editor, optional, width, merge, profilesSave, profilesGui);
 		options.put(jsonName, item);
 		if (optional) {
 			optionalOptions.add(jsonName);
@@ -185,12 +187,14 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		}
 	}
 
-	public void addOption(String fieldName, String jsonName, ConfigEditor editor, ConfigurableField annotation) {
-		this.addOption(fieldName, jsonName, editor, annotation.optional(), 1, annotation.merge(), annotation.profilesSave(), annotation.profilesGui());
+	public void addOption(final String fieldName, final String jsonName, final ConfigEditor editor,
+			final ConfigurableField annotation) {
+		this.addOption(fieldName, jsonName, editor, annotation.optional(), 1, annotation.merge(),
+				annotation.profilesSave(), annotation.profilesGui());
 	}
 
 	@Override
-	public void setConfig(JsonElement config) {
+	public void setConfig(final JsonElement config) {
 		value.clear();
 
 		if (config != null && config.isJsonObject()) {
@@ -203,7 +207,7 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 					item.editor.setConfig(config);
 					value.add(jsonName);
 				} else {
-					JsonElement itemConfig = configObj.get(item.jsonName);
+					final JsonElement itemConfig = configObj.get(item.jsonName);
 					if (itemConfig != null) {
 						item.editor.setConfig(itemConfig);
 						value.add(jsonName);
@@ -235,11 +239,11 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 		final JsonObject result = new JsonObject();
 		for (final String key : value) {
 			final Item<V> item = options.get(key);
-			JsonElement itemConfig = item.editor.getConfig();
+			final JsonElement itemConfig = item.editor.getConfig();
 			if (item.merge && itemConfig.isJsonObject()) {
 				// Handle merge
-				JsonObject itemObject = itemConfig.getAsJsonObject();
-				for (Map.Entry<String, JsonElement> entry : itemObject.entrySet()) {
+				final JsonObject itemObject = itemConfig.getAsJsonObject();
+				for (final Map.Entry<String, JsonElement> entry : itemObject.entrySet()) {
 					result.add(entry.getKey(), entry.getValue());
 				}
 			} else {
@@ -305,32 +309,35 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 
 	/**
 	 * For each of the keys in the map, tries set the value of the field on the
-	 * target object.It first tries to set the field with the fieldName
-	 * directly. If that does not work, it tries to call the setter
-	 * set{fieldName}(fieldValue) on the target.
+	 * target object.It first tries to set the field with the fieldName directly. If
+	 * that does not work, it tries to call the setter set{fieldName}(fieldValue) on
+	 * the target.
 	 *
 	 * @param target The target to set the fields, or call the setters on.
 	 * @throws ConfigurationException if any of the values could not be loaded.
 	 */
 	public void setContentsOn(final Object target) throws ConfigurationException {
-		for (Item<V> item : options.values()) {
-			Object val = item.editor.getValue();
+		for (final Item<V> item : options.values()) {
+			if (hasConfigurableConstructorParameter(target, item.fieldName))
+				continue;
+			final Object val = item.editor.getValue();
 			if (val == null) {
 				continue;
 			}
-			String fieldName = item.fieldName;
+			final String fieldName = item.fieldName;
 
-			String methodName = "set" + fieldName.substring(0, 1).toUpperCase(Locale.ROOT) + fieldName.substring(1);
+			final String methodName = "set" + fieldName.substring(0, 1).toUpperCase(Locale.ROOT)
+					+ fieldName.substring(1);
 			if (AbstractEditorMap.callMethodOn(methodName, target, val)) {
 				// using setting worked.
 				continue;
 			}
 
-			Field field = FieldUtils.getField(target.getClass(), fieldName, true);
+			final Field field = FieldUtils.getField(target.getClass(), fieldName, true);
 			try {
 				FieldUtils.writeField(field, target, val, true);
 				continue;
-			} catch (IllegalAccessException ex) {
+			} catch (final IllegalAccessException ex) {
 				LOGGER.trace("Exception:", ex);
 			}
 			LOGGER.warn("Could not set field {}.", field);
@@ -384,7 +391,7 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	/**
 	 * How many columns we want to have. Defaults to 1.
 	 *
-	 * @return	How many columns we want to have.
+	 * @return How many columns we want to have.
 	 */
 	public final int getColumns() {
 		return columns;
@@ -399,15 +406,15 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	}
 
 	@Override
-	public void setProfile(String profile) {
+	public void setProfile(final String profile) {
 		this.profile = profile.toLowerCase();
-		for (Item<V> item : options.values()) {
+		for (final Item<V> item : options.values()) {
 			item.editor.setProfile(this.profile);
 		}
 		fillComponent();
 	}
 
-	public void setProfilesEdit(String csv) {
+	public void setProfilesEdit(final String csv) {
 		profilesEdit = csvToReadOnlySet(csv);
 		fillComponent();
 	}

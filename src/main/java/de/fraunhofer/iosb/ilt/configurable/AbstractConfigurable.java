@@ -38,7 +38,7 @@ public abstract class AbstractConfigurable<C, D> implements Configurable<C, D> {
 	@Override
 	public EditorMap<?> getConfigEditor(C context, D edtCtx) {
 		if (editor == null) {
-			editor = AnnotationHelper.GenerateEditorFromAnnotations(this, context, edtCtx);
+			editor = AnnotationHelper.generateEditorFromAnnotations(this, context, edtCtx).get();
 		}
 		return editor;
 	}

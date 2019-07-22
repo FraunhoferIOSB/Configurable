@@ -18,6 +18,7 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
+import de.fraunhofer.iosb.ilt.configurable.ConfigEditors;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurableFactory;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
@@ -150,21 +151,24 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	 * Set the name of the class selected in this editor.
 	 */
 	public void initClass() {
-		Object instance = null;
-		try {
-			instance = findFactory(context, edtCtx).instantiate(clazz, classConfig, context, edtCtx);
-		} catch (ConfigurationException exc) {
-			throw new RuntimeException(exc);
+		classEditor = ConfigEditors.buildEditorFromClass(clazz, context, edtCtx).orElse(null);
+		if (classEditor == null) {
+			Object instance = null;
+			try {
+				instance = findFactory(context, edtCtx).instantiate(clazz, classConfig, context, edtCtx);
+			} catch (final ConfigurationException exc) {
+				throw new RuntimeException(exc);
+			}
+
+			if (instance instanceof Configurable) {
+				final Configurable confInstance = (Configurable) instance;
+				classEditor = confInstance.getConfigEditor(context, edtCtx);
+			} else {
+				LOGGER.warn("Class {} is not configurable.", clazz);
+				classEditor = new EditorString("", 6);
+			}
 		}
-		if (instance instanceof Configurable) {
-			final Configurable confInstance = (Configurable) instance;
-			classEditor = confInstance.getConfigEditor(context, edtCtx);
-			classEditor.setConfig(classConfig);
-		} else {
-			LOGGER.warn("Class {} is not configurable.", clazz);
-			classEditor = new EditorString("", 6);
-			classEditor.setConfig(classConfig);
-		}
+		classEditor.setConfig(classConfig);
 		classEditor.setProfile(profile);
 
 		fillComponent();
@@ -208,6 +212,7 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	@Override
 	public T getValue() throws ConfigurationException {
 		readComponent();
+		// TODO support annotations as in EditorSubclass
 		final T instance = findFactory(context, edtCtx).instantiate(clazz, classConfig, context, edtCtx);
 		if (instance instanceof Configurable) {
 			final Configurable confInstance = (Configurable) instance;

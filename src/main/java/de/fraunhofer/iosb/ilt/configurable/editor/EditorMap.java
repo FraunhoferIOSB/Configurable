@@ -17,6 +17,8 @@
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
+import de.fraunhofer.iosb.ilt.configurable.ContentConfigEditor;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,7 +29,7 @@ import java.util.Map;
  * @author Hylke van der Schaaf
  * @param <T> The type of object returned by getValue.
  */
-public class EditorMap<T> extends AbstractEditorMap<Map<String, T>, T> {
+public class EditorMap<T> extends AbstractEditorMap<Map<String, T>, T> implements ContentConfigEditor<Map<String, T>> {
 
 	public EditorMap() {
 		super();

@@ -54,4 +54,17 @@ public interface ConfigurableFactory {
 	public default <T> T instantiate(Class<? extends T> clazz, JsonElement config, Object runtimeContext, Object editContext) throws ConfigurationException {
 		return clazz.cast(instantiate(clazz.getName(), config, runtimeContext, editContext));
 	}
+
+	/**
+	 * Loads the class with the specified <a href="#binary-name">binary name</a>.
+	 * This method searches for classes in the same manner as the
+	 * {@link #loadClass(String, boolean)} method.
+	 *
+	 * @param name The <a href="#binary-name">binary name</a> of the class
+	 * @return The resulting {@code Class} object
+	 * @throws ClassNotFoundException If the class was not found
+	 */
+	public default Class<?> loadClass(final String name) throws ClassNotFoundException {
+		return getClass().getClassLoader().loadClass(name);
+	}
 }

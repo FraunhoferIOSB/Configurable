@@ -20,6 +20,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
+import de.fraunhofer.iosb.ilt.configurable.ConfigEditors;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurableFactory;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
@@ -28,6 +29,8 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
 import de.fraunhofer.iosb.ilt.configurable.Utils;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.instantiateFrom;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.getConfigurableConstructor;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableClass;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactorySubclsFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactorySubclsSwing;
@@ -36,10 +39,13 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import org.slf4j.Logger;
@@ -250,7 +256,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 	@Override
 	public void setConfig(JsonElement config) {
 		String name = null;
-		jsonName = null;
+		jsonName = "";
 		if (config != null && config.isJsonObject()) {
 			JsonObject confObj = config.getAsJsonObject();
 			if (merge) {
@@ -430,17 +436,31 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 
 		instance = null;
 		if (!Utils.isNullOrEmpty(jsonName)) {
+			final ConfigurableFactory factory = findFactory(context, edtCtx);
 			try {
-				instance = (T) findFactory(context, edtCtx).instantiate(jsonName, classConfig, context, edtCtx);
-			} catch (ConfigurationException exc) {
-				LOGGER.warn("Exception instantiating class {}.", jsonName);
-				LOGGER.debug("Exception instantiating class.", exc);
+				final Class<?> subclassType = factory.loadClass(jsonName);
+				classEditor = ConfigEditors.buildEditorFromClass(subclassType, context, edtCtx).orElse(null);
+
+			} catch (final ClassNotFoundException exc) {
+				LOGGER.warn("Exception loading class {}.", jsonName);
+				LOGGER.debug("Exception loading class.", exc);
 			}
+
+			if (classEditor == null)
+				try {
+					instance = (T) factory.instantiate(jsonName, classConfig, context, edtCtx);
+				} catch (final ConfigurationException exc) {
+					LOGGER.warn("Exception instantiating class {}.", jsonName);
+					LOGGER.debug("Exception instantiating class.", exc);
+				}
 		}
 
 		if (instance instanceof Configurable) {
-			Configurable confInstance = (Configurable) instance;
+			final Configurable confInstance = (Configurable) instance;
 			classEditor = confInstance.getConfigEditor(context, edtCtx);
+		}
+
+		if (classEditor != null) {
 			classEditor.setConfig(classConfig);
 			classEditor.setProfile(profile);
 		} else {
@@ -496,7 +516,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 			return null;
 		}
 		if (instance == null) {
-			instance = (T) findFactory(context, edtCtx).instantiate(jsonName, classConfig, context, edtCtx);
+			instance = tryToInstantiate();
 		} else if (instance instanceof Configurable) {
 			Configurable confInstance = (Configurable) instance;
 			confInstance.configure(classConfig, context, edtCtx);
@@ -504,6 +524,25 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		return instance;
 	}
 
+	private T tryToInstantiate() throws ConfigurationException {
+		try {
+			return instantiate();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
+				| InvocationTargetException exc) {
+			throw new ConfigurationException(exc);
+		}
+	}
+
+	private T instantiate() throws ClassNotFoundException, ConfigurationException, InstantiationException,
+			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		final ConfigurableFactory factory = findFactory(context, edtCtx);
+		final Class<?> subclassClass = factory.loadClass(jsonName);
+		final Optional<Constructor<?>> configurableConstructor = getConfigurableConstructor(subclassClass);
+		if (configurableConstructor.isPresent())
+			return instantiateFrom(configurableConstructor.get(), classConfig, context, edtCtx);
+
+		return (T) factory.instantiate(jsonName, classConfig, context, edtCtx);
+	}
 	@Override
 	public void setValue(T value) {
 		throw new UnsupportedOperationException("Not supported yet.");
