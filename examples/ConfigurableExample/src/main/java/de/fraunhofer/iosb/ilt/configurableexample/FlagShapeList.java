@@ -40,7 +40,7 @@ public class FlagShapeList implements Configurable<Object, Object> {
     }
 
     @Override
-    public void configure(JsonElement config, Object context, Object edtCtx, ConfigEditor<?> configEditor) throws ConfigurationException {
+    public void configure(JsonElement config, Object context, Object edtCtx, ConfigEditor<?> ignoredConfigEditor) throws ConfigurationException {
         getConfigEditor(context, edtCtx);
         configEditor.setConfig(config);
         width = editorWidth.getValue();

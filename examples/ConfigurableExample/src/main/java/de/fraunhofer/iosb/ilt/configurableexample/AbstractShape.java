@@ -26,7 +26,7 @@ public abstract class AbstractShape implements Shape {
     }
 
     @Override
-    public void configure(JsonElement config, Object context, Object edtCtx, ConfigEditor<?> configEditor) {
+    public void configure(JsonElement config, Object context, Object edtCtx, ConfigEditor<?> ignoredConfigEditor) {
         getConfigEditor(context, edtCtx);
         configEditor.setConfig(config);
         color = editorColor.getValue();
