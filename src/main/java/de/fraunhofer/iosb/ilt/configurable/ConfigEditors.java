@@ -60,7 +60,9 @@ public final class ConfigEditors {
 			}
 		}
 
-		return Optional.ofNullable(AnnotationHelper.generateEditorFromAnnotations(subclassType, runtimeContext, editorContext).get());
+		return Optional
+				.ofNullable(AnnotationHelper.generateEditorFromAnnotations(subclassType, runtimeContext, editorContext)
+				.orElse(null));
 	}
 
 }
