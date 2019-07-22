@@ -29,13 +29,18 @@ public interface AnnotatedConfigurable<C, D> extends Configurable<C, D> {
 	 * @param config The configuration to use for this instance.
 	 * @param context the object that defines the context at runtime.
 	 * @param edtCtx the object that defines the context while editing.
+	 * @param configEditor optional {@code ConfigEditor} that may be used to
+	 * access and assign configured contents.
 	 * @throws ConfigurationException If the configuration can not be loaded.
 	 */
 	@Override
-	public default void configure(final JsonElement config, final C context, final D edtCtx) throws ConfigurationException {
-		final ContentConfigEditor<?> editor = (ContentConfigEditor<?>) ConfigEditors
-				.buildEditorFromClass(this.getClass(), context, edtCtx)
-				.get();
+	public default void configure(final JsonElement config, final C context, final D edtCtx, ConfigEditor<?> configEditor) throws ConfigurationException {
+
+		final ContentConfigEditor<?> editor = configEditor instanceof ContentConfigEditor
+				? (ContentConfigEditor<?>) configEditor
+				: (ContentConfigEditor<?>) ConfigEditors
+						.buildEditorFromClass(this.getClass(), context, edtCtx)
+						.get();
 		editor.setConfig(config);
 		editor.setContentsOn(this);
 	}

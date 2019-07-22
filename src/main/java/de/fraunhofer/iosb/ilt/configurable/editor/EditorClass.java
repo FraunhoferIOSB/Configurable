@@ -258,7 +258,7 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 			}
 			if (newInstance instanceof Configurable) {
 				Configurable confInstance = (Configurable) newInstance;
-				confInstance.configure(classConfig, context, edtCtx);
+				confInstance.configure(classConfig, context, edtCtx, null);
 			}
 			return newInstance;
 		}

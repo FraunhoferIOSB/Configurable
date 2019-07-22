@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
+import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorDouble;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorInt;
@@ -35,8 +36,8 @@ public class Rectangle extends AbstractShape {
     }
 
     @Override
-    public void configure(JsonElement config, Object context, Object edtCtx) {
-        super.configure(config, context, edtCtx);
+    public void configure(JsonElement config, Object context, Object edtCtx, ConfigEditor<?> configEditor) {
+        super.configure(config, context, edtCtx, configEditor);
         width = editorWidth.getValue();
         height = editorHeight.getValue();
         x = editorX.getValue();

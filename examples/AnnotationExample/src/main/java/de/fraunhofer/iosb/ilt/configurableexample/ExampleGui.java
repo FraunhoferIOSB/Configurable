@@ -120,7 +120,7 @@ public class ExampleGui extends javax.swing.JFrame {
 		try {
 			JsonElement config = editor.getConfig();
 			FlagShapeList flag = new FlagShapeList();
-			flag.configure(config, null, null);
+			flag.configure(config, null, null, null);
 			flag.wave();
 		} catch (ConfigurationException ex) {
 			LOGGER.error("Could not configure the flag!", ex);

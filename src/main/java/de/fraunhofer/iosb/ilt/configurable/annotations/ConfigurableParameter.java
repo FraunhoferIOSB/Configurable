@@ -36,6 +36,7 @@ public @interface ConfigurableParameter {
 	}
 
 	ConfigurableParameterType type() default ConfigurableParameterType.JSON_FIELD;
+
 	/**
 	 * The name of the field in the configuration JSON to use for storing the
 	 * value of the annotated field. Defaults to the field name (case

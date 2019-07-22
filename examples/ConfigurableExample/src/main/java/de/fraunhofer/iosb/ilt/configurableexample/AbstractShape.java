@@ -3,12 +3,14 @@ package de.fraunhofer.iosb.ilt.configurableexample;
 import java.awt.Color;
 
 import com.google.gson.JsonElement;
+import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorColor;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorMap;
 
 /**
- * The abstract class that our shapes extend. It defines the common property 'color' shared amongst all Shapes.
+ * The abstract class that our shapes extend. It defines the common property
+ * 'color' shared amongst all Shapes.
  *
  * @author scf
  */
@@ -24,7 +26,7 @@ public abstract class AbstractShape implements Shape {
     }
 
     @Override
-    public void configure(JsonElement config, Object context, Object edtCtx) {
+    public void configure(JsonElement config, Object context, Object edtCtx, ConfigEditor<?> configEditor) {
         getConfigEditor(context, edtCtx);
         configEditor.setConfig(config);
         color = editorColor.getValue();

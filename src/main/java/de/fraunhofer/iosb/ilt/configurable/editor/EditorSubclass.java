@@ -520,7 +520,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 			instance = tryToInstantiate();
 		} else if (instance instanceof Configurable) {
 			Configurable confInstance = (Configurable) instance;
-			confInstance.configure(classConfig, context, edtCtx);
+			confInstance.configure(classConfig, context, edtCtx, classEditor);
 		}
 		return instance;
 	}
@@ -528,14 +528,12 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 	private T tryToInstantiate() throws ConfigurationException {
 		try {
 			return instantiate();
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException exc) {
+		} catch (ReflectiveOperationException | IllegalArgumentException exc) {
 			throw new ConfigurationException(exc);
 		}
 	}
 
-	private T instantiate() throws ClassNotFoundException, ConfigurationException, InstantiationException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	private T instantiate() throws ReflectiveOperationException, ConfigurationException, IllegalArgumentException {
 		final ConfigurableFactory factory = findFactory(context, edtCtx);
 		final Class<?> subclassClass = factory.loadClass(jsonName);
 		final Optional<Constructor<?>> configurableConstructor = getConfigurableConstructor(subclassClass);
@@ -723,7 +721,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 			}
 			if (newInstance instanceof Configurable) {
 				Configurable confInstance = (Configurable) newInstance;
-				confInstance.configure(classConfig, context, edtCtx);
+				confInstance.configure(classConfig, context, edtCtx, null);
 			}
 			return newInstance;
 		}

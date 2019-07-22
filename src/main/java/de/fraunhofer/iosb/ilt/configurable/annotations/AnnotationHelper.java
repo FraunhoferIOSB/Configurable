@@ -192,9 +192,11 @@ public class AnnotationHelper {
 				.findFirst();
 	}
 
-	public static <T, R, E> T instantiateFrom(final Constructor<?> configurableConstructor,
-			final JsonElement classConfig, final R runtimeContext, final E editorContext) throws InstantiationException,
-			IllegalAccessException, IllegalArgumentException, InvocationTargetException, ConfigurationException {
+	public static <T, R, E> T instantiateFrom(
+			final Constructor<?> configurableConstructor,
+			final JsonElement classConfig,
+			final R runtimeContext,
+			final E editorContext) throws ReflectiveOperationException, IllegalArgumentException, ConfigurationException {
 
 		// we'd expect to deal with a ContentConfigEditor here
 		final ContentConfigEditor<?> editor = (ContentConfigEditor<?>) ConfigEditors
@@ -203,9 +205,7 @@ public class AnnotationHelper {
 		editor.setConfig(classConfig);
 
 		final T instance = instantiateFrom(configurableConstructor, classConfig, editor, runtimeContext);
-		((Configurable) instance).configure(classConfig, runtimeContext, editorContext);
-		// TODO configure should take editor as optional
-		// argument so that we can reuse the built editor!
+		((Configurable) instance).configure(classConfig, runtimeContext, editorContext, editor);
 
 		return instance;
 	}
