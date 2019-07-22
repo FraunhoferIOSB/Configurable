@@ -29,31 +29,19 @@ public interface AnnotatedConfigurable<C, D> extends Configurable<C, D> {
 	 * @param config  The configuration to use for this instance.
 	 * @param context the object that defines the context at runtime.
 	 * @param edtCtx  the object that defines the context while editing.
+	 * @param configEditor optional {@code ConfigEditor} that may be used to access and assign configured contents.
 	 * @throws ConfigurationException If the configuration can not be loaded.
 	 */
 	@Override
-	public default void configure(final JsonElement config, final C context, final D edtCtx)
+	public default void configure(final JsonElement config, final C context, final D edtCtx, ConfigEditor<?> configEditor)
 			throws ConfigurationException {
-//		final EditorMap<?> editor = AnnotationHelper.generateEditorFromAnnotations(this, context, edtCtx).get();
-		final ContentConfigEditor<?> editor = (ContentConfigEditor<?>) ConfigEditors
+		
+		final ContentConfigEditor<?> editor = configEditor instanceof ContentConfigEditor ? (ContentConfigEditor<?>)configEditor : (ContentConfigEditor<?>) ConfigEditors
 				.buildEditorFromClass(this.getClass(), context, edtCtx).get();
 		editor.setConfig(config);
 		editor.setContentsOn(this);
 	}
 
-//	/**
-//	 * Returns an editor for this class. Changing the configuration of this editor
-//	 * <em>may</em> change the configuration of the instance that generated the
-//	 * editor, but it is not guaranteed to do so.
-//	 *
-//	 * @param context the object that defines the context at runtime.
-//	 * @param edtCtx  the object that defines the context while editing.
-//	 * @return A generic editor for any instance of this class.
-//	 */
-//	@Override
-//	public default ConfigEditor<?> getConfigEditor(final C context, final D edtCtx) {
-//		return AnnotationHelper.generateEditorFromAnnotations(this, context, edtCtx).get();
-//	}
 
 	/**
 	 * {@inheritDoc}

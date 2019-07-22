@@ -30,7 +30,12 @@ public abstract class AbstractConfigurable<C, D> implements Configurable<C, D> {
 	private transient EditorMap<?> editor;
 
 	@Override
-	public void configure(JsonElement config, C context, D edtCtx) throws ConfigurationException {
+	public void configure(JsonElement config, C context, D edtCtx, ConfigEditor configEditor) throws ConfigurationException {
+		if (configEditor instanceof ContentConfigEditor<?>) {
+			((ContentConfigEditor<?>)configEditor).setContentsOn(this);
+			return;
+		}
+
 		getConfigEditor(context, edtCtx).setConfig(config);
 		editor.setContentsOn(this);
 	}
