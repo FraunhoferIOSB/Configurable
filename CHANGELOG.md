@@ -1,3 +1,9 @@
+# Release Version 0.16
+
+**Updates**
+ * Fixed NoSuchElementException for old-style configurables.
+
+
 # Release Version 0.15
 
 **Updates**
