@@ -58,7 +58,7 @@ public interface ConfigurableFactory {
 	/**
 	 * Loads the class with the specified <a href="#binary-name">binary
 	 * name</a>. This method searches for classes in the same manner as the
-	 * {@link #loadClass(String, boolean)} method.
+	 * {@link ClassLoader#loadClass(String, boolean)} method.
 	 *
 	 * @param name The <a href="#binary-name">binary name</a> of the class
 	 * @return The resulting {@code Class} object
