@@ -66,7 +66,9 @@ public final class FactoryColorSwing implements GuiFactorySwing {
 		swComponent.add(new JSpinner(swModelRed), new GridBagConstraints());
 		swComponent.add(new JSpinner(swModelGreen), new GridBagConstraints());
 		swComponent.add(new JSpinner(swModelBlue), new GridBagConstraints());
-		swComponent.add(new JSpinner(swModelAlpha), new GridBagConstraints());
+		if (parentEditor.isEditAlpla()) {
+			swComponent.add(new JSpinner(swModelAlpha), new GridBagConstraints());
+		}
 
 		JButton button = new JButton("…");
 		button.setMargin(new java.awt.Insets(0, 2, 0, 2));
@@ -109,6 +111,7 @@ public final class FactoryColorSwing implements GuiFactorySwing {
 			swModelAlpha.setValue(parentEditor.getAlpha());
 		}
 		swComponent.setBackground(new Color(parentEditor.getRed(), parentEditor.getGreen(), parentEditor.getBlue()));
+		filling = false;
 	}
 
 	public void readComponent() {
