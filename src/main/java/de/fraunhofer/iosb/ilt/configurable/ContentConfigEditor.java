@@ -33,6 +33,23 @@ public interface ContentConfigEditor<T> extends ConfigEditor<T> {
 	 */
 	public void setContentsOn(final Object target) throws ConfigurationException;
 
+	/**
+	 * Checks if the given option is set. For mandatory options this should
+	 * always return true.
+	 *
+	 * @param name The option to check.
+	 * @return true if the option is set, false otherwise.
+	 */
+	public boolean isOptionSet(final String name);
+
+	/**
+	 * Get the value set for the given option.
+	 *
+	 * @param name The option to check.
+	 * @return The value of the given option.
+	 * @throws ConfigurationException If the given option can not be retrieved
+	 * because the configuration passed to the editor was incorrect.
+	 */
 	public Object getValue(final String name) throws ConfigurationException;
 
 }
