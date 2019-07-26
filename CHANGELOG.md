@@ -1,3 +1,10 @@
+# Release Version 0.17
+
+**Updates**
+* Fixed Swing EditorColor misbehaving.
+* Added isOptionSet method to ContentConfigEditor interface.
+
+
 # Release Version 0.16
 
 **Updates**
