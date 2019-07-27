@@ -1,6 +1,12 @@
 # Release Version 0.17
 
 **Updates**
+* Changed the ComboBox of the swing-EditorSubClass to a type that can filter.
+
+
+# Release Version 0.17
+
+**Updates**
 * Fixed Swing EditorColor misbehaving.
 * Added isOptionSet method to ContentConfigEditor interface.
 

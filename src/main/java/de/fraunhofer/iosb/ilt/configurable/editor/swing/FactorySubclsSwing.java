@@ -27,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.util.Set;
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,7 +43,7 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 	private String selectLabel = "Type:";
 	private JPanel swComponent;
 	private JPanel swItemHolder;
-	private JComboBox<String> swItems;
+	private FilteringComboBox<String> swItems;
 	private JPanel controls;
 
 	public FactorySubclsSwing(EditorSubclass<?, ?, ?> parentEditor) {
@@ -70,10 +69,12 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 
 		controls = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		controls.add(new JLabel(selectLabel));
-		swItems = new JComboBox<>(classes.toArray(new String[classes.size()]));
+		swItems = new FilteringComboBox<>(classes.toArray(new String[classes.size()]));
 		controls.add(swItems);
 		if (item != null) {
 			swItems.setSelectedItem(item.displayName);
+		} else {
+			swItems.setSelectedItem(null);
 		}
 		JButton addButton = new JButton("Set");
 		addButton.addActionListener((ActionEvent e) -> {
