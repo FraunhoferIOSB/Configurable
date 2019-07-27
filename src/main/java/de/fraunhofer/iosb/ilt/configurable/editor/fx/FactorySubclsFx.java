@@ -70,7 +70,8 @@ public final class FactorySubclsFx implements GuiFactoryFx {
 		controls = new FlowPane();
 		controls.setAlignment(Pos.TOP_CENTER);
 		controls.getChildren().add(new Label(selectLabel));
-		fxItems = new ComboBox<>(FXCollections.observableArrayList(values));
+		fxItems = new FilteringComboBox<>(FXCollections.observableArrayList(values));
+		fxItems.setEditable(true);
 		if (item != null) {
 			fxItems.getSelectionModel().select(item.displayName);
 		}

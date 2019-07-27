@@ -14,17 +14,17 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package de.fraunhofer.iosb.ilt.configurable.editor.swing;
+package de.fraunhofer.iosb.ilt.configurable.editor.fx;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JComboBox;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A combo box that can filter its elements, using a String.contains on the
@@ -32,49 +32,46 @@ import javax.swing.SwingUtilities;
  *
  * @param <E> The type of the elements in the combobox.
  */
-public class FilteringComboBox<E> extends JComboBox<E> {
+public class FilteringComboBox<E> extends ComboBox<E> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(FilteringComboBox.class.getName());
 	/**
 	 * The complete list of elements.
 	 */
-	private final E[] allElements;
+	private final List<E> allElements;
 
 	/**
 	 * Create a new FilteringComboBox, using the given list of elements.
 	 *
 	 * @param elements The elements to let the user select from.
 	 */
-	public FilteringComboBox(E[] elements) {
-		super(elements);
+	public FilteringComboBox(List<E> elements) {
+		super(FXCollections.observableArrayList(elements));
 		this.allElements = elements;
 		setEditable(true);
 
-		final JTextField textfield = (JTextField) getEditor().getEditorComponent();
+		final TextField textfield = getEditor();
 
 		/**
 		 * Listen for key presses.
 		 */
-		textfield.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent ke) {
-				switch (ke.getKeyCode()) {
-					case KeyEvent.VK_DOWN:
-					case KeyEvent.VK_LEFT:
-					case KeyEvent.VK_RIGHT:
-					case KeyEvent.VK_UP:
-					case KeyEvent.VK_KP_DOWN:
-					case KeyEvent.VK_KP_LEFT:
-					case KeyEvent.VK_KP_RIGHT:
-					case KeyEvent.VK_KP_UP:
-					case KeyEvent.VK_ENTER:
-						return;
-				}
-				SwingUtilities.invokeLater(() -> {
-					filterElements(textfield.getText().toLowerCase());
-				});
+		textfield.setOnKeyReleased((ke) -> {
+			switch (ke.getCode()) {
+				case DOWN:
+				case UP:
+				case LEFT:
+				case RIGHT:
+				case KP_DOWN:
+				case KP_UP:
+				case KP_LEFT:
+				case KP_RIGHT:
+				case ENTER:
+					return;
 			}
+			Platform.runLater(() -> {
+				filterElements(textfield.getText().toLowerCase());
+			});
 		});
-
 	}
 
 	/**
@@ -83,22 +80,26 @@ public class FilteringComboBox<E> extends JComboBox<E> {
 	 *
 	 * @param enteredText The text to search for.
 	 */
-	private void filterElements(final String enteredText) {
-		String lowCaseTest = enteredText.toLowerCase();
+	private void filterElements(String enteredText) {
 		List<E> entriesFiltered = new ArrayList<>();
 
 		for (E entry : allElements) {
-			if (entry.toString().toLowerCase().contains(lowCaseTest)) {
+			if (entry.toString().toLowerCase().contains(enteredText)) {
 				entriesFiltered.add(entry);
 			}
 		}
 
 		if (entriesFiltered.size() > 0) {
-			setModel(new DefaultComboBoxModel(entriesFiltered.toArray()));
-			setSelectedItem(enteredText);
-			showPopup();
+			ObservableList<E> items = getItems();
+			if (items.size() == entriesFiltered.size()) {
+				// The list didn't actually change. Do nothing.
+				return;
+			}
+			items.clear();
+			items.addAll(entriesFiltered);
+			show();
 		} else {
-			hidePopup();
+			hide();
 		}
 	}
 }
