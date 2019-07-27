@@ -2,6 +2,7 @@
 
 **Updates**
 * Changed the ComboBox of the swing-EditorSubClass to a type that can filter.
+* Added option to EditorSubClass to not shorten class names.
 
 
 # Release Version 0.17

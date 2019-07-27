@@ -41,7 +41,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +97,17 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		 * @return A comma separated, case insensitive list of profile names.
 		 */
 		String profilesEdit() default "";
+
+		/**
+		 * If true, the class names are shortened by removing any common prefix.
+		 * For example, if all classes are in the java.lang package, and thus
+		 * all class names start with "java.lang.", then "java.lang." is removed
+		 * from the names displayed in the dialog box. In the JSON, the full
+		 * name is used.
+		 *
+		 * @return true if class names should be shortened.
+		 */
+		boolean shortenClassNames() default true;
 	}
 
 	/**
@@ -173,6 +183,11 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 	private boolean merge = false;
 
 	/**
+	 * Show the full class name in the box, not the shortened version.
+	 */
+	private boolean shortenClassNames = true;
+
+	/**
 	 * The name of the json field that holds the name of the selected class.
 	 */
 	private String nameField = KEY_CLASSNAME;
@@ -230,6 +245,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		merge = annotation.merge();
 		nameField = annotation.nameField();
 		requiredAnnotation = annotation.requiredAnnotation();
+		shortenClassNames = annotation.shortenClassNames();
 		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
 
@@ -382,7 +398,11 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 			classesByJsonName.put(item.jsonName, item);
 			classesByClassName.put(item.className, item);
 		}
-		findPrefix();
+
+		if (shortenClassNames) {
+			findPrefix();
+		}
+
 		for (classItem item : classesByJsonName.values()) {
 			if (classesByDisplayName.containsKey(item.displayName)) {
 				classItem conflict = classesByDisplayName.get(item.displayName);
