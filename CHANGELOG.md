@@ -1,4 +1,4 @@
-# Release Version 0.17
+# Release Version 0.18
 
 **Updates**
 * Changed the ComboBox of EditorSubClass to a type that can filter.
