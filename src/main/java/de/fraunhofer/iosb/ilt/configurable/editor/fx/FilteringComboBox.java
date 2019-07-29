@@ -56,6 +56,12 @@ public class FilteringComboBox<E> extends ComboBox<E> {
 		 * Listen for key presses.
 		 */
 		textfield.setOnKeyReleased((ke) -> {
+			// Only filter on normal text entry, not when something like CTRL-a is used to select all text.
+			if (ke.isControlDown()) {
+				return;
+			}
+
+			// Don't trigger on special keys used to select items or text.
 			switch (ke.getCode()) {
 				case DOWN:
 				case UP:
@@ -65,6 +71,10 @@ public class FilteringComboBox<E> extends ComboBox<E> {
 				case KP_UP:
 				case KP_LEFT:
 				case KP_RIGHT:
+				case CONTROL:
+				case SHIFT:
+				case HOME:
+				case END:
 				case ENTER:
 					return;
 			}

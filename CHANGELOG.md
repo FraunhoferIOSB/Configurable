@@ -2,6 +2,7 @@
 
 **Updates**
 * Fixed behaviour in Windows look and feel of Swing.
+* Improved behaviour when selecting text with keys.
 
 
 # Release Version 0.18

@@ -57,6 +57,12 @@ public class FilteringComboBox<E> extends JComboBox<E> {
 		textfield.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent ke) {
+				// Only filter on normal text entry, not when something like CTRL-a is used to select all text.
+				if (ke.isControlDown()) {
+					return;
+				}
+
+				// Don't trigger on special keys used to select items or text.
 				switch (ke.getKeyCode()) {
 					case KeyEvent.VK_DOWN:
 					case KeyEvent.VK_LEFT:
@@ -66,6 +72,10 @@ public class FilteringComboBox<E> extends JComboBox<E> {
 					case KeyEvent.VK_KP_LEFT:
 					case KeyEvent.VK_KP_RIGHT:
 					case KeyEvent.VK_KP_UP:
+					case KeyEvent.VK_CONTROL:
+					case KeyEvent.VK_SHIFT:
+					case KeyEvent.VK_HOME:
+					case KeyEvent.VK_END:
 					case KeyEvent.VK_ENTER:
 						return;
 				}
