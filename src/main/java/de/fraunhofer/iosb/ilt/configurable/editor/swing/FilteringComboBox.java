@@ -94,8 +94,12 @@ public class FilteringComboBox<E> extends JComboBox<E> {
 		}
 
 		if (entriesFiltered.size() > 0) {
-			setModel(new DefaultComboBoxModel(entriesFiltered.toArray()));
+			final DefaultComboBoxModel model = (DefaultComboBoxModel) getModel();
+			model.removeAllElements();
+			model.addAll(entriesFiltered);
 			setSelectedItem(enteredText);
+			final JTextField textfield = (JTextField) getEditor().getEditorComponent();
+			textfield.setCaretPosition(textfield.getText().length());
 			showPopup();
 		} else {
 			hidePopup();

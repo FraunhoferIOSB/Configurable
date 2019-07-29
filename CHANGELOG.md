@@ -1,3 +1,9 @@
+# Release Version 0.19
+
+**Updates**
+* Fixed behaviour in Windows look and feel of Swing.
+
+
 # Release Version 0.18
 
 **Updates**
