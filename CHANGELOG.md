@@ -1,3 +1,9 @@
+# Release Version 0.20
+
+**Updates**
+* Fixed running with java -jar jarfile.jar
+
+
 # Release Version 0.19
 
 **Updates**
