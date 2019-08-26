@@ -1,3 +1,10 @@
+# Release Version 0.21
+
+**Updates**
+* Added an editor for passwords. It hides the typed text in the GUI, but still puts
+  the password in the JSON as plain text.
+
+
 # Release Version 0.20
 
 **Updates**

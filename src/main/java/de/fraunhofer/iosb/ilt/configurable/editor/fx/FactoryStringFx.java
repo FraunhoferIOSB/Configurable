@@ -17,8 +17,10 @@
 package de.fraunhofer.iosb.ilt.configurable.editor.fx;
 
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorPassword;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorString;
 import javafx.scene.Node;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
@@ -31,9 +33,13 @@ public final class FactoryStringFx implements GuiFactoryFx {
 
 	private final EditorString parentEditor;
 	private TextInputControl fxNode;
+	private boolean passwordControl;
 
 	public FactoryStringFx(EditorString parentEditor) {
 		this.parentEditor = parentEditor;
+		if (parentEditor instanceof EditorPassword) {
+			passwordControl = true;
+		}
 	}
 
 	@Override
@@ -45,7 +51,9 @@ public final class FactoryStringFx implements GuiFactoryFx {
 	}
 
 	private void createNode() {
-		if (parentEditor.getLines() == 1) {
+		if (passwordControl) {
+			fxNode = new PasswordField();
+		} else if (parentEditor.getLines() == 1) {
 			fxNode = new TextField();
 		} else {
 			TextArea text = new TextArea();

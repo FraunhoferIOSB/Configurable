@@ -65,7 +65,7 @@ public class EditorString extends EditorDefault<String> {
 	private String value;
 	private int lines = 1;
 
-	public Set<String> profilesEdit = csvToReadOnlySet("");
+	private Set<String> profilesEdit = csvToReadOnlySet("");
 	private String profile = DEFAULT_PROFILE_NAME;
 
 	private FactoryStringSwing factorySwing;
@@ -134,6 +134,10 @@ public class EditorString extends EditorDefault<String> {
 			factoryFx = new FactoryStringFx(this);
 		}
 		return factoryFx;
+	}
+
+	protected final void setDflt(String dflt) {
+		this.dflt = dflt;
 	}
 
 	private void fillComponent() {

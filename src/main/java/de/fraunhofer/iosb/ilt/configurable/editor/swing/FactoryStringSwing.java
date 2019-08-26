@@ -17,10 +17,12 @@
 package de.fraunhofer.iosb.ilt.configurable.editor.swing;
 
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorPassword;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorString;
 import java.awt.BorderLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -35,9 +37,13 @@ public final class FactoryStringSwing implements GuiFactorySwing {
 	private final EditorString parentEditor;
 	private JTextComponent swText;
 	private JComponent swComponent;
+	private boolean passwordControl;
 
 	public FactoryStringSwing(EditorString parentEditor) {
 		this.parentEditor = parentEditor;
+		if (parentEditor instanceof EditorPassword) {
+			passwordControl = true;
+		}
 	}
 
 	@Override
@@ -49,7 +55,10 @@ public final class FactoryStringSwing implements GuiFactorySwing {
 	}
 
 	private void createComponent() {
-		if (parentEditor.getLines() == 1) {
+		if (passwordControl) {
+			swText = new JPasswordField();
+			swComponent = swText;
+		} else if (parentEditor.getLines() == 1) {
 			swText = new JTextField();
 			swComponent = swText;
 		} else {
