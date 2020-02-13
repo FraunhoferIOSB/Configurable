@@ -151,7 +151,7 @@ public final class FactoryMapFx implements GuiFactoryFx {
 		GridPane.setConstraints(itemPane, x2, row, width, 1, HPos.LEFT, VPos.BASELINE, Priority.SOMETIMES, Priority.NEVER);
 		fxPaneList.getChildren().add(itemPane);
 		if (!parentEditor.getOptionalOptions().isEmpty()) {
-			Button removeButton = new Button("❌");
+			Button removeButton = new Button("✖");
 			removeButton.setDisable(!item.optional);
 			removeButton.setOnAction((event) -> parentEditor.removeItem(key));
 			GridPane.setConstraints(removeButton, x1, row, 1, 1, HPos.LEFT, VPos.TOP, Priority.NEVER, Priority.NEVER);
