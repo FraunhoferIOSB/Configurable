@@ -52,7 +52,11 @@ public final class FactoryColorFx implements GuiFactoryFx {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		javafx.scene.paint.Color color = javafx.scene.paint.Color.color(255.0 / parentEditor.getRed(), 255.0 / parentEditor.getGreen(), 255.0 / parentEditor.getBlue(), 255.0 / (1 - parentEditor.getAlpha()));
+		javafx.scene.paint.Color color = javafx.scene.paint.Color.color(
+				parentEditor.getRed() / 255.0,
+				parentEditor.getGreen() / 255.0,
+				parentEditor.getBlue() / 255.0,
+				(255 - parentEditor.getAlpha()) / 255.0);
 		fxNode.setValue(color);
 	}
 
