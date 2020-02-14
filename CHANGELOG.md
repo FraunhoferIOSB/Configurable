@@ -1,3 +1,10 @@
+# Release Version 0.22
+
+**Updates**
+* Fixed EditorColor in FX.
+* Updated depencencies.
+
+
 # Release Version 0.21
 
 **Updates**
