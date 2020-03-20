@@ -24,13 +24,18 @@ import de.fraunhofer.iosb.ilt.configurable.ConfigurableFactory;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.Utils;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.getConfigurableConstructor;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.instantiateFrom;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryClassFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryClassSwing;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -212,15 +217,24 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	@Override
 	public T getValue() throws ConfigurationException {
 		readComponent();
-		// TODO support annotations as in EditorSubclass
-		final T instance = findFactory(context, edtCtx).instantiate(clazz, classConfig, context, edtCtx);
-		if (instance instanceof Configurable) {
-			final Configurable confInstance = (Configurable) instance;
-			classEditor = confInstance.getConfigEditor(context, edtCtx);
-			classEditor.setProfile(profile);
-			fillComponent();
+		return tryToInstantiate();
+	}
+
+	private T tryToInstantiate() throws ConfigurationException {
+		try {
+			return instantiate();
+		} catch (ReflectiveOperationException | IllegalArgumentException exc) {
+			throw new ConfigurationException(exc);
 		}
-		return instance;
+	}
+
+	private T instantiate() throws ReflectiveOperationException, ConfigurationException, IllegalArgumentException {
+		final ConfigurableFactory factory = findFactory(context, edtCtx);
+		final Optional<Constructor<?>> configurableConstructor = getConfigurableConstructor(clazz);
+		if (configurableConstructor.isPresent()) {
+			return instantiateFrom(configurableConstructor.get(), classConfig, context, edtCtx);
+		}
+		return (T) factory.instantiate(clazz, classConfig, context, edtCtx);
 	}
 
 	@Override
