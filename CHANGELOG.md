@@ -1,3 +1,10 @@
+# Release Version 0.23
+
+**Updates**
+* Fixed EditorClass not working correctly with annotations.
+* Changed search for ConfigurableClass annotation to include interfaces. 
+
+
 # Release Version 0.22
 
 **Updates**
