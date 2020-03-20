@@ -82,18 +82,33 @@ public class AnnotationHelper {
 	 * @return an editor for the given Configurable class, or an empty optional
 	 * if no Configurable annotations exist.
 	 */
-	public static final <C, D> Optional<EditorMap<?>> generateEditorFromAnnotations(final Class<?> configurableClass,
-			final C context, final D edtCtx) {
+	public static final <C, D> Optional<EditorMap<?>> generateEditorFromAnnotations(final Class<?> configurableClass, final C context, final D edtCtx) {
 		final EditorMap<?> map = new EditorMap<>();
 		boolean annotated = false;
 
 		Class<?> type = configurableClass;
 		do {
-			final ConfigurableClass classAnnotation = type.getAnnotation(ConfigurableClass.class);
-			if (classAnnotation != null && !classAnnotation.profilesEdit().isEmpty()) {
-				map.setProfilesEdit(classAnnotation.profilesEdit());
+			ConfigurableClass classAnnotation = type.getAnnotation(ConfigurableClass.class);
+			if (classAnnotation != null) {
 				annotated = true;
+				if (!classAnnotation.profilesEdit().isEmpty()) {
+					map.setProfilesEdit(classAnnotation.profilesEdit());
+				}
 				break;
+			} else {
+				for (final Class<?> iface : type.getInterfaces()) {
+					classAnnotation = iface.getAnnotation(ConfigurableClass.class);
+					if (classAnnotation != null) {
+						annotated = true;
+						if (!classAnnotation.profilesEdit().isEmpty()) {
+							map.setProfilesEdit(classAnnotation.profilesEdit());
+						}
+						break;
+					}
+				}
+				if (annotated) {
+					break;
+				}
 			}
 			type = type.getSuperclass();
 		} while (type != null);
@@ -115,7 +130,7 @@ public class AnnotationHelper {
 					final String jsonName = jsonNameForField(field, annotation);
 					map.addOption(field.getName(), jsonName, fieldEditor, annotation);
 
-				} catch (ReflectiveOperationException ex) {
+				} catch (final ReflectiveOperationException ex) {
 					LOGGER.error("could not instantiate give editor: {}", editorClass);
 					LOGGER.info("Exception", ex);
 				}
