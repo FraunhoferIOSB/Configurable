@@ -29,8 +29,8 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
 import de.fraunhofer.iosb.ilt.configurable.Utils;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
-import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.instantiateFrom;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.getConfigurableConstructor;
+import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.instantiateFrom;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableClass;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactorySubclsFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactorySubclsSwing;
@@ -107,7 +107,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		 *
 		 * @return true if class names should be shortened.
 		 */
-		boolean shortenClassNames() default true;
+		boolean shortenClassNames() default false;
 	}
 
 	/**
@@ -185,7 +185,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 	/**
 	 * Show the full class name in the box, not the shortened version.
 	 */
-	private boolean shortenClassNames = true;
+	private boolean shortenClassNames = false;
 
 	/**
 	 * The name of the json field that holds the name of the selected class.
