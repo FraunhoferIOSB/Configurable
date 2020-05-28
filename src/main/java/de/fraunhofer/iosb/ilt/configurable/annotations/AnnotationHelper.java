@@ -16,6 +16,7 @@
  */
 package de.fraunhofer.iosb.ilt.configurable.annotations;
 
+import com.google.gson.JsonElement;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditors;
 import de.fraunhofer.iosb.ilt.configurable.Configurable;
@@ -23,13 +24,6 @@ import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.ContentConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.Utils;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorMap;
-
-import com.google.gson.JsonElement;
-
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.commons.lang3.reflect.MethodUtils;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -40,6 +34,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hylke van der Schaaf
@@ -275,7 +272,7 @@ public class AnnotationHelper {
 		}
 
 		final Optional<Constructor<?>> configurableConstructor = getConfigurableConstructor(instance.getClass());
-		if (configurableConstructor.isEmpty()) {
+		if (!configurableConstructor.isPresent()) {
 			return false;
 		}
 

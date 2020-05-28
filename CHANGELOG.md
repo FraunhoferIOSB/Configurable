@@ -1,3 +1,10 @@
+# Release Version 0.24
+
+**Updates**
+* Changed default setting of EditorSubclass.shortenClassNames to false.
+* Fixed Java 8 compatibility.
+
+
 # Release Version 0.23
 
 **Updates**
