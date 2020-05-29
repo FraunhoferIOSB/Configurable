@@ -1,3 +1,9 @@
+# Release Version 0.25
+
+**Updates**
+* Fixed some editors not being reset when setting a null configuration.
+
+
 # Release Version 0.24
 
 **Updates**
