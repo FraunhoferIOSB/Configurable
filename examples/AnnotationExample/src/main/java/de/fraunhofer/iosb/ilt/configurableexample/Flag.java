@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.ilt.configurableexample;
 
 import de.fraunhofer.iosb.ilt.configurable.AbstractConfigurable;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableField;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorBoolean;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorClass;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorInt;
 import org.slf4j.Logger;
@@ -36,8 +37,15 @@ public class Flag extends AbstractConfigurable<Object, Object> {
 	@EditorClass.EdOptsClass(clazz = Circle.class)
 	private Circle circle;
 
+	@ConfigurableField(
+			editor = EditorBoolean.class,
+			label = "Cloth",
+			description = "Is this flag made of cloth?")
+	@EditorBoolean.EdOptsBool(dflt = true)
+	private boolean cloth;
+
 	public void wave() {
-		LOGGER.info("I'm waving a flag of {} by {}. It has a circle:", width, height);
+		LOGGER.info("I'm waving a flag of {} by {}. It is made of cloth: {}. It has a circle:", width, height, cloth);
 		circle.paintMe();
 	}
 

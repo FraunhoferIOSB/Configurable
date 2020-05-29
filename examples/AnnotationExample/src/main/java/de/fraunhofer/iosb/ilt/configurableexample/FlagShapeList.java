@@ -2,6 +2,7 @@ package de.fraunhofer.iosb.ilt.configurableexample;
 
 import de.fraunhofer.iosb.ilt.configurable.AbstractConfigurable;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableField;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorBoolean;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorInt;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorList;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorSubclass;
@@ -40,8 +41,15 @@ public class FlagShapeList extends AbstractConfigurable<Object, Object> {
 	@EditorSubclass.EdOptsSubclass(iface = Shape.class)
 	private List<Shape> shapes = Collections.emptyList();
 
+	@ConfigurableField(
+			editor = EditorBoolean.class,
+			label = "Cloth",
+			description = "Is this flag made of cloth?")
+	@EditorBoolean.EdOptsBool(dflt = true)
+	private boolean cloth;
+
 	public void wave() {
-		LOGGER.info("I'm waving a flag of {} by {}. It has shapes:", width, height);
+		LOGGER.info("I'm waving a flag of {} by {}. It is made of cloth: {}. It has shapes:", width, height, cloth);
 		for (Shape shape : shapes) {
 			shape.paintMe();
 		}

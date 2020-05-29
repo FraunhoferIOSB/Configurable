@@ -95,7 +95,11 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 	@Override
 	public void setConfig(JsonElement config) {
 		try {
-			value = config.getAsBoolean();
+			if (config == null) {
+				value = dflt;
+			} else {
+				value = config.getAsBoolean();
+			}
 		} catch (ClassCastException | IllegalStateException e) {
 			value = dflt;
 			LOGGER.trace("", e);
