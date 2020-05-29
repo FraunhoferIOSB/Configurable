@@ -140,7 +140,7 @@ public class ExampleGui extends javax.swing.JFrame {
 	}
 
 	public void loadConfig(String jsonString) {
-		JsonElement config = new JsonParser().parse(jsonString);
+		JsonElement config = JsonParser.parseString(jsonString);
 		editor.setConfig(config);
 	}
 

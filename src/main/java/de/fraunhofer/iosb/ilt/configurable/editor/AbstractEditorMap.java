@@ -208,8 +208,8 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 					value.add(jsonName);
 				} else {
 					final JsonElement itemConfig = configObj.get(item.jsonName);
+					item.editor.setConfig(itemConfig);
 					if (itemConfig != null) {
-						item.editor.setConfig(itemConfig);
 						value.add(jsonName);
 					} else if (!item.optional) {
 						value.add(jsonName);
@@ -220,6 +220,7 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 			for (final Map.Entry<String, Item<V>> entry : options.entrySet()) {
 				final String key = entry.getKey();
 				final Item<V> val = entry.getValue();
+				val.editor.setConfig(null);
 				if (!val.optional) {
 					value.add(key);
 				}

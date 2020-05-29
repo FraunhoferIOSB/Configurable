@@ -273,7 +273,9 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 	public void setConfig(JsonElement config) {
 		String name = null;
 		jsonName = "";
-		if (config != null && config.isJsonObject()) {
+		if (config == null || !config.isJsonObject()) {
+			classConfig = null;
+		} else {
 			JsonObject confObj = config.getAsJsonObject();
 			if (merge) {
 				JsonElement classNameElem = confObj.get(nameField);
@@ -446,7 +448,10 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 
 	public void setJsonName(final String name) {
 		if (Utils.isNullOrEmpty(name)) {
-			LOGGER.info("Empty class name.");
+			LOGGER.debug("Empty class name.");
+			instance = null;
+			classEditor = null;
+			fillComponent();
 			return;
 		}
 		if (name.equals(jsonName)) {

@@ -100,14 +100,13 @@ public class EditorColor extends EditorDefault<Color> {
 	private FactoryColorFx factoryFx;
 
 	public EditorColor() {
+		this.dflt = Color.BLACK;
+		resetToDefault();
 	}
 
 	public EditorColor(Color dflt) {
 		this.dflt = dflt;
-		this.red = dflt.getRed();
-		this.green = dflt.getGreen();
-		this.blue = dflt.getBlue();
-		this.alpha = dflt.getAlpha();
+		resetToDefault();
 	}
 
 	public EditorColor(Color deflt, boolean editAlpha) {
@@ -119,6 +118,13 @@ public class EditorColor extends EditorDefault<Color> {
 		this(deflt, editAlpha);
 		setLabel(label);
 		setDescription(description);
+	}
+
+	private void resetToDefault() {
+		this.red = dflt.getRed();
+		this.green = dflt.getGreen();
+		this.blue = dflt.getBlue();
+		this.alpha = dflt.getAlpha();
 	}
 
 	@Override
@@ -147,7 +153,9 @@ public class EditorColor extends EditorDefault<Color> {
 
 	@Override
 	public void setConfig(JsonElement config) {
-		if (config.isJsonObject()) {
+		if (config == null) {
+			resetToDefault();
+		} else if (config.isJsonObject()) {
 			JsonObject confObj = config.getAsJsonObject();
 			red = getInt(confObj, red, "r", "red");
 			green = getInt(confObj, green, "g", "green");
