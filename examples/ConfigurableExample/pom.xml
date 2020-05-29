@@ -4,7 +4,7 @@
 
     <groupId>de.fraunhofer.iosb.ilt</groupId>
     <artifactId>ConfigurableExample</artifactId>
-    <version>0.25</version>
+    <version>0.26-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>ConfigurableExample</name>
