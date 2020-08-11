@@ -1,17 +1,12 @@
 package de.fraunhofer.iosb.ilt.configurableexample;
 
-import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
-import de.fraunhofer.iosb.ilt.configurable.ContentConfigEditor;
-import de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper;
+import com.google.gson.JsonElement;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableConstructor;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableField;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableParameter;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableParameter.ConfigurableParameterType;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorDouble;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorInt;
-
-import com.google.gson.JsonElement;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +48,7 @@ public class Circle extends AbstractShape {
 	@Override
 	public void paintMe() {
 		// paint to some device...
-		LOGGER.info("I'm a circle at {}, {} with radius {} and color {}!", x, y, r, getColor());
+		LOGGER.info("I'm a circle at {}, {} with radius {}, color {}, and pattern {}!", x, y, r, getColor(), getPattern());
 		super.paintMe();
 	}
 

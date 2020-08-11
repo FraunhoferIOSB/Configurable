@@ -17,6 +17,7 @@
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
@@ -30,6 +31,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -37,6 +40,8 @@ import java.util.Set;
  * @param <T> The type this editor selects.
  */
 public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(EditorEnum.class.getName());
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
@@ -48,9 +53,10 @@ public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
 		Class<? extends Enum> sourceType();
 
 		/**
-		 * @return The enum.name of the default value.
+		 * @return The enum.name of the default value. If left empty, null is
+		 * used as default value.
 		 */
-		String dflt();
+		String dflt() default "";
 
 		/**
 		 * A comma separated, case insensitive list of profile names. This field
@@ -90,7 +96,11 @@ public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
 			throw new IllegalArgumentException("Field must have an EdOptsEnum annotation to use this editor: " + field.getName());
 		}
 		sourceType = (Class<T>) annotation.sourceType();
-		dflt = Enum.valueOf(sourceType, annotation.dflt());
+		try {
+			dflt = Enum.valueOf(sourceType, annotation.dflt());
+		} catch (IllegalArgumentException exc) {
+			LOGGER.trace("Empty or invalid default: {}", annotation.dflt(), exc);
+		}
 		value = dflt;
 		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
@@ -100,7 +110,12 @@ public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
 		if (config != null && config.isJsonPrimitive()) {
 			JsonPrimitive prim = config.getAsJsonPrimitive();
 			if (prim.isString()) {
-				value = Enum.valueOf(sourceType, config.getAsString());
+				try {
+					value = Enum.valueOf(sourceType, config.getAsString());
+				} catch (IllegalArgumentException exc) {
+					value = null;
+					LOGGER.trace("Empty or invalid value: {}", config.getAsString(), exc);
+				}
 			} else if (prim.isNumber()) {
 				T[] list = sourceType.getEnumConstants();
 				int ord = prim.getAsInt();
@@ -117,6 +132,9 @@ public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
 	@Override
 	public JsonElement getConfig() {
 		readComponent();
+		if (value == null) {
+			return JsonNull.INSTANCE;
+		}
 		return new JsonPrimitive(value.name());
 	}
 

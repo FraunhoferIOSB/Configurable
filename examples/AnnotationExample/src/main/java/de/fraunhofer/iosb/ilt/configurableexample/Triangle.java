@@ -38,7 +38,7 @@ public class Triangle extends AbstractShape {
 	@Override
 	public void paintMe() {
 		// paint to some device...
-		LOGGER.info("I'm a triangle at {}, {} with side-length of {} and color {}!", x, y, side, getColor());
+		LOGGER.info("I'm a triangle at {}, {} with side-length of {}, color {}, and pattern {}!", x, y, side, getColor(), getPattern());
 	}
 
 }

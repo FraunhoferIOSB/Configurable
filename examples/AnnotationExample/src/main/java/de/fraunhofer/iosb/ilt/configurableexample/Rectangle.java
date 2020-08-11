@@ -44,7 +44,7 @@ public class Rectangle extends AbstractShape {
 	@Override
 	public void paintMe() {
 		// paint to some device...
-		LOGGER.info("I'm a Rectangle at {}, {} with width {}, height {} and color {}!", x, y, width, height, getColor());
+		LOGGER.info("I'm a Rectangle at {}, {} with width {}, height {}, color {}, and pattern {}!", x, y, width, height, getColor(), getPattern());
 	}
 
 }
