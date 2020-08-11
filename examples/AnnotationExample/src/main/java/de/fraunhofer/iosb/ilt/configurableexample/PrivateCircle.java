@@ -15,10 +15,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author scf
  */
+@Flag.Private
 @Flag.Internal
-public class Circle extends AbstractShape {
+public class PrivateCircle extends AbstractShape {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(Circle.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(PrivateCircle.class);
 
 	@ConfigurableField(editor = EditorDouble.class,
 			label = "X-Coordinate",
@@ -39,7 +40,7 @@ public class Circle extends AbstractShape {
 	private int r;
 
 	@ConfigurableConstructor
-	public Circle(
+	public PrivateCircle(
 			@ConfigurableParameter(type = ConfigurableParameterType.RUNTIME_CONTEXT) final Void runtimeContext,
 			@ConfigurableParameter(type = ConfigurableParameterType.CLASS_CONFIG) final JsonElement classConfig,
 			@ConfigurableParameter(jsonField = "shape") final Shape nestedShape) {
@@ -49,7 +50,7 @@ public class Circle extends AbstractShape {
 	@Override
 	public void paintMe() {
 		// paint to some device...
-		LOGGER.info("I'm a circle at {}, {} with radius {}, color {}, and pattern {}!", x, y, r, getColor(), getPattern());
+		LOGGER.info("I'm a private circle at {}, {} with radius {}, color {}, and pattern {}!", x, y, r, getColor(), getPattern());
 		super.paintMe();
 	}
 

@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author scf
  */
+@Flag.Public
 public class Rectangle extends AbstractShape {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Rectangle.class);

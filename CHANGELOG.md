@@ -1,3 +1,11 @@
+# Release Version 0.26
+
+**Updates**
+* Added allowList and denyList of annotations to EditorSubClass, to filter the
+  list of classes presented to the user.
+* Allow an empty default value for EditorEnum, mapped to null.
+
+
 # Release Version 0.25
 
 **Updates**

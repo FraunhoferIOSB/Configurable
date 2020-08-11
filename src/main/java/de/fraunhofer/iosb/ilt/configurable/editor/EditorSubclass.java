@@ -41,6 +41,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,10 +85,23 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		String nameField() default KEY_CLASSNAME;
 
 		/**
-		 * @return An optional annotation that the presented classes must
-		 * implement.
+		 * @return An optional annotation that the presented classes must be
+		 * annotated with.
 		 */
 		Class<? extends Annotation> requiredAnnotation() default NoFilter.class;
+
+		/**
+		 * @return An optional list of annotations. Only classes annotated with
+		 * one of these annotations are listed in the UI.
+		 */
+		Class<? extends Annotation>[] allowList() default NoFilter.class;
+
+		/**
+		 * @return An optional list of annotations. Classes annotated with one
+		 * of these annotations are not listed in the UI, even if they have one
+		 * of the allowList or requiredAnnotation annotations.
+		 */
+		Class<? extends Annotation>[] denyList() default NoFilter.class;
 
 		/**
 		 * A comma separated, case insensitive list of profile names. This field
@@ -175,6 +189,15 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 	 * An annotation that the presented classes must implement.
 	 */
 	private Class<? extends Annotation> requiredAnnotation = NoFilter.class;
+	/**
+	 * An annotation that the presented classes must implement.
+	 */
+	private List<Class<? extends Annotation>> allowList = new ArrayList<>();
+	/**
+	 * An annotation that the presented classes must not implement. These
+	 * override the allowList and requiredAnnotation annotations.
+	 */
+	private List<Class<? extends Annotation>> denyList = new ArrayList<>();
 
 	/**
 	 * The flag indicating the selected class name and the configuration of this
@@ -245,6 +268,12 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		merge = annotation.merge();
 		nameField = annotation.nameField();
 		requiredAnnotation = annotation.requiredAnnotation();
+		for (Class<? extends Annotation> anno : annotation.allowList()) {
+			allowList.add(anno);
+		}
+		for (Class<? extends Annotation> anno : annotation.denyList()) {
+			denyList.add(anno);
+		}
 		shortenClassNames = annotation.shortenClassNames();
 		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
@@ -370,6 +399,33 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		return classesByJsonName;
 	}
 
+	private boolean isAllowed(Class<?> subtype) {
+		if (allowList.isEmpty()) {
+			return true;
+		}
+		for (Class<? extends Annotation> annotation : allowList) {
+			if (subtype.getAnnotation(annotation) != null) {
+				LOGGER.debug("Allowing class {}, annotated with {}.", subtype, annotation);
+				return true;
+			}
+		}
+		LOGGER.debug("Not Allowing class {}, not annotated with any of the allowList annotations.", subtype);
+		return false;
+	}
+
+	private boolean isDenied(Class<?> subtype) {
+		if (denyList.isEmpty()) {
+			return false;
+		}
+		for (Class<? extends Annotation> annotation : denyList) {
+			if (subtype.getAnnotation(annotation) != null) {
+				LOGGER.debug("Ignoring class {}, annotated with {}.", subtype, annotation);
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private void initClasses() {
 		if (!classesByJsonName.isEmpty()) {
 			return;
@@ -378,6 +434,12 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		for (Class<?> subtype : subtypes) {
 			if (requiredAnnotation != NoFilter.class && subtype.getAnnotation(requiredAnnotation) == null) {
 				LOGGER.debug("Ignoring class {}, not annotated with {}.", subtype, requiredAnnotation);
+				continue;
+			}
+			if (!isAllowed(subtype)) {
+				continue;
+			}
+			if (isDenied(subtype)) {
 				continue;
 			}
 
@@ -673,6 +735,44 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 	 */
 	public void setRequiredAnnotation(Class<? extends Annotation> requiredAnnotation) {
 		this.requiredAnnotation = requiredAnnotation;
+	}
+
+	/**
+	 * An annotation that the presented classes must implement.
+	 *
+	 * @return the allowList
+	 */
+	public List<Class<? extends Annotation>> getAllowList() {
+		return allowList;
+	}
+
+	/**
+	 * An annotation that the presented classes must implement.
+	 *
+	 * @param allowList the allowList to set
+	 */
+	public void setAllowList(List<Class<? extends Annotation>> allowList) {
+		this.allowList = allowList;
+	}
+
+	/**
+	 * An annotation that the presented classes must not implement. These
+	 * override the allowList and requiredAnnotation annotations.
+	 *
+	 * @return the denyList
+	 */
+	public List<Class<? extends Annotation>> getDenyList() {
+		return denyList;
+	}
+
+	/**
+	 * An annotation that the presented classes must not implement. These
+	 * override the allowList and requiredAnnotation annotations.
+	 *
+	 * @param denyList the denyList to set
+	 */
+	public void setDenyList(List<Class<? extends Annotation>> denyList) {
+		this.denyList = denyList;
 	}
 
 	public void setProfilesEdit(String csv) {

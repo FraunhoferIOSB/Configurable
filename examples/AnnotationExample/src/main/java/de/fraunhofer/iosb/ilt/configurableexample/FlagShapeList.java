@@ -38,7 +38,11 @@ public class FlagShapeList extends AbstractConfigurable<Object, Object> {
 			label = "Shapes",
 			description = "The shapes to put on the flag")
 	@EditorList.EdOptsList(editor = EditorSubclass.class)
-	@EditorSubclass.EdOptsSubclass(iface = Shape.class)
+	@EditorSubclass.EdOptsSubclass(
+			iface = Shape.class,
+			allowList = {Flag.Public.class, Flag.Internal.class},
+			denyList = {Flag.Private.class}
+	)
 	private List<Shape> shapes = Collections.emptyList();
 
 	@ConfigurableField(

@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author scf
  */
+@Flag.Public
+@Flag.Internal
 public class Triangle extends AbstractShape {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Triangle.class);
