@@ -92,7 +92,13 @@ public final class FactorySubclsFx implements GuiFactoryFx {
 		String selected = fxItems.getSelectionModel().getSelectedItem();
 		if (selected != null && !selected.isEmpty()) {
 			item = parentEditor.getClassesByDisplayName().get(selected);
-			parentEditor.setJsonName(item.jsonName);
+			if (item == null) {
+				if (!parentEditor.isRestrictedClasses()) {
+					parentEditor.setJsonName(selected);
+				}
+			} else {
+				parentEditor.setJsonName(item.jsonName);
+			}
 		}
 	}
 
@@ -106,7 +112,11 @@ public final class FactorySubclsFx implements GuiFactoryFx {
 		if (jsonName == null || jsonName.isEmpty()) {
 			label = "No Class selected.";
 		} else {
-			label = "Selected: " + item.displayName;
+			if (item == null) {
+				label = "Manual: " + jsonName;
+			} else {
+				label = "Selected: " + item.displayName;
+			}
 		}
 		fxPaneItem.getChildren().clear();
 		fxPaneItem.setTop(new Label(label));

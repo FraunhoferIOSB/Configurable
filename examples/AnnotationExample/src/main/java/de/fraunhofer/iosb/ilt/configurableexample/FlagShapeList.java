@@ -41,7 +41,8 @@ public class FlagShapeList extends AbstractConfigurable<Object, Object> {
 	@EditorSubclass.EdOptsSubclass(
 			iface = Shape.class,
 			allowList = {Flag.Public.class, Flag.Internal.class},
-			denyList = {Flag.Private.class}
+			denyList = {Flag.Private.class},
+			restrictedClasses = true
 	)
 	private List<Shape> shapes = Collections.emptyList();
 

@@ -104,6 +104,15 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		Class<? extends Annotation>[] denyList() default NoFilter.class;
 
 		/**
+		 * Are classes restricted to the ones found after applying the
+		 * allow/deny lists, or is a user allowed to type in any class name.
+		 *
+		 * @return flag indicating if classes are restricted.
+		 *
+		 */
+		boolean restrictedClasses() default true;
+
+		/**
 		 * A comma separated, case insensitive list of profile names. This field
 		 * is only editable when one of these profiles is active. The "default"
 		 * profile is automatically added to the list.
@@ -211,6 +220,12 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 	private boolean shortenClassNames = false;
 
 	/**
+	 * Are classes restricted to the ones found after applying the allow/deny
+	 * lists, or is a user allowed to type in any class name.
+	 */
+	private boolean restrictedClasses = true;
+
+	/**
 	 * The name of the json field that holds the name of the selected class.
 	 */
 	private String nameField = KEY_CLASSNAME;
@@ -274,6 +289,7 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		for (Class<? extends Annotation> anno : annotation.denyList()) {
 			denyList.add(anno);
 		}
+		restrictedClasses = annotation.restrictedClasses();
 		shortenClassNames = annotation.shortenClassNames();
 		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
@@ -775,6 +791,26 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		this.denyList = denyList;
 	}
 
+	/**
+	 * Are classes restricted to the ones found after applying the allow/deny
+	 * lists, or is a user allowed to type in any class name.
+	 *
+	 * @return the restrictedClasses
+	 */
+	public boolean isRestrictedClasses() {
+		return restrictedClasses;
+	}
+
+	/**
+	 * Are classes restricted to the ones found after applying the allow/deny
+	 * lists, or is a user allowed to type in any class name.
+	 *
+	 * @param restrictedClasses the restrictedClasses to set
+	 */
+	public void setRestrictedClasses(boolean restrictedClasses) {
+		this.restrictedClasses = restrictedClasses;
+	}
+
 	public void setProfilesEdit(String csv) {
 		profilesEdit = csvToReadOnlySet(csv);
 	}
@@ -851,4 +887,5 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 			return newInstance;
 		}
 	}
+
 }

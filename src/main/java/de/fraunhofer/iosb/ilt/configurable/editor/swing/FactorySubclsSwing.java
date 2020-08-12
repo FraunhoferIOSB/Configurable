@@ -95,6 +95,9 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 			String displayName = swItems.getModel().getElementAt(idx);
 			item = parentEditor.getClassesByDisplayName().get(displayName);
 			parentEditor.setJsonName(item.jsonName);
+		} else if (!parentEditor.isRestrictedClasses()) {
+			String className = swItems.getSelectedItem().toString();
+			parentEditor.setJsonName(className);
 		}
 	}
 
@@ -104,10 +107,14 @@ public final class FactorySubclsSwing implements GuiFactorySwing {
 		item = parentEditor.findClassItem(jsonName);
 		ConfigEditor classEditor = parentEditor.getClassEditor();
 		String label;
-		if (item == null) {
+		if (jsonName == null || jsonName.isEmpty()) {
 			label = "No Class selected.";
 		} else {
-			label = "Selected: " + item.displayName;
+			if (item == null) {
+				label = "Manual: " + jsonName;
+			} else {
+				label = "Selected: " + item.displayName;
+			}
 		}
 		swItemHolder.removeAll();
 		Dimension dim = new Dimension(5, 5);

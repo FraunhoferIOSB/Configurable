@@ -4,6 +4,9 @@
 * Added allowList and denyList of annotations to EditorSubClass, to filter the
   list of classes presented to the user.
 * Allow an empty default value for EditorEnum, mapped to null.
+* Added an option to EditorSubClass to allow a user to type in any class name,
+  regardless of the allow/deny lists. In this case the allow/deny list will only
+  be used to filter the suggested class names.
 
 
 # Release Version 0.25
