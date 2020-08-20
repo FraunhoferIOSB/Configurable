@@ -94,14 +94,14 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		 * @return An optional list of annotations. Only classes annotated with
 		 * one of these annotations are listed in the UI.
 		 */
-		Class<? extends Annotation>[] allowList() default NoFilter.class;
+		Class<? extends Annotation>[] allowList() default {};
 
 		/**
 		 * @return An optional list of annotations. Classes annotated with one
 		 * of these annotations are not listed in the UI, even if they have one
 		 * of the allowList or requiredAnnotation annotations.
 		 */
-		Class<? extends Annotation>[] denyList() default NoFilter.class;
+		Class<? extends Annotation>[] denyList() default {};
 
 		/**
 		 * Are classes restricted to the ones found after applying the

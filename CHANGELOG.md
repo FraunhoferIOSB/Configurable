@@ -1,3 +1,9 @@
+# Release Version 0.27
+
+**Updates**
+* Fixed allow/deny list annotations not having empty default values.
+
+
 # Release Version 0.26
 
 **Updates**
