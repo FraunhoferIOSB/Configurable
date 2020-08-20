@@ -29,7 +29,7 @@ Configurable is hosted on Bintray. If you add the bintray repository to your pom
         <dependency>
             <groupId>de.fraunhofer.iosb.ilt</groupId>
             <artifactId>Configurable</artifactId>
-            <version>0.26</version>
+            <version>0.27</version>
         </dependency>
     </dependencies>
 ```
