@@ -1,3 +1,11 @@
+# Release Version 0.28
+
+**Updates**
+* All (simple) editors can now have a NULL default value, by setting the
+  dfltIsNull annotation. Editors not configured using annotations could already
+  accept a null dflt.
+
+
 # Release Version 0.27
 
 **Updates**
