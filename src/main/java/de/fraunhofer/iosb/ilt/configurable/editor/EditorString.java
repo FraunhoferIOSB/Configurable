@@ -17,6 +17,7 @@
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
@@ -47,9 +48,17 @@ public class EditorString extends EditorDefault<String> {
 		int lines() default 1;
 
 		/**
-		 * @return The default value.
+		 * @return The default value. Used if dfltIsNull is false.
 		 */
 		String dflt() default "";
+
+		/**
+		 * If set to true, the default value of the editor is null.
+		 *
+		 * @return if true, the default value of the editor is null, not the
+		 * value of dflt.
+		 */
+		boolean dfltIsNull() default false;
 
 		/**
 		 * A comma separated, case insensitive list of profile names. This field
@@ -93,7 +102,9 @@ public class EditorString extends EditorDefault<String> {
 			throw new IllegalArgumentException("Field must have an EdOptsString annotation to use this editor: " + field.getName());
 		}
 		lines = annotation.lines();
-		dflt = annotation.dflt();
+		if (!annotation.dfltIsNull()) {
+			dflt = annotation.dflt();
+		}
 		value = dflt;
 		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
@@ -111,7 +122,11 @@ public class EditorString extends EditorDefault<String> {
 	@Override
 	public JsonElement getConfig() {
 		readComponent();
+		if (value == null) {
+			return JsonNull.INSTANCE;
+		}
 		return new JsonPrimitive(value);
+
 	}
 
 	@Override
@@ -180,6 +195,10 @@ public class EditorString extends EditorDefault<String> {
 	public void setValue(String value) {
 		this.value = value;
 		fillComponent();
+	}
+
+	public String getDflt() {
+		return dflt;
 	}
 
 	@Override

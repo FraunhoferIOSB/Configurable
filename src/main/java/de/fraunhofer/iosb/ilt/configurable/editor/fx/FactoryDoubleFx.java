@@ -50,19 +50,32 @@ public final class FactoryDoubleFx implements GuiFactoryFx {
 	}
 
 	private void createComponent() {
-		if (parentEditor.getRawValue() < parentEditor.getMin() || parentEditor.getRawValue() > parentEditor.getMax()) {
-			parentEditor.setRawValue(Math.max(parentEditor.getMin(), Math.min(parentEditor.getRawValue(), parentEditor.getMax())));
-		}
 		fxNode = new TextField();
 		fxNode.setTextFormatter(new TextFormatter(new BigDecimalStringConverter()));
 		fillComponent();
+	}
+
+	private double getRawValue() {
+		Double rawValue = parentEditor.getRawValue();
+		final double min = parentEditor.getMin();
+		final double max = parentEditor.getMax();
+		if (rawValue == null) {
+			rawValue = 0.0;
+			parentEditor.setRawValue(rawValue);
+		}
+		if (rawValue < min || rawValue > max) {
+			rawValue = Math.max(min, Math.min(rawValue, max));
+			parentEditor.setRawValue(rawValue);
+		}
+		return rawValue;
 	}
 
 	/**
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		fxNode.setText("" + parentEditor.getRawValue());
+		double rawValue = getRawValue();
+		fxNode.setText("" + rawValue);
 	}
 
 	public void readComponent() {

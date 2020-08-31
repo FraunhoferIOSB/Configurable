@@ -17,6 +17,7 @@
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
@@ -29,6 +30,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,7 +46,18 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 	@Target(ElementType.FIELD)
 	public static @interface EdOptsBool {
 
+		/**
+		 * @return The default value. Used if dfltIsNull is false.
+		 */
 		boolean dflt() default false;
+
+		/**
+		 * If set to true, the default value of the editor is null.
+		 *
+		 * @return if true, the default value of the editor is null, not the
+		 * value of dflt.
+		 */
+		boolean dfltIsNull() default false;
 
 		/**
 		 * A comma separated, case insensitive list of profile names. This field
@@ -57,8 +70,8 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 	}
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EditorBoolean.class.getName());
-	private boolean dflt;
-	private boolean value;
+	private Boolean dflt;
+	private Boolean value;
 
 	public Set<String> profilesEdit = csvToReadOnlySet("");
 	private String profile = DEFAULT_PROFILE_NAME;
@@ -87,7 +100,16 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 		if (annotation == null) {
 			throw new IllegalArgumentException("Field must have an EdOptsBool annotation to use this editor: " + field.getName());
 		}
-		dflt = annotation.dflt();
+		final boolean isPrimitive = field.getType().isPrimitive();
+		final boolean dfltIsNull = annotation.dfltIsNull();
+		if (dfltIsNull) {
+			if (isPrimitive) {
+				LOGGER.error("Flag dfltIsNull set to true on a primitive field: {}", field);
+				dflt = false;
+			}
+		} else {
+			dflt = annotation.dflt();
+		}
 		value = dflt;
 		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
@@ -139,29 +161,27 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 		}
 	}
 
-	@Override
-	public JsonElement getConfig() {
+	private void readComponent() {
 		if (factorySwing != null) {
 			value = factorySwing.isSelected();
 		}
 		if (factoryFx != null) {
 			value = factoryFx.isSelected();
 		}
-		return new JsonPrimitive(value);
 	}
 
-	public boolean isSelected() {
-		if (factorySwing != null) {
-			return factorySwing.isSelected();
+	@Override
+	public JsonElement getConfig() {
+		readComponent();
+		if (value == null) {
+			return JsonNull.INSTANCE;
 		}
-		if (factoryFx != null) {
-			return factoryFx.isSelected();
-		}
-		return value;
+		return new JsonPrimitive(value);
 	}
 
 	@Override
 	public Boolean getValue() {
+		readComponent();
 		return value;
 	}
 
@@ -188,7 +208,8 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 
 	@Override
 	public boolean isDefault() {
-		return dflt == isSelected();
+		readComponent();
+		return Objects.equals(dflt, value);
 	}
 
 }

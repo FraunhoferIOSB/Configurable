@@ -52,6 +52,9 @@ public final class FactoryBigDecimalFx implements GuiFactoryFx {
 
 	private void createComponent() {
 		BigDecimal rawValue = parentEditor.getRawValue();
+		if (rawValue == null) {
+			rawValue = BigDecimal.ZERO;
+		}
 		BigDecimal min = parentEditor.getMin();
 		BigDecimal max = parentEditor.getMax();
 
@@ -70,7 +73,11 @@ public final class FactoryBigDecimalFx implements GuiFactoryFx {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		fxNode.setText("" + parentEditor.getRawValue());
+		BigDecimal rawValue = parentEditor.getRawValue();
+		if (rawValue == null) {
+			rawValue = BigDecimal.ZERO;
+		}
+		fxNode.setText("" + rawValue);
 	}
 
 	public void readComponent() {

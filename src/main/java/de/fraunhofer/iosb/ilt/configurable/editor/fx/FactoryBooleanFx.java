@@ -51,7 +51,11 @@ public final class FactoryBooleanFx implements GuiFactoryFx {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		fxNode.setSelected(parentEditor.getValue());
+		Boolean value = parentEditor.getValue();
+		if (value == null) {
+			value = false;
+		}
+		fxNode.setSelected(value);
 	}
 
 	public boolean isSelected() {

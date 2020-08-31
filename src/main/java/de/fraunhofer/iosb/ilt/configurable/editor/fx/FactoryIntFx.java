@@ -31,6 +31,7 @@ public final class FactoryIntFx implements GuiFactoryFx {
 
 	private final EditorInt parentEditor;
 	private Spinner<Integer> fxNode;
+	private int min;
 
 	public FactoryIntFx(EditorInt parentEditor) {
 		this.parentEditor = parentEditor;
@@ -45,10 +46,15 @@ public final class FactoryIntFx implements GuiFactoryFx {
 	}
 
 	private void createComponent() {
+		Integer value = parentEditor.getValue();
+		min = parentEditor.getMin();
+		if (value == null) {
+			value = Math.max(0, min);
+		}
 		SpinnerValueFactory.IntegerSpinnerValueFactory factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(
-				parentEditor.getMin(),
+				min,
 				parentEditor.getMax(),
-				parentEditor.getValue(),
+				value,
 				parentEditor.getStep());
 		fxNode = new Spinner<>(factory);
 		fxNode.setEditable(true);
@@ -64,7 +70,11 @@ public final class FactoryIntFx implements GuiFactoryFx {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		fxNode.getValueFactory().setValue(parentEditor.getRawValue());
+		Integer rawValue = parentEditor.getRawValue();
+		if (rawValue == null) {
+			rawValue = Math.max(0, min);
+		}
+		fxNode.getValueFactory().setValue(rawValue);
 	}
 
 	public void readComponent() {

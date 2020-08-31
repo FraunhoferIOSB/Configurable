@@ -68,7 +68,11 @@ public final class FactoryStringFx implements GuiFactoryFx {
 	 */
 	public void fillComponent() {
 		fxNode.setEditable(parentEditor.canEdit());
-		fxNode.setText(parentEditor.getRawValue());
+		String value = parentEditor.getRawValue();
+		if (value == null) {
+			value = "";
+		}
+		fxNode.setText(value);
 	}
 
 	public void readComponent() {

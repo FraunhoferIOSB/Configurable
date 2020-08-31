@@ -17,6 +17,7 @@
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
@@ -30,12 +31,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Hylke van der Schaaf
  */
 public final class EditorLong extends EditorDefault<Long> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(EditorLong.class.getName());
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
@@ -45,7 +50,18 @@ public final class EditorLong extends EditorDefault<Long> {
 
 		long max() default Long.MAX_VALUE;
 
-		long dflt();
+		/**
+		 * @return The default value. Used if dfltIsNull is false.
+		 */
+		long dflt() default 0;
+
+		/**
+		 * If set to true, the default value of the editor is null.
+		 *
+		 * @return if true, the default value of the editor is null, not the
+		 * value of dflt.
+		 */
+		boolean dfltIsNull() default false;
 
 		/**
 		 * A comma separated, case insensitive list of profile names. This field
@@ -59,8 +75,8 @@ public final class EditorLong extends EditorDefault<Long> {
 
 	private long min;
 	private long max;
-	private long dflt;
-	private long value;
+	private Long dflt;
+	private Long value;
 
 	public Set<String> profilesEdit = csvToReadOnlySet("");
 	private String profile = DEFAULT_PROFILE_NAME;
@@ -88,7 +104,16 @@ public final class EditorLong extends EditorDefault<Long> {
 		}
 		min = annotation.min();
 		max = annotation.max();
-		dflt = annotation.dflt();
+		boolean isPrimitive = field.getType().isPrimitive();
+		final boolean dfltIsNull = annotation.dfltIsNull();
+		if (dfltIsNull) {
+			if (isPrimitive) {
+				LOGGER.error("Flag dfltIsNull set to true on a primitive field: {}", field);
+				dflt = 0L;
+			}
+		} else {
+			dflt = annotation.dflt();
+		}
 		value = dflt;
 		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
@@ -96,7 +121,7 @@ public final class EditorLong extends EditorDefault<Long> {
 	@Override
 	public void setConfig(JsonElement config) {
 		if (config != null && config.isJsonPrimitive() && config.getAsJsonPrimitive().isNumber()) {
-			value = config.getAsInt();
+			value = config.getAsLong();
 		} else {
 			value = dflt;
 		}
@@ -105,7 +130,11 @@ public final class EditorLong extends EditorDefault<Long> {
 
 	@Override
 	public JsonElement getConfig() {
-		return new JsonPrimitive(getValue());
+		Long val = getValue();
+		if (val == null) {
+			return JsonNull.INSTANCE;
+		}
+		return new JsonPrimitive(val);
 	}
 
 	@Override
@@ -148,7 +177,7 @@ public final class EditorLong extends EditorDefault<Long> {
 		}
 	}
 
-	public long getRawValue() {
+	public Long getRawValue() {
 		return value;
 	}
 
@@ -170,13 +199,16 @@ public final class EditorLong extends EditorDefault<Long> {
 		return max;
 	}
 
-	public long getDeflt() {
+	public Long getDeflt() {
 		return dflt;
 	}
 
 	@Override
 	public Long getValue() {
 		readComponent();
+		if (value == null) {
+			return null;
+		}
 		if (value > max) {
 			value = max;
 		}

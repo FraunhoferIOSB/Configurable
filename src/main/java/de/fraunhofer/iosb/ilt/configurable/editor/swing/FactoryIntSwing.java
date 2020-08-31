@@ -31,6 +31,7 @@ public final class FactoryIntSwing implements GuiFactorySwing {
 	private final EditorInt parentEditor;
 	private SpinnerNumberModel swModel;
 	private JSpinner swComponent;
+	private int min = 0;
 
 	public FactoryIntSwing(EditorInt parentEditor) {
 		this.parentEditor = parentEditor;
@@ -45,20 +46,32 @@ public final class FactoryIntSwing implements GuiFactorySwing {
 	}
 
 	private void createComponent() {
+		min = parentEditor.getMin();
+		int value = getRawValue();
 		swModel = new SpinnerNumberModel(
-				parentEditor.getRawValue(),
-				parentEditor.getMin(),
+				value,
+				min,
 				parentEditor.getMax(),
 				parentEditor.getStep());
 		swComponent = new JSpinner(swModel);
 		fillComponent();
 	}
 
+	private int getRawValue() {
+		final Integer rawValue = parentEditor.getRawValue();
+		if (rawValue == null) {
+			return Math.max(0, min);
+		} else {
+			return rawValue;
+		}
+	}
+
 	/**
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		swComponent.setValue(parentEditor.getRawValue());
+		Integer rawValue = getRawValue();
+		swComponent.setValue(rawValue);
 	}
 
 	public void readComponent() {

@@ -17,6 +17,7 @@
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
@@ -29,7 +30,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.Objects;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -37,17 +41,30 @@ import java.util.Set;
  */
 public final class EditorInt extends EditorDefault<Integer> {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(EditorInt.class.getName());
+
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	public static @interface EdOptsInt {
 
-		int min();
+		int min() default Integer.MIN_VALUE;
 
-		int max();
+		int max() default Integer.MAX_VALUE;
 
-		int step();
+		int step() default 1;
 
-		int dflt();
+		/**
+		 * @return The default value. Used if dfltIsNull is false.
+		 */
+		int dflt() default 0;
+
+		/**
+		 * If set to true, the default value of the editor is null.
+		 *
+		 * @return if true, the default value of the editor is null, not the
+		 * value of dflt.
+		 */
+		boolean dfltIsNull() default false;
 
 		/**
 		 * A comma separated, case insensitive list of profile names. This field
@@ -62,8 +79,8 @@ public final class EditorInt extends EditorDefault<Integer> {
 	private int min;
 	private int max;
 	private int step;
-	private int dflt;
-	private int value;
+	private Integer dflt;
+	private Integer value;
 
 	public Set<String> profilesEdit = csvToReadOnlySet("");
 	private String profile = DEFAULT_PROFILE_NAME;
@@ -93,7 +110,16 @@ public final class EditorInt extends EditorDefault<Integer> {
 		min = annotation.min();
 		max = annotation.max();
 		step = annotation.step();
-		dflt = annotation.dflt();
+		final boolean isPrimitive = field.getType().isPrimitive();
+		final boolean dfltIsNull = annotation.dfltIsNull();
+		if (dfltIsNull) {
+			if (isPrimitive) {
+				LOGGER.error("Flag dfltIsNull set to true on a primitive field: {}", field);
+				dflt = 0;
+			}
+		} else {
+			dflt = annotation.dflt();
+		}
 		value = dflt;
 		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
@@ -110,7 +136,11 @@ public final class EditorInt extends EditorDefault<Integer> {
 
 	@Override
 	public JsonElement getConfig() {
-		return new JsonPrimitive(getValue());
+		Integer val = getValue();
+		if (val == null) {
+			return JsonNull.INSTANCE;
+		}
+		return new JsonPrimitive(val);
 	}
 
 	@Override
@@ -161,7 +191,7 @@ public final class EditorInt extends EditorDefault<Integer> {
 		return max;
 	}
 
-	public int getDflt() {
+	public Integer getDflt() {
 		return dflt;
 	}
 
@@ -169,7 +199,7 @@ public final class EditorInt extends EditorDefault<Integer> {
 		return step;
 	}
 
-	public int getRawValue() {
+	public Integer getRawValue() {
 		return value;
 	}
 
@@ -180,6 +210,15 @@ public final class EditorInt extends EditorDefault<Integer> {
 	@Override
 	public Integer getValue() {
 		readComponent();
+		if (value == null) {
+			return null;
+		}
+		if (value > max) {
+			value = max;
+		}
+		if (value < min) {
+			value = min;
+		}
 		return value;
 	}
 
@@ -207,7 +246,7 @@ public final class EditorInt extends EditorDefault<Integer> {
 	@Override
 	public boolean isDefault() {
 		readComponent();
-		return dflt == value;
+		return Objects.equals(dflt, value);
 	}
 
 }

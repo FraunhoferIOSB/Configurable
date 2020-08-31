@@ -51,6 +51,9 @@ public final class FactoryBigDecimalSwing implements GuiFactorySwing {
 
 	private void createComponent() {
 		BigDecimal rawValue = parentEditor.getRawValue();
+		if (rawValue == null) {
+			rawValue = BigDecimal.ZERO;
+		}
 		BigDecimal min = parentEditor.getMin();
 		BigDecimal max = parentEditor.getMax();
 
@@ -84,7 +87,11 @@ public final class FactoryBigDecimalSwing implements GuiFactorySwing {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		swComponent.setText("" + parentEditor.getRawValue());
+		BigDecimal rawValue = parentEditor.getRawValue();
+		if (rawValue == null) {
+			rawValue = BigDecimal.ZERO;
+		}
+		swComponent.setText("" + rawValue);
 	}
 
 	public void readComponent() {

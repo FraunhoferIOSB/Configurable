@@ -17,6 +17,7 @@
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
@@ -30,12 +31,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Hylke van der Schaaf
  */
 public class EditorDouble extends EditorDefault<Double> {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(EditorDouble.class.getName());
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
@@ -47,7 +52,18 @@ public class EditorDouble extends EditorDefault<Double> {
 
 		double step() default Double.MIN_VALUE;
 
-		double dflt();
+		/**
+		 * @return The default value. Used if dfltIsNull is false.
+		 */
+		double dflt() default 0;
+
+		/**
+		 * If set to true, the default value of the editor is null.
+		 *
+		 * @return if true, the default value of the editor is null, not the
+		 * value of dflt.
+		 */
+		boolean dfltIsNull() default false;
 
 		/**
 		 * A comma separated, case insensitive list of profile names. This field
@@ -62,8 +78,8 @@ public class EditorDouble extends EditorDefault<Double> {
 	private double min;
 	private double max;
 	private double step;
-	private double dflt;
-	private double value;
+	private Double dflt;
+	private Double value;
 
 	public Set<String> profilesEdit = csvToReadOnlySet("");
 	private String profile = DEFAULT_PROFILE_NAME;
@@ -101,7 +117,16 @@ public class EditorDouble extends EditorDefault<Double> {
 		min = annotation.min();
 		max = annotation.max();
 		step = annotation.step();
-		dflt = annotation.dflt();
+		boolean isPrimitive = field.getType().isPrimitive();
+		final boolean dfltIsNull = annotation.dfltIsNull();
+		if (dfltIsNull) {
+			if (isPrimitive) {
+				LOGGER.error("Flag dfltIsNull set to true on a primitive field: {}", field);
+				dflt = 0D;
+			}
+		} else {
+			dflt = annotation.dflt();
+		}
 		value = dflt;
 		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
@@ -118,7 +143,12 @@ public class EditorDouble extends EditorDefault<Double> {
 
 	@Override
 	public JsonElement getConfig() {
-		return new JsonPrimitive(getValue());
+		Double val = getValue();
+		if (val == null) {
+			return JsonNull.INSTANCE;
+		}
+		return new JsonPrimitive(val);
+
 	}
 
 	@Override
@@ -169,7 +199,7 @@ public class EditorDouble extends EditorDefault<Double> {
 		return max;
 	}
 
-	public double getDeflt() {
+	public Double getDeflt() {
 		return dflt;
 	}
 
@@ -177,7 +207,7 @@ public class EditorDouble extends EditorDefault<Double> {
 		return step;
 	}
 
-	public double getRawValue() {
+	public Double getRawValue() {
 		return value;
 	}
 
@@ -194,6 +224,15 @@ public class EditorDouble extends EditorDefault<Double> {
 	@Override
 	public Double getValue() {
 		readComponent();
+		if (value == null) {
+			return null;
+		}
+		if (value > max) {
+			value = max;
+		}
+		if (value < min) {
+			value = min;
+		}
 		return value;
 	}
 

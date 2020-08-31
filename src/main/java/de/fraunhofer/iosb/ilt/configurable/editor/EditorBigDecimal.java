@@ -17,6 +17,7 @@
 package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
@@ -44,15 +45,23 @@ public class EditorBigDecimal extends EditorDefault<BigDecimal> {
 
 		double min() default Double.NEGATIVE_INFINITY;
 
-		double max() default Double.NEGATIVE_INFINITY;
+		double max() default Double.POSITIVE_INFINITY;
 
 		/**
 		 * The default value, must not be NaN, NEGATIVE_INFINITY nor
-		 * NEGATIVE_INFINITY
+		 * POSITIVE_INFINITY
 		 *
-		 * @return The default value.
+		 * @return The default value. Used if dfltIsNull is false.
 		 */
-		double dflt();
+		double dflt() default 0;
+
+		/**
+		 * If set to true, the default value of the editor is null.
+		 *
+		 * @return if true, the default value of the editor is null, not the
+		 * value of dflt.
+		 */
+		boolean dfltIsNull() default false;
 
 		/**
 		 * A comma separated, case insensitive list of profile names. This field
@@ -107,10 +116,11 @@ public class EditorBigDecimal extends EditorDefault<BigDecimal> {
 		if (annotation == null) {
 			throw new IllegalArgumentException("Field must have an EdOptsDouble annotation to use this editor: " + field.getName());
 		}
-
 		min = fromDouble(annotation.min());
 		max = fromDouble(annotation.max());
-		dflt = new BigDecimal(annotation.dflt());
+		if (!annotation.dfltIsNull()) {
+			dflt = new BigDecimal(annotation.dflt());
+		}
 		value = dflt;
 		profilesEdit = csvToReadOnlySet(annotation.profilesEdit());
 	}
@@ -127,7 +137,11 @@ public class EditorBigDecimal extends EditorDefault<BigDecimal> {
 
 	@Override
 	public JsonElement getConfig() {
-		return new JsonPrimitive(getValue());
+		readComponent();
+		if (value == null) {
+			return JsonNull.INSTANCE;
+		}
+		return new JsonPrimitive(value);
 	}
 
 	@Override

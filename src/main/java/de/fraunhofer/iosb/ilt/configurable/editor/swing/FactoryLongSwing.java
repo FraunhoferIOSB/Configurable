@@ -49,9 +49,6 @@ public final class FactoryLongSwing implements GuiFactorySwing {
 	}
 
 	private void createComponent() {
-		if (parentEditor.getRawValue() < parentEditor.getMin() || parentEditor.getRawValue() > parentEditor.getMax()) {
-			parentEditor.setRawValue(Math.max(parentEditor.getMin(), Math.min(parentEditor.getRawValue(), parentEditor.getMax())));
-		}
 		swComponent = new JTextField();
 		swComponent.addActionListener(new ActionListener() {
 			@Override
@@ -62,11 +59,26 @@ public final class FactoryLongSwing implements GuiFactorySwing {
 		fillComponent();
 	}
 
+	private long getRawValue() {
+		Long rawValue = parentEditor.getRawValue();
+		final long min = parentEditor.getMin();
+		final long max = parentEditor.getMax();
+		if (rawValue == null) {
+			rawValue = 0L;
+			parentEditor.setRawValue(rawValue);
+		}
+		if (rawValue < min || rawValue > max) {
+			rawValue = Math.max(min, Math.min(rawValue, max));
+			parentEditor.setRawValue(rawValue);
+		}
+		return rawValue;
+	}
+
 	/**
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		swComponent.setText("" + parentEditor.getRawValue());
+		swComponent.setText("" + getRawValue());
 	}
 
 	public void readComponent() {
