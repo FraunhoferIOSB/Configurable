@@ -179,6 +179,14 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
 		return new JsonPrimitive(value);
 	}
 
+	public Boolean getRawValue() {
+		return value;
+	}
+
+	public void setRawValue(Boolean value) {
+		this.value = value;
+	}
+
 	@Override
 	public Boolean getValue() {
 		readComponent();

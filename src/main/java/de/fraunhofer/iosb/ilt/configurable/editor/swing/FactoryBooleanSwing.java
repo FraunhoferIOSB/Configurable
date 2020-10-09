@@ -51,7 +51,7 @@ public final class FactoryBooleanSwing implements GuiFactorySwing {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		swComponent.setSelected(parentEditor.getValue());
+		swComponent.setSelected(parentEditor.getRawValue());
 	}
 
 	public boolean isSelected() {
