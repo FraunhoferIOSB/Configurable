@@ -1,3 +1,9 @@
+# Release Version 0.29
+
+**Updates**
+* Fixed Boolean values not being transferred to the GUI.
+
+
 # Release Version 0.28
 
 **Updates**
