@@ -1,4 +1,4 @@
-# Configurable [![Build Status](https://travis-ci.org/FraunhoferIOSB/Configurable.svg?branch=master)](https://travis-ci.org/FraunhoferIOSB/Configurable)
+# Configurable [![Build Status](https://api.travis-ci.com/FraunhoferIOSB/Configurable.svg?branch=master)](https://travis-ci.com/FraunhoferIOSB/Configurable)
 
 A library for building classes that have a configuration GUI and can store/load this configuration to/from JSON.
 
