@@ -4,7 +4,7 @@
 
 	<groupId>de.fraunhofer.iosb.ilt</groupId>
 	<artifactId>Configurable</artifactId>
-	<version>0.30-SNAPSHOT</version>
+	<version>0.30</version>
 	<packaging>jar</packaging>
 
 	<name>Configurable</name>
@@ -61,7 +61,7 @@
 		<url>https://github.com/FraunhoferIOSB/Configurable</url>
 		<connection>scm:git:git@github.com:FraunhoferIOSB/Configurable.git</connection>
 		<developerConnection>scm:git:git@github.com:FraunhoferIOSB/Configurable.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>v0.30</tag>
 	</scm>
 
 	<issueManagement>
