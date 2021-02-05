@@ -10,26 +10,13 @@ Why Configurable?
 
 ## Maven
 
-Configurable is hosted on Bintray. If you add the bintray repository to your pom you are set:
+Configurable is hosted on Maven Central:
 ```
-    <repositories>
-        <repository>
-            <id>bintray-fraunhoferiosb-Maven</id>
-            <url>https://dl.bintray.com/fraunhoferiosb/Maven</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>de.fraunhofer.iosb.ilt</groupId>
             <artifactId>Configurable</artifactId>
-            <version>0.29</version>
+            <version>0.30</version>
         </dependency>
     </dependencies>
 ```

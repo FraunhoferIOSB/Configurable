@@ -1,3 +1,10 @@
+# Release Version 0.30
+
+**Updates**
+* Changed distribution to oss.sonatype.org / maven central.
+* Updated dependencies.
+
+
 # Release Version 0.29
 
 **Updates**
