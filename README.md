@@ -1,4 +1,4 @@
-# Configurable [![Build Status](https://api.travis-ci.com/FraunhoferIOSB/Configurable.svg?branch=master)](https://travis-ci.com/FraunhoferIOSB/Configurable)
+# Configurable [![Build Status](https://github.com/FraunhoferIOSB/Configurable/workflows/Maven%20Build/badge.svg)](https://github.com/FraunhoferIOSB/Configurable/actions)
 
 A library for building classes that have a configuration GUI and can store/load this configuration to/from JSON.
 
