@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>de.fraunhofer.iosb.ilt</groupId>
+        <artifactId>ConfigurableParent</artifactId>
+        <version>0.31-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
 
     <groupId>de.fraunhofer.iosb.ilt</groupId>
-    <artifactId>AnnotationExample</artifactId>
-    <version>0.30</version>
+    <artifactId>ConfigurableExampleAnnotations</artifactId>
     <packaging>jar</packaging>
 
-    <name>AnnotationExample</name>
+    <name>CnfExample-Annotations</name>
     <description>An example of the use of the Configurable framework.</description>
     <url>https://github.com/FraunhoferIOSB/Configurable</url>
     <inceptionYear>2018</inceptionYear>
@@ -15,26 +20,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>de.fraunhofer.iosb.ilt.configurableexample.ExampleFxGui</mainClass>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
 
         <configurable.version>${project.version}</configurable.version>
         <logback.version>1.2.0</logback.version>
         <openjfx.version>11.0.2</openjfx.version>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>bintray-fraunhoferiosb-Maven</id>
-            <url>https://dl.bintray.com/fraunhoferiosb/Maven</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <dependencies>
         <dependency>

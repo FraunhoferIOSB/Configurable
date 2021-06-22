@@ -3,26 +3,28 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>de.fraunhofer.iosb.ilt</groupId>
-	<artifactId>Configurable</artifactId>
+	<artifactId>ConfigurableParent</artifactId>
 	<version>0.31-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
-	<name>Configurable</name>
+	<name>ConfigurableParent</name>
 	<description>A light-weight framework for generating configuration user interfaces from classes and storing the configuration in JSON.</description>
 	<url>https://github.com/FraunhoferIOSB/Configurable</url>
 	<inceptionYear>2014</inceptionYear>
+
+	<modules>
+		<module>Configurable</module>
+		<module>examples/AnnotationExample</module>
+		<module>examples/ConfigurableExample</module>
+	</modules>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 
-		<bintray.subject>fraunhoferiosb</bintray.subject>
-		<bintray.repo>Maven</bintray.repo>
-		<bintray.package>Configurable</bintray.package>
-
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-		<maven-dependency-plugin.version>3.1.1</maven-dependency-plugin.version>
+		<maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
 		<maven-gpg-plugin>3.0.1</maven-gpg-plugin>
 		<maven-javadoc-plugin.version>3.3.0</maven-javadoc-plugin.version>
 		<maven-nexus-staging-plugin>1.6.8</maven-nexus-staging-plugin>
@@ -38,7 +40,8 @@
 
 	<licenses>
 		<license>
-			<name>LGPL-3</name>
+			<name>GNU Lesser General Public License v3, or (at your option) any later version</name>
+			<url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
 			<comments>For more information see the LICENSE file included with the sources.</comments>
 		</license>
 	</licenses>
@@ -77,25 +80,11 @@
 		<repository>
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>	
+		</repository>
 	</distributionManagement>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>${maven-compiler-plugin.version}</version>
-				<configuration>
-					<source>${maven.compiler.source}</source>
-					<target>${maven.compiler.target}</target>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-
 	<profiles>
-		<profile> 
+		<profile>
 			<id>release</id>
 			<build>
 				<plugins>
@@ -158,39 +147,35 @@
 							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 							<autoReleaseAfterClose>false</autoReleaseAfterClose>
 						</configuration>
-					</plugin>		
-
+					</plugin>
 				</plugins>
 			</build>
 		</profile>
 	</profiles>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>${gson.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.oneandone.reflections8</groupId>
-			<artifactId>reflections8</artifactId>
-			<version>${reflections.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j-api.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>${commons-lang.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.openjfx</groupId>
-			<artifactId>javafx-controls</artifactId>
-			<version>${openjfx.version}</version>
-			<scope>compile</scope>
-		</dependency>
-	</dependencies>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>${maven-assembly-plugin.version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>${maven-compiler-plugin.version}</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>${maven-release-plugin.version}</version>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
