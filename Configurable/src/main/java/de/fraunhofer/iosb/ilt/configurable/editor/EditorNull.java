@@ -22,6 +22,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemString;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemTrue;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
 
 /**
  * An editor that does not edit anything. For cases where you want a class to be
@@ -45,6 +49,15 @@ public class EditorNull extends EditorDefault<Void> {
 	@Override
 	public void setConfig(JsonElement config) {
 		// Nothing to configure
+	}
+
+	@Override
+	public SchemaItem getJsonSchema(RootSchema rootSchema) {
+		ItemTrue item = new ItemTrue();
+		if (rootSchema == null) {
+			return new RootSchema(item);
+		}
+		return item;
 	}
 
 	@Override

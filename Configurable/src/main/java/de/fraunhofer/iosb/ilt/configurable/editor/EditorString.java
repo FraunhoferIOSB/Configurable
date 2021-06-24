@@ -22,6 +22,9 @@ import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemString;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryStringFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryStringSwing;
@@ -127,6 +130,18 @@ public class EditorString extends EditorDefault<String> {
 		}
 		return new JsonPrimitive(value);
 
+	}
+
+	@Override
+	public SchemaItem getJsonSchema(RootSchema rootSchema) {
+		ItemString item = new ItemString()
+				.setDeflt(dflt)
+				.setTitle(getLabel())
+				.setDescription(getDescription());
+		if (rootSchema == null) {
+			return new RootSchema(item);
+		}
+		return item;
 	}
 
 	@Override

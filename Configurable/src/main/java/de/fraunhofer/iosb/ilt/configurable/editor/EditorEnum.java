@@ -22,6 +22,10 @@ import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemNumber;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemString;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryEnumFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryEnumSwing;
@@ -30,6 +34,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,6 +141,21 @@ public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
 			return JsonNull.INSTANCE;
 		}
 		return new JsonPrimitive(value.name());
+	}
+
+	@Override
+	public SchemaItem getJsonSchema(RootSchema rootSchema) {
+		ItemString item = new ItemString()
+				.setTitle(getLabel())
+				.setDescription(getDescription())
+				.setDeflt(dflt);
+		for (T value : sourceType.getEnumConstants()) {
+			item.addAllowedValue(value.name());
+		}
+		if (rootSchema == null) {
+			return new RootSchema(item);
+		}
+		return item;
 	}
 
 	@Override

@@ -23,6 +23,10 @@ import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.EditorFactory;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemArray;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemInteger;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
 import de.fraunhofer.iosb.ilt.configurable.Utils;
 import de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
@@ -241,6 +245,22 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 			result.add(item.getConfig());
 		}
 		return result;
+	}
+
+	@Override
+	public SchemaItem getJsonSchema(RootSchema rootSchema) {
+		ItemArray item = new ItemArray()
+				.setMinItems(minCount)
+				.setMaxItems(maxCount)
+				.setTitle(getLabel())
+				.setDescription(getDescription());
+		SchemaItem retval = item;
+		if (rootSchema == null) {
+			rootSchema = new RootSchema(item);
+			retval = rootSchema;
+		}
+		item.setItems(factory.createEditor().getJsonSchema(rootSchema));
+		return retval;
 	}
 
 	@Override

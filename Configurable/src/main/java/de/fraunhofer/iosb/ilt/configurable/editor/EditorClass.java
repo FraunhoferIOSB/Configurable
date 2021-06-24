@@ -24,6 +24,11 @@ import de.fraunhofer.iosb.ilt.configurable.ConfigurableFactory;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemArray;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemObject;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemRef;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
 import de.fraunhofer.iosb.ilt.configurable.Utils;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.getConfigurableConstructor;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.instantiateFrom;
@@ -128,6 +133,21 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
 	public JsonElement getConfig() {
 		readComponent();
 		return classConfig;
+	}
+
+	@Override
+	public SchemaItem getJsonSchema(RootSchema rootSchema) {
+		if (rootSchema == null) {
+			return classEditor.getJsonSchema(rootSchema)
+					.setTitle(getLabel())
+					.setDescription(getDescription());
+		}
+		String refName = clazz.getName();
+		if (!rootSchema.hasDef(refName)) {
+			rootSchema.addDef(refName, new ItemRef(refName)); // Placeholder to catch recursion
+			rootSchema.addDef(refName, classEditor.getJsonSchema(rootSchema));
+		}
+		return new ItemRef(refName);
 	}
 
 	@Override

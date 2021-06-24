@@ -22,6 +22,11 @@ import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemObject;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemString;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItemAbstract;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.hasConfigurableConstructorParameter;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableField;
@@ -252,6 +257,25 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public SchemaItem getJsonSchema(RootSchema rootSchema) {
+		ItemObject myItem = new ItemObject()
+				.setTitle(getLabel())
+				.setDescription(getDescription());
+		SchemaItem retval = myItem;
+		if (rootSchema == null) {
+			rootSchema = new RootSchema(myItem);
+			retval = rootSchema;
+		}
+		for (Map.Entry<String, Item<V>> subItem : options.entrySet()) {
+			final String subItemName = subItem.getKey();
+			final Item<V> subItemValue = subItem.getValue();
+			final SchemaItem subItemSchema = subItemValue.editor.getJsonSchema(rootSchema);
+			myItem.addProperty(subItemName, subItemValue.optional, subItemSchema);
+		}
+		return retval;
 	}
 
 	@Override

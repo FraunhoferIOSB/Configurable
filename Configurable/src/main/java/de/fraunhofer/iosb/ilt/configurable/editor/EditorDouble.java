@@ -22,6 +22,9 @@ import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemNumber;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryDoubleFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryDoubleSwing;
@@ -30,6 +33,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -149,6 +153,24 @@ public class EditorDouble extends EditorDefault<Double> {
 		}
 		return new JsonPrimitive(val);
 
+	}
+
+	@Override
+	public SchemaItem getJsonSchema(RootSchema rootSchema) {
+		ItemNumber item = new ItemNumber()
+				.setDeflt(dflt)
+				.setTitle(getLabel())
+				.setDescription(getDescription());
+		if (min > Double.NEGATIVE_INFINITY) {
+			item.setMinimum(BigDecimal.valueOf(min));
+		}
+		if (max < Double.POSITIVE_INFINITY) {
+			item.setMaximum(BigDecimal.valueOf(max));
+		}
+		if (rootSchema == null) {
+			return new RootSchema(item);
+		}
+		return item;
 	}
 
 	@Override

@@ -22,6 +22,9 @@ import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemNumber;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryBigDecimalFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryBigDecimalSwing;
@@ -142,6 +145,24 @@ public class EditorBigDecimal extends EditorDefault<BigDecimal> {
 			return JsonNull.INSTANCE;
 		}
 		return new JsonPrimitive(value);
+	}
+
+	@Override
+	public SchemaItem getJsonSchema(RootSchema rootSchema) {
+		ItemNumber item = new ItemNumber()
+				.setDeflt(dflt)
+				.setTitle(getLabel())
+				.setDescription(getDescription());
+		if (min != null) {
+			item.setMinimum(min);
+		}
+		if (max != null) {
+			item.setMaximum(max);
+		}
+		if (rootSchema == null) {
+			return new RootSchema(item);
+		}
+		return item;
 	}
 
 	@Override

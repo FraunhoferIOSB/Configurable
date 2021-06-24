@@ -22,6 +22,9 @@ import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemInteger;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryLongFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryLongSwing;
@@ -30,6 +33,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,6 +139,24 @@ public final class EditorLong extends EditorDefault<Long> {
 			return JsonNull.INSTANCE;
 		}
 		return new JsonPrimitive(val);
+	}
+
+	@Override
+	public SchemaItem getJsonSchema(RootSchema rootSchema) {
+		ItemInteger item = new ItemInteger()
+				.setDeflt(dflt)
+				.setTitle(getLabel())
+				.setDescription(getDescription());
+		if (min > Long.MIN_VALUE) {
+			item.setMinimum(min);
+		}
+		if (max < Long.MAX_VALUE) {
+			item.setMaximum(max);
+		}
+		if (rootSchema == null) {
+			return new RootSchema(item);
+		}
+		return item;
 	}
 
 	@Override

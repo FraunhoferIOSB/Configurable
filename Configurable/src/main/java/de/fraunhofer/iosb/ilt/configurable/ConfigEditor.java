@@ -17,6 +17,9 @@
 package de.fraunhofer.iosb.ilt.configurable;
 
 import com.google.gson.JsonElement;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItemAbstract;
 import java.lang.reflect.Field;
 
 /**
@@ -59,6 +62,29 @@ public interface ConfigEditor<T> {
 	 * @param value the value in the editor.
 	 */
 	public void setValue(T value);
+
+	/**
+	 * Get the Schema for this editor, in the form of a root schema.
+	 *
+	 * @return The schema for this editor, as a root schema.
+	 */
+	public default RootSchema getJsonRootSchema() {
+		SchemaItem jsonSchema = getJsonSchema(null);
+		if (jsonSchema instanceof RootSchema) {
+			return (RootSchema) jsonSchema;
+		}
+		throw new IllegalStateException("getJsonSchema did not return a RootSchema.");
+	}
+
+	/**
+	 * Get the JSON Schema for this editor, using the given rootSchema for
+	 * shared $defs.
+	 *
+	 * @param rootSchema the root schema to use for $defs. If null, the return
+	 * value must be a root schema.
+	 * @return the schema for this editor.
+	 */
+	public SchemaItem getJsonSchema(RootSchema rootSchema);
 
 	/**
 	 * Get a factory that can generate a swing-based gui for this editor.

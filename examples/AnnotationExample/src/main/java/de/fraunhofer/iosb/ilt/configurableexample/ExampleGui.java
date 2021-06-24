@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditors;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
 import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
@@ -36,6 +37,7 @@ public class ExampleGui extends javax.swing.JFrame {
 	 */
 	public ExampleGui() {
 		createGui();
+		printSchema();
 	}
 
 	private void createGui() {
@@ -116,6 +118,15 @@ public class ExampleGui extends javax.swing.JFrame {
 		editor = ConfigEditors.buildEditorFromClass(FlagShapeList.class, null, null).get();
 		parentPanel.add(editor.getGuiFactorySwing().getComponent());
 	}
+
+	private void printSchema() {
+		RootSchema jsonRootSchema = ConfigEditors.buildEditorFromClass(FlagShapeList.class, null, null)
+				.get()
+				.getJsonRootSchema();
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String jsonString = gson.toJson(jsonRootSchema);
+		jsonTextArea.setText(jsonString);
+		LOGGER.info("Our schema is:\n{}", jsonString);
 	}
 
 	private void useConfig() {

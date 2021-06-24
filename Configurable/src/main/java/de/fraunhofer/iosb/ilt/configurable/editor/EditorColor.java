@@ -22,6 +22,10 @@ import com.google.gson.JsonPrimitive;
 import static de.fraunhofer.iosb.ilt.configurable.ConfigEditor.DEFAULT_PROFILE_NAME;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemInteger;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemObject;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import de.fraunhofer.iosb.ilt.configurable.editor.fx.FactoryColorFx;
 import de.fraunhofer.iosb.ilt.configurable.editor.swing.FactoryColorSwing;
@@ -31,6 +35,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -176,6 +181,21 @@ public class EditorColor extends EditorDefault<Color> {
 			config.add("a", new JsonPrimitive(alpha));
 		}
 		return config;
+	}
+
+	@Override
+	public SchemaItem getJsonSchema(RootSchema rootSchema) {
+		ItemObject myItem = new ItemObject()
+				.addProperty("red", false, new ItemInteger().setMinimum(0L).setMaximum(255L).setDeflt(0L).setTitle("Red").setDescription("The red value"))
+				.addProperty("green", false, new ItemInteger().setMinimum(0L).setMaximum(255L).setDeflt(0L).setTitle("Green").setDescription("The green value"))
+				.addProperty("blue", false, new ItemInteger().setMinimum(0L).setMaximum(255L).setDeflt(0L).setTitle("Blue").setDescription("The blue value"));
+		if (editAlpla) {
+			myItem.addProperty("alpha", false, new ItemInteger().setMinimum(0L).setMaximum(255L).setDeflt(255L).setTitle("Alpha").setDescription("The alpha value"));
+		}
+		if (rootSchema == null) {
+			return new RootSchema(myItem);
+		}
+		return myItem;
 	}
 
 	@Override

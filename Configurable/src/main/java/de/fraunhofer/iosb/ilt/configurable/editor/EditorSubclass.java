@@ -26,6 +26,12 @@ import de.fraunhofer.iosb.ilt.configurable.ConfigurableFactory;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemConst;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemObject;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemRef;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemString;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
+import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
 import de.fraunhofer.iosb.ilt.configurable.Utils;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
@@ -360,6 +366,39 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 	}
 
 	@Override
+	public SchemaItem getJsonSchema(RootSchema rootSchema) {
+		initClasses();
+		ItemObject myItem = new ItemObject()
+				.setTitle(getLabel())
+				.setDescription(getDescription())
+				.setAdditionalProperties(true);
+		SchemaItem retval = myItem;
+		if (rootSchema == null) {
+			rootSchema = new RootSchema(myItem);
+			retval = rootSchema;
+		}
+
+		List<SchemaItem> oneOfs = new ArrayList<>();
+		for (Map.Entry<String, classItem> classEntry : classesByJsonName.entrySet()) {
+			final classItem classItem = classEntry.getValue();
+			final String itemClassName = classItem.className;
+			final String itemJsonName = classItem.jsonName;
+			if (!rootSchema.hasDef(itemClassName)) {
+				rootSchema.addDef(itemClassName, new ItemRef(itemClassName)); // Placeholder to catch recursion
+				SchemaItem itemSchema = createClassEditor(classItem.jsonName, context, edtCtx).getJsonSchema(rootSchema);
+				rootSchema.addDef(itemClassName, itemSchema);
+			}
+			oneOfs.add(new ItemObject()
+					.setTitle(classItem.displayName)
+					.addProperty(KEY_CLASSNAME, false, new ItemString().addAllowedValue(itemJsonName).addOption("hidden", true))
+					.addProperty(KEY_CLASSCONFIG, false, new ItemRef(itemClassName)));
+		}
+
+		myItem.setOneOf(oneOfs);
+		return retval;
+	}
+
+	@Override
 	public GuiFactorySwing getGuiFactorySwing() {
 		if (factoryFx != null) {
 			throw new IllegalArgumentException("Can not mix different types of editors.");
@@ -524,6 +563,30 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		return prefix.substring(0, idx + 1);
 	}
 
+	private ConfigEditor createClassEditor(final String jsonName, final C context, final D edtCtx) {
+		final ConfigurableFactory factory = findFactory(context, edtCtx);
+		try {
+			final Class<?> subclassType = factory.loadClass(jsonName);
+			return ConfigEditors.buildEditorFromClass(subclassType, context, edtCtx).orElse(null);
+		} catch (final ClassNotFoundException exc) {
+			LOGGER.warn("Exception loading class {}.", jsonName);
+			LOGGER.debug("Exception loading class.", exc);
+		}
+
+		try {
+			Object tempInstance = (T) factory.instantiate(jsonName, classConfig, context, edtCtx);
+			if (tempInstance instanceof Configurable) {
+				final Configurable confInstance = (Configurable) tempInstance;
+				return confInstance.getConfigEditor(context, edtCtx);
+			}
+		} catch (final ConfigurationException exc) {
+			LOGGER.warn("Exception instantiating class {}.", jsonName);
+			LOGGER.debug("Exception instantiating class.", exc);
+		}
+
+		return null;
+	}
+
 	public void setJsonName(final String name) {
 		if (Utils.isNullOrEmpty(name)) {
 			LOGGER.debug("Empty class name.");
@@ -564,12 +627,11 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 			classEditor = confInstance.getConfigEditor(context, edtCtx);
 		}
 
-		if (classEditor != null) {
+		if (classEditor == null) {
+			LOGGER.warn("Class {} is not configurable.", jsonName);
+		} else {
 			classEditor.setConfig(classConfig);
 			classEditor.setProfile(profile);
-		} else {
-			LOGGER.warn("Class {} is not configurable.", jsonName);
-			classEditor = null;
 		}
 
 		fillComponent();
