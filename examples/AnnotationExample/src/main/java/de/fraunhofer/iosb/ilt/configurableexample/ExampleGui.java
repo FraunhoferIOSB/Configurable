@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
+import de.fraunhofer.iosb.ilt.configurable.ConfigEditors;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.Reflection;
 import java.awt.GridBagConstraints;
@@ -39,6 +40,7 @@ public class ExampleGui extends javax.swing.JFrame {
 
 	private void createGui() {
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+		setTitle("Configurable Example");
 		getContentPane().setLayout(new java.awt.BorderLayout());
 
 		GridBagConstraints gridBagConstraints;
@@ -111,9 +113,9 @@ public class ExampleGui extends javax.swing.JFrame {
 	}
 
 	private void addEditorToGui(JPanel parentPanel) {
-		FlagShapeList flag = new FlagShapeList();
-		editor = flag.getConfigEditor(null, null);
-		panelEditor.add(editor.getGuiFactorySwing().getComponent());
+		editor = ConfigEditors.buildEditorFromClass(FlagShapeList.class, null, null).get();
+		parentPanel.add(editor.getGuiFactorySwing().getComponent());
+	}
 	}
 
 	private void useConfig() {

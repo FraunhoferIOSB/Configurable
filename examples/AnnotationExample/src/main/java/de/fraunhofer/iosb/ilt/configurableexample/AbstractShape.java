@@ -24,7 +24,7 @@ public abstract class AbstractShape implements Shape {
 		STARRED
 	}
 
-	@ConfigurableField(editor = EditorSubclass.class,
+	@ConfigurableField(editor = EditorSubclass.class, optional = true,
 			label = "Shape",
 			description = "The sub-shape to put on this Shape")
 	@EditorSubclass.EdOptsSubclass(iface = Shape.class)

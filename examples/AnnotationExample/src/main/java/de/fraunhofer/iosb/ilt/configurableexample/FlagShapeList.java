@@ -1,6 +1,6 @@
 package de.fraunhofer.iosb.ilt.configurableexample;
 
-import de.fraunhofer.iosb.ilt.configurable.AbstractConfigurable;
+import de.fraunhofer.iosb.ilt.configurable.AnnotatedConfigurable;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableField;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorBigDecimal;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorBoolean;
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author scf
  */
-public class FlagShapeList extends AbstractConfigurable<Object, Object> {
+public class FlagShapeList implements AnnotatedConfigurable<Object, Object> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(FlagShapeList.class);
 

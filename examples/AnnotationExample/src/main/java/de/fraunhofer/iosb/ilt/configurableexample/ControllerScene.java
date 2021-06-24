@@ -22,6 +22,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import de.fraunhofer.iosb.ilt.configurable.ConfigEditor;
+import de.fraunhofer.iosb.ilt.configurable.ConfigEditors;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -69,8 +70,7 @@ public class ControllerScene implements Initializable {
 	}
 
 	private void addEditorToGui() {
-		FlagShapeList flag = new FlagShapeList();
-		editor = flag.getConfigEditor(null, null);
+		editor = ConfigEditors.buildEditorFromClass(FlagShapeList.class, null, null).get();
 		paneEditor.setCenter(editor.getGuiFactoryFx().getNode());
 	}
 
