@@ -1,3 +1,10 @@
+# Release Version 0.31
+
+**Updates**
+* Added JSON Schema generation. The schema can be used to generate an editor using
+  for instance [JSON Editor](https://github.com/json-editor/json-editor).
+
+
 # Release Version 0.30
 
 **Updates**
