@@ -22,7 +22,7 @@
         <mainClass>de.fraunhofer.iosb.ilt.configurableexample.ExampleFxGui</mainClass>
 
         <configurable.version>${project.version}</configurable.version>
-        <logback.version>1.2.0</logback.version>
+        <logback.version>1.2.3</logback.version>
         <openjfx.version>11.0.2</openjfx.version>
     </properties>
 
