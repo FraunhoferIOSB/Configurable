@@ -4,7 +4,7 @@
     <parent>
         <groupId>de.fraunhofer.iosb.ilt</groupId>
         <artifactId>ConfigurableParent</artifactId>
-        <version>0.31-SNAPSHOT</version>
+        <version>0.31</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
