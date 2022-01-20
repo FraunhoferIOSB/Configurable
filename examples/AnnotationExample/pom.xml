@@ -23,7 +23,7 @@
 
         <configurable.version>${project.version}</configurable.version>
         <logback.version>1.2.10</logback.version>
-        <openjfx.version>17.0.1</openjfx.version>
+        <openjfx.version>17.0.2</openjfx.version>
     </properties>
 
     <dependencies>
