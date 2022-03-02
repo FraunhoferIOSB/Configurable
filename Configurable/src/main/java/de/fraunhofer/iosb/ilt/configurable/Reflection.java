@@ -19,12 +19,11 @@ package de.fraunhofer.iosb.ilt.configurable;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import org.reflections8.Reflections;
-import org.reflections8.util.ClasspathHelper;
-import org.reflections8.util.ConfigurationBuilder;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 
 /**
  * Utility methods for Reflections.
@@ -37,16 +36,10 @@ public class Reflection {
 
 	public static synchronized Reflections getReflections() {
 		if (reflections == null) {
-			ConfigurationBuilder config = new ConfigurationBuilder().useParallelExecutor().setUrls(ClasspathHelper.forClassLoader());
-			try {
-				reflections = new Reflections(config);
-			} finally {
-
-				Optional<ExecutorService> executorService = config.getExecutorService();
-				if (executorService.isPresent()) {
-					executorService.get().shutdown();
-				}
-			}
+			ConfigurationBuilder config = new ConfigurationBuilder()
+					.addUrls(ClasspathHelper.forJavaClassPath())
+					.setScanners(Scanners.values());
+			reflections = new Reflections(config);
 		}
 		return reflections;
 	}

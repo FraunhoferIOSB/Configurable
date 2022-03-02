@@ -1,3 +1,10 @@
+# Release Version 0.32
+
+**Updates**
+* Switched back to the original Reflections library.
+* Made JavaFX dependency `provided`, so JavaFX projects should include it themselves.
+
+
 # Release Version 0.31
 
 **Updates**
