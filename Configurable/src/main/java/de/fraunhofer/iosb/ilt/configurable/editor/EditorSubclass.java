@@ -26,7 +26,6 @@ import de.fraunhofer.iosb.ilt.configurable.ConfigurableFactory;
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
-import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemConst;
 import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemObject;
 import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemRef;
 import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemString;
@@ -51,6 +50,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -310,8 +310,11 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
 		readComponent();
 		JsonObject result;
 		if (merge && classConfig != null && classConfig.isJsonObject()) {
-			result = classConfig.getAsJsonObject();
+			result = new JsonObject();
 			result.add(nameField, new JsonPrimitive(jsonName));
+			for (Entry<String, JsonElement> entry : classConfig.getAsJsonObject().entrySet()) {
+				result.add(entry.getKey(), entry.getValue());
+			}
 		} else {
 			result = new JsonObject();
 			result.add(KEY_CLASSNAME, new JsonPrimitive(jsonName));
