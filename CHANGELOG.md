@@ -1,3 +1,9 @@
+# Release Version 0.33
+
+**Updates**
+* Improved reliability of ordering of items in generated JSON.
+
+
 # Release Version 0.32
 
 **Updates**

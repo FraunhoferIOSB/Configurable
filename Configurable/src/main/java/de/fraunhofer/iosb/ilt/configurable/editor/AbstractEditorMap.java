@@ -23,10 +23,8 @@ import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemObject;
-import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemString;
 import de.fraunhofer.iosb.ilt.configurable.JsonSchema.RootSchema;
 import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItem;
-import de.fraunhofer.iosb.ilt.configurable.JsonSchema.SchemaItemAbstract;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.csvToReadOnlySet;
 import static de.fraunhofer.iosb.ilt.configurable.annotations.AnnotationHelper.hasConfigurableConstructorParameter;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableField;
@@ -41,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
@@ -123,21 +122,21 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	 */
 	private final int columns;
 
-	public Set<String> profilesEdit = csvToReadOnlySet("");
+	private Set<String> profilesEdit = csvToReadOnlySet("");
 	private String profile = DEFAULT_PROFILE_NAME;
 
 	private FactoryMapSwing factorySwing;
 	private FactoryMapFx factoryFx;
 
-	public AbstractEditorMap() {
+	protected AbstractEditorMap() {
 		columns = 1;
 	}
 
-	public AbstractEditorMap(final int columns) {
+	protected AbstractEditorMap(final int columns) {
 		this.columns = columns;
 	}
 
-	public AbstractEditorMap(final int columns, final String label, final String description) {
+	protected AbstractEditorMap(final int columns, final String label, final String description) {
 		this.columns = columns;
 		setLabel(label);
 		setDescription(description);
@@ -214,9 +213,7 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 				} else {
 					final JsonElement itemConfig = configObj.get(item.jsonName);
 					item.editor.setConfig(itemConfig);
-					if (itemConfig != null) {
-						value.add(jsonName);
-					} else if (!item.optional) {
+					if (itemConfig != null || !item.optional) {
 						value.add(jsonName);
 					}
 				}
@@ -243,14 +240,18 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 	@Override
 	public JsonElement getConfig() {
 		final JsonObject result = new JsonObject();
-		for (final String key : value) {
-			final Item<V> item = options.get(key);
+		for (Entry<String, Item<V>> entry : options.entrySet()) {
+			String key = entry.getKey();
+			if (!value.contains(key)) {
+				continue;
+			}
+			final Item<V> item = entry.getValue();
 			final JsonElement itemConfig = item.editor.getConfig();
 			if (item.merge && itemConfig.isJsonObject()) {
 				// Handle merge
 				final JsonObject itemObject = itemConfig.getAsJsonObject();
-				for (final Map.Entry<String, JsonElement> entry : itemObject.entrySet()) {
-					result.add(entry.getKey(), entry.getValue());
+				for (final Entry<String, JsonElement> subEntry : itemObject.entrySet()) {
+					result.add(subEntry.getKey(), subEntry.getValue());
 				}
 			} else {
 				result.add(key, itemConfig);
@@ -375,10 +376,9 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 			MethodUtils.invokeMethod(target, methodName, val);
 			return true;
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException exc) {
-			LOGGER.trace("Failed to call setter.", exc);
+			LOGGER.debug("Failed call method {} on {}.", methodName, target.getClass().getName());
+			return false;
 		}
-		LOGGER.debug("Failed call method {} on {}.", methodName, target.getClass().getName());
-		return false;
 	}
 
 	@Override
