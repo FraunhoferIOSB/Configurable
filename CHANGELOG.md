@@ -1,3 +1,9 @@
+# Release Version 0.34
+
+**Updates**
+* Updated dependencies.
+
+
 # Release Version 0.33
 
 **Updates**
