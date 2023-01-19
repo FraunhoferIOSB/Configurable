@@ -23,7 +23,7 @@
 
         <configurable.version>${project.version}</configurable.version>
         <logback.version>1.4.5</logback.version>
-        <openjfx.version>19</openjfx.version>
+        <openjfx.version>19.0.2</openjfx.version>
     </properties>
 
     <dependencies>
