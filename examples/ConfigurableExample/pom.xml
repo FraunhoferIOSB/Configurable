@@ -22,7 +22,7 @@
         <mainClass>de.fraunhofer.iosb.ilt.configurableexample.ExampleGui</mainClass>
 
         <configurable.version>${project.version}</configurable.version>
-        <logback.version>1.4.5</logback.version>
+        <logback.version>1.4.6</logback.version>
     </properties>
 
     <dependencies>
