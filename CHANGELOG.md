@@ -1,3 +1,10 @@
+# Development Version 0.34
+
+**Updates**
+* Updated the minimum Java version to 17, since new JavaFX versions have this requirement.
+* Updated dependencies.
+
+
 # Release Version 0.34
 
 **Updates**
