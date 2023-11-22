@@ -32,7 +32,7 @@
 		<maven-release-plugin.version>3.0.1</maven-release-plugin.version>
 		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
 
-		<commons-lang.version>3.13.0</commons-lang.version>
+		<commons-lang.version>3.14.0</commons-lang.version>
 		<gson.version>2.10.1</gson.version>
 		<openjfx.version>20.0.2</openjfx.version>
 		<reflections.version>0.10.2</reflections.version>
