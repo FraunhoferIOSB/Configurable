@@ -23,10 +23,10 @@
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 
-		<maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
+		<maven-assembly-plugin.version>3.7.0</maven-assembly-plugin.version>
 		<maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
-		<maven-gpg-plugin>3.1.0</maven-gpg-plugin>
+		<maven-gpg-plugin>3.2.0</maven-gpg-plugin>
 		<maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
 		<maven-nexus-staging-plugin>1.6.13</maven-nexus-staging-plugin>
 		<maven-release-plugin.version>3.0.1</maven-release-plugin.version>
