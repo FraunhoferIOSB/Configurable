@@ -23,18 +23,18 @@
 		<maven.compiler.source>17</maven.compiler.source>
 		<maven.compiler.target>17</maven.compiler.target>
 
-		<maven-assembly-plugin.version>3.6.0</maven-assembly-plugin.version>
-		<maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
+		<maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
+		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
-		<maven-gpg-plugin>3.1.0</maven-gpg-plugin>
+		<maven-gpg-plugin>3.2.3</maven-gpg-plugin>
 		<maven-javadoc-plugin.version>3.6.3</maven-javadoc-plugin.version>
 		<maven-nexus-staging-plugin>1.6.13</maven-nexus-staging-plugin>
 		<maven-release-plugin.version>3.0.1</maven-release-plugin.version>
-		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+		<maven-source-plugin.version>3.3.1</maven-source-plugin.version>
 
 		<commons-lang.version>3.14.0</commons-lang.version>
 		<gson.version>2.10.1</gson.version>
-		<openjfx.version>21.0.2</openjfx.version>
+		<openjfx.version>22</openjfx.version>
 		<reflections.version>0.10.2</reflections.version>
 		<slf4j-api.version>2.0.12</slf4j-api.version>
 	</properties>
