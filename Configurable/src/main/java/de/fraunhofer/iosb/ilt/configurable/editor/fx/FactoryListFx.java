@@ -70,14 +70,14 @@ public final class FactoryListFx<U, T extends ConfigEditor<U>> implements GuiFac
 
 	private void createPane() {
 		FlowPane controls = new FlowPane();
-		controls.setAlignment(Pos.TOP_RIGHT);
+		controls.setAlignment(Pos.TOP_LEFT);
 
-		Label addLabel = new Label(text);
-		addLabel.setAlignment(Pos.BASELINE_RIGHT);
-		controls.getChildren().add(addLabel);
 		addButton = new Button("+");
 		addButton.setOnAction((event) -> parentEditor.addItem());
 		controls.getChildren().add(addButton);
+		Label addLabel = new Label(text);
+		addLabel.setAlignment(Pos.BASELINE_RIGHT);
+		controls.getChildren().add(addLabel);
 
 		fxPaneList = new GridPane();
 		fxPaneRoot = new BorderPane();
