@@ -324,6 +324,15 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
 		fillComponent();
 	}
 
+	public void upItem(int idx) {
+		if (idx == 0 || idx >= value.size()) {
+			return;
+		}
+		T item = value.remove(idx);
+		value.add(idx - 1, item);
+		fillComponent();
+	}
+
 	@Override
 	public Iterator<T> iterator() {
 		return value.iterator();

@@ -23,6 +23,8 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -104,9 +106,21 @@ public final class FactoryListSwing<U, T extends ConfigEditor<U>> implements Gui
 			swListHolder.add(item.getGuiFactorySwing().getComponent(), gbc);
 
 			if (parentEditor.canEdit()) {
+				Box buttonBox = new Box(BoxLayout.Y_AXIS);
+
 				JButton removeButton = new JButton("❌");
 				removeButton.setMargin(new Insets(1, 1, 1, 1));
 				removeButton.addActionListener((event) -> parentEditor.removeItem(item));
+				buttonBox.add(removeButton);
+
+				if (row > 0) {
+					final int myRow = row;
+					JButton upButton = new JButton("↑");
+					upButton.setMargin(new Insets(1, 1, 1, 1));
+					upButton.addActionListener((event) -> parentEditor.upItem(myRow));
+					buttonBox.add(upButton);
+				}
+
 				gbc = new GridBagConstraints();
 				gbc.gridx = vertical ? 1 : row;
 				gbc.gridy = vertical ? row : 1;

@@ -31,6 +31,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 
 /**
  *
@@ -107,14 +108,23 @@ public final class FactoryListFx<U, T extends ConfigEditor<U>> implements GuiFac
 					vertical ? row : 0,
 					1, 1, HPos.LEFT, VPos.BASELINE, Priority.ALWAYS, Priority.SOMETIMES);
 			if (parentEditor.canEdit()) {
+				VBox buttonBox = new VBox();
 				Button removeButton = new Button("-");
 				removeButton.setOnAction((event) -> parentEditor.removeItem(item));
+				buttonBox.getChildren().add(removeButton);
+
+				if (row > 0) {
+					final int myRow = row;
+					Button upButton = new Button("↑");
+					upButton.setOnAction((event) -> parentEditor.upItem(myRow));
+					buttonBox.getChildren().add(upButton);
+				}
 				GridPane.setConstraints(
-						removeButton,
+						buttonBox,
 						vertical ? 1 : row,
 						vertical ? row : 1,
 						1, 1, HPos.RIGHT, VPos.TOP, Priority.NEVER, Priority.NEVER);
-				fxPaneList.getChildren().addAll(pane, removeButton);
+				fxPaneList.getChildren().addAll(pane, buttonBox);
 			}
 			row++;
 		}
