@@ -2,6 +2,9 @@
 
 **Updates**
 * Items in List editors now have a button to move them up in the list.
+* fixed NPE if EdOptsBool#dfltIsNull is used
+* [FX] Moved list-add button to the left
+* Updated dependencies.
 
 
 # Release Version 0.35
