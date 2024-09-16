@@ -20,6 +20,7 @@ import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorBoolean;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import java.util.Objects;
 
 /**
  *
@@ -51,7 +52,7 @@ public final class FactoryBooleanSwing implements GuiFactorySwing {
 	 * Ensure the component represents the current value.
 	 */
 	public void fillComponent() {
-		swComponent.setSelected(parentEditor.getRawValue());
+		swComponent.setSelected(Objects.requireNonNullElse(parentEditor.getRawValue(), Boolean.FALSE));
 	}
 
 	public boolean isSelected() {
