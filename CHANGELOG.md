@@ -1,4 +1,4 @@
-# Development Version 0.36
+# Release Version 0.36
 
 **Updates**
 * Items in List editors now have a button to move them up in the list.
