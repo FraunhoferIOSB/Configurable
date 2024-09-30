@@ -26,7 +26,7 @@
 		<maven-assembly-plugin.version>3.7.1</maven-assembly-plugin.version>
 		<maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
 		<maven-dependency-plugin.version>3.2.0</maven-dependency-plugin.version>
-		<maven-gpg-plugin>3.2.6</maven-gpg-plugin>
+		<maven-gpg-plugin>3.2.7</maven-gpg-plugin>
 		<maven-javadoc-plugin.version>3.10.0</maven-javadoc-plugin.version>
 		<maven-nexus-staging-plugin>1.7.0</maven-nexus-staging-plugin>
 		<maven-release-plugin.version>3.1.1</maven-release-plugin.version>
