@@ -337,7 +337,7 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
 
     /**
      * For each of the keys in the map, tries set the value of the field on the
-     * target object.It first tries to set the field with the fieldName
+     * target object. It first tries to set the field with the fieldName
      * directly. If that does not work, it tries to call the setter
      * set{fieldName}(fieldValue) on the target.
      *
@@ -345,7 +345,8 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
      * @throws ConfigurationException if any of the values could not be loaded.
      */
     public void setContentsOn(final Object target) throws ConfigurationException {
-        for (final Item<V> item : options.values()) {
+        for (final String itemName : value) {
+            Item<V> item = options.get(itemName);
             if (hasConfigurableConstructorParameter(target, item.fieldName)) {
                 continue;
             }
