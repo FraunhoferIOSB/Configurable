@@ -58,7 +58,7 @@
         <root.basedir>${project.basedir}</root.basedir>
 
         <version.commons-lang>3.17.0</version.commons-lang>
-        <version.gson>2.11.0</version.gson>
+        <version.gson>2.13.1</version.gson>
         <version.logback>1.5.18</version.logback>
 
         <version.maven.plugin.assembly>3.7.1</version.maven.plugin.assembly>
@@ -72,7 +72,7 @@
 
         <version.openjfx>22.0.2</version.openjfx>
         <version.reflections>0.10.2</version.reflections>
-        <version.slf4j-api>2.0.16</version.slf4j-api>
+        <version.slf4j-api>2.0.17</version.slf4j-api>
     </properties>
 
     <dependencyManagement>
