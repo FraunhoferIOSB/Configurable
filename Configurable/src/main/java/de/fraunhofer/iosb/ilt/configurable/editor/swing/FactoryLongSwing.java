@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -31,64 +32,64 @@ import org.slf4j.LoggerFactory;
  */
 public final class FactoryLongSwing implements GuiFactorySwing {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FactoryLongSwing.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(FactoryLongSwing.class.getName());
 
-	private final EditorLong parentEditor;
-	private JTextField swComponent;
+    private final EditorLong parentEditor;
+    private JTextField swComponent;
 
-	public FactoryLongSwing(EditorLong parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactoryLongSwing(EditorLong parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public JComponent getComponent() {
-		if (swComponent == null) {
-			createComponent();
-		}
-		return swComponent;
-	}
+    @Override
+    public JComponent getComponent() {
+        if (swComponent == null) {
+            createComponent();
+        }
+        return swComponent;
+    }
 
-	private void createComponent() {
-		swComponent = new JTextField();
-		swComponent.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				readComponent();
-			}
-		});
-		fillComponent();
-	}
+    private void createComponent() {
+        swComponent = new JTextField();
+        swComponent.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                readComponent();
+            }
+        });
+        fillComponent();
+    }
 
-	private long getRawValue() {
-		Long rawValue = parentEditor.getRawValue();
-		final long min = parentEditor.getMin();
-		final long max = parentEditor.getMax();
-		if (rawValue == null) {
-			rawValue = 0L;
-			parentEditor.setRawValue(rawValue);
-		}
-		if (rawValue < min || rawValue > max) {
-			rawValue = Math.max(min, Math.min(rawValue, max));
-			parentEditor.setRawValue(rawValue);
-		}
-		return rawValue;
-	}
+    private long getRawValue() {
+        Long rawValue = parentEditor.getRawValue();
+        final long min = parentEditor.getMin();
+        final long max = parentEditor.getMax();
+        if (rawValue == null) {
+            rawValue = 0L;
+            parentEditor.setRawValue(rawValue);
+        }
+        if (rawValue < min || rawValue > max) {
+            rawValue = Math.max(min, Math.min(rawValue, max));
+            parentEditor.setRawValue(rawValue);
+        }
+        return rawValue;
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		swComponent.setText("" + getRawValue());
-	}
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        swComponent.setText("" + getRawValue());
+    }
 
-	public void readComponent() {
-		if (swComponent != null) {
-			try {
-				parentEditor.setRawValue(Long.parseLong(swComponent.getText()));
-			} catch (NumberFormatException exc) {
-				LOGGER.error("Failed to parse text to number: " + swComponent.getText());
-			}
-			fillComponent();
-		}
-	}
+    public void readComponent() {
+        if (swComponent != null) {
+            try {
+                parentEditor.setRawValue(Long.parseLong(swComponent.getText()));
+            } catch (NumberFormatException exc) {
+                LOGGER.error("Failed to parse text to number: " + swComponent.getText());
+            }
+            fillComponent();
+        }
+    }
 }

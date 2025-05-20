@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2021 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -28,117 +29,117 @@ import java.util.Map;
  */
 public class ItemObject extends SchemaItemAbstract<ItemObject> {
 
-	private Map<String, SchemaItem> properties;
+    private Map<String, SchemaItem> properties;
 
-	private boolean additionalProperties = false;
+    private boolean additionalProperties = false;
 
-	private List<String> required;
-	private List<String> defaultProperties;
+    private List<String> required;
+    private List<String> defaultProperties;
 
-	private List<SchemaItem> oneOf;
+    private List<SchemaItem> oneOf;
 
-	public ItemObject() {
-		super("object");
-	}
+    public ItemObject() {
+        super("object");
+    }
 
-	@Override
-	public ItemObject getThis() {
-		return this;
-	}
+    @Override
+    public ItemObject getThis() {
+        return this;
+    }
 
-	public boolean isAdditionalProperties() {
-		return additionalProperties;
-	}
+    public boolean isAdditionalProperties() {
+        return additionalProperties;
+    }
 
-	public ItemObject setAdditionalProperties(boolean additionalProperties) {
-		this.additionalProperties = additionalProperties;
-		return this;
-	}
+    public ItemObject setAdditionalProperties(boolean additionalProperties) {
+        this.additionalProperties = additionalProperties;
+        return this;
+    }
 
-	public Map<String, SchemaItem> getProperties() {
-		return properties;
-	}
+    public Map<String, SchemaItem> getProperties() {
+        return properties;
+    }
 
-	public ItemObject addProperty(String name, SchemaItem property) {
-		if (properties == null) {
-			properties = new HashMap<>();
-		}
-		properties.put(name, property);
-		return this;
-	}
+    public ItemObject addProperty(String name, SchemaItem property) {
+        if (properties == null) {
+            properties = new HashMap<>();
+        }
+        properties.put(name, property);
+        return this;
+    }
 
-	public ItemObject addProperty(String name, boolean isOptional, SchemaItem property) {
-		if (properties == null) {
-			properties = new HashMap<>();
-		}
-		properties.put(name, property);
-		if (!isOptional) {
-			addRequired(name);
-			addDefaultProperty(name);
-		}
-		return this;
-	}
+    public ItemObject addProperty(String name, boolean isOptional, SchemaItem property) {
+        if (properties == null) {
+            properties = new HashMap<>();
+        }
+        properties.put(name, property);
+        if (!isOptional) {
+            addRequired(name);
+            addDefaultProperty(name);
+        }
+        return this;
+    }
 
-	public void setProperties(Map<String, SchemaItem> properties) {
-		this.properties = properties;
-	}
+    public void setProperties(Map<String, SchemaItem> properties) {
+        this.properties = properties;
+    }
 
-	public List<String> getRequired() {
-		if (required == null) {
-			return Collections.emptyList();
-		}
-		return Collections.unmodifiableList(required);
-	}
+    public List<String> getRequired() {
+        if (required == null) {
+            return Collections.emptyList();
+        }
+        return Collections.unmodifiableList(required);
+    }
 
-	public ItemObject addRequired(String name) {
-		if (required == null) {
-			required = new ArrayList<>();
-		}
-		required.add(name);
-		return this;
-	}
+    public ItemObject addRequired(String name) {
+        if (required == null) {
+            required = new ArrayList<>();
+        }
+        required.add(name);
+        return this;
+    }
 
-	public void setRequired(List<String> required) {
-		this.required = required;
-	}
+    public void setRequired(List<String> required) {
+        this.required = required;
+    }
 
-	/**
-	 * @return the oneOf
-	 */
-	public List<SchemaItem> getOneOf() {
-		return oneOf;
-	}
+    /**
+     * @return the oneOf
+     */
+    public List<SchemaItem> getOneOf() {
+        return oneOf;
+    }
 
-	/**
-	 * @param oneOf the oneOf to set
-	 */
-	public void setOneOf(List<SchemaItem> oneOf) {
-		this.oneOf = oneOf;
-	}
+    /**
+     * @param oneOf the oneOf to set
+     */
+    public void setOneOf(List<SchemaItem> oneOf) {
+        this.oneOf = oneOf;
+    }
 
-	/**
-	 * @return the defaultProperties
-	 */
-	public List<String> getDefaultProperties() {
-		if (defaultProperties == null) {
-			return Collections.emptyList();
-		}
-		return Collections.unmodifiableList(defaultProperties);
-	}
+    /**
+     * @return the defaultProperties
+     */
+    public List<String> getDefaultProperties() {
+        if (defaultProperties == null) {
+            return Collections.emptyList();
+        }
+        return Collections.unmodifiableList(defaultProperties);
+    }
 
-	public ItemObject addDefaultProperty(String name) {
-		if (defaultProperties == null) {
-			defaultProperties = new ArrayList<>();
-		}
-		defaultProperties.add(name);
-		return this;
-	}
+    public ItemObject addDefaultProperty(String name) {
+        if (defaultProperties == null) {
+            defaultProperties = new ArrayList<>();
+        }
+        defaultProperties.add(name);
+        return this;
+    }
 
-	/**
-	 * @param defaultProperties the defaultProperties to set
-	 */
-	public void setDefaultProperties(List<String> defaultProperties) {
-		this.defaultProperties = defaultProperties;
-	}
+    /**
+     * @param defaultProperties the defaultProperties to set
+     */
+    public void setDefaultProperties(List<String> defaultProperties) {
+        this.defaultProperties = defaultProperties;
+    }
 
 }

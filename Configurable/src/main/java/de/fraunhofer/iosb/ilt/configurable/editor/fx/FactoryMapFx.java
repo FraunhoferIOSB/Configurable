@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -43,144 +44,144 @@ import javafx.scene.layout.Priority;
  */
 public final class FactoryMapFx implements GuiFactoryFx {
 
-	private final AbstractEditorMap<?, ?> parentEditor;
-	// FX Nodes
-	private BorderPane fxPaneRoot;
-	private GridPane fxPaneList;
-	private ComboBox<AbstractEditorMap.Item> fxBoxNames;
-	private FlowPane controls;
+    private final AbstractEditorMap<?, ?> parentEditor;
+    // FX Nodes
+    private BorderPane fxPaneRoot;
+    private GridPane fxPaneList;
+    private ComboBox<AbstractEditorMap.Item> fxBoxNames;
+    private FlowPane controls;
 
-	public FactoryMapFx(AbstractEditorMap<?, ?> parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactoryMapFx(AbstractEditorMap<?, ?> parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public Pane getNode() {
-		if (fxPaneRoot == null) {
-			createPane();
-		}
-		return fxPaneRoot;
-	}
+    @Override
+    public Pane getNode() {
+        if (fxPaneRoot == null) {
+            createPane();
+        }
+        return fxPaneRoot;
+    }
 
-	private void createPane() {
-		fxPaneRoot = new BorderPane();
-		controls = new FlowPane();
-		controls.setAlignment(Pos.BASELINE_LEFT);
+    private void createPane() {
+        fxPaneRoot = new BorderPane();
+        controls = new FlowPane();
+        controls.setAlignment(Pos.BASELINE_LEFT);
 
-		List<AbstractEditorMap.Item> optionals = new ArrayList<>();
-		for (final String optionName : parentEditor.getOptionalOptions()) {
-			if (!parentEditor.getRawValue().contains(optionName)) {
-				optionals.add(parentEditor.getOptions().get(optionName));
-			}
-		}
-		optionals.sort((final AbstractEditorMap.Item o1, final AbstractEditorMap.Item o2) -> o1.label.compareTo(o2.label));
-		fxBoxNames = new ComboBox<>(FXCollections.observableArrayList(optionals));
-		controls.getChildren().add(fxBoxNames);
-		Button addButton = new Button("+");
-		addButton.setOnAction((event) -> addItem());
-		controls.getChildren().add(addButton);
-		fxPaneRoot.setTop(controls);
+        List<AbstractEditorMap.Item> optionals = new ArrayList<>();
+        for (final String optionName : parentEditor.getOptionalOptions()) {
+            if (!parentEditor.getRawValue().contains(optionName)) {
+                optionals.add(parentEditor.getOptions().get(optionName));
+            }
+        }
+        optionals.sort((final AbstractEditorMap.Item o1, final AbstractEditorMap.Item o2) -> o1.label.compareTo(o2.label));
+        fxBoxNames = new ComboBox<>(FXCollections.observableArrayList(optionals));
+        controls.getChildren().add(fxBoxNames);
+        Button addButton = new Button("+");
+        addButton.setOnAction((event) -> addItem());
+        controls.getChildren().add(addButton);
+        fxPaneRoot.setTop(controls);
 
-		if (parentEditor.getOptionalOptions().isEmpty()) {
-			controls.setVisible(false);
-		}
+        if (parentEditor.getOptionalOptions().isEmpty()) {
+            controls.setVisible(false);
+        }
 
-		fxPaneList = new GridPane();
-		fxPaneRoot.setStyle(Styles.STYLE_BORDER);
-		fxPaneRoot.setCenter(fxPaneList);
-		fillComponent();
-	}
+        fxPaneList = new GridPane();
+        fxPaneRoot.setStyle(Styles.STYLE_BORDER);
+        fxPaneRoot.setCenter(fxPaneList);
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		controls.setVisible(parentEditor.canEdit() && !parentEditor.getOptionalOptions().isEmpty());
-		fxPaneList.getChildren().clear();
-		int row = 0;
-		int endCol = -1;
-		boolean canEdit = parentEditor.canEdit();
-		String profile = parentEditor.getProfile();
-		fxBoxNames.getItems().clear();
-		// Iterate over the options so the order is fixed.
-		for (Map.Entry<String, ? extends AbstractEditorMap.Item<?>> entry : parentEditor.getOptions().entrySet()) {
-			final String key = entry.getKey();
-			final AbstractEditorMap.Item<?> item = entry.getValue();
-			if (canEdit && !parentEditor.getRawValue().contains(key)) {
-				if (item.hasGuiProfile(profile)) {
-					// Item is not selected, but is not profile-excluded.
-					fxBoxNames.getItems().add(item);
-				}
-				continue;
-			}
-			if (!item.hasGuiProfile(profile)) {
-				continue;
-			}
-			if (!item.editor.canEdit() && item.editor.isDefault()) {
-				continue;
-			}
-			if (!canEdit && !parentEditor.getRawValue().contains(key)) {
-				// Item is not selected, and since we can't edit it can't be selected.
-				// Therefore we now select it.
-				parentEditor.getRawValue().add(key);
-			}
-			endCol += item.colwidth;
-			if (endCol >= parentEditor.getColumns()) {
-				endCol = item.colwidth - 1;
-				row++;
-			}
-			final int startCol = endCol - item.colwidth + 1;
-			final int width = 3 * item.colwidth - 2;
-			final int x0 = startCol * 3;
-			final int x1 = x0 + 1;
-			final int x2 = x0 + width + 1;
-			String label = item.editor.getLabel();
-			if (label.isEmpty()) {
-				label = key;
-			}
-			addToGridFx(row, x0, label, x1, item, width, x2, key);
-		}
-	}
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        controls.setVisible(parentEditor.canEdit() && !parentEditor.getOptionalOptions().isEmpty());
+        fxPaneList.getChildren().clear();
+        int row = 0;
+        int endCol = -1;
+        boolean canEdit = parentEditor.canEdit();
+        String profile = parentEditor.getProfile();
+        fxBoxNames.getItems().clear();
+        // Iterate over the options so the order is fixed.
+        for (Map.Entry<String, ? extends AbstractEditorMap.Item<?>> entry : parentEditor.getOptions().entrySet()) {
+            final String key = entry.getKey();
+            final AbstractEditorMap.Item<?> item = entry.getValue();
+            if (canEdit && !parentEditor.getRawValue().contains(key)) {
+                if (item.hasGuiProfile(profile)) {
+                    // Item is not selected, but is not profile-excluded.
+                    fxBoxNames.getItems().add(item);
+                }
+                continue;
+            }
+            if (!item.hasGuiProfile(profile)) {
+                continue;
+            }
+            if (!item.editor.canEdit() && item.editor.isDefault()) {
+                continue;
+            }
+            if (!canEdit && !parentEditor.getRawValue().contains(key)) {
+                // Item is not selected, and since we can't edit it can't be selected.
+                // Therefore we now select it.
+                parentEditor.getRawValue().add(key);
+            }
+            endCol += item.colwidth;
+            if (endCol >= parentEditor.getColumns()) {
+                endCol = item.colwidth - 1;
+                row++;
+            }
+            final int startCol = endCol - item.colwidth + 1;
+            final int width = 3 * item.colwidth - 2;
+            final int x0 = startCol * 3;
+            final int x1 = x0 + 1;
+            final int x2 = x0 + width + 1;
+            String label = item.editor.getLabel();
+            if (label.isEmpty()) {
+                label = key;
+            }
+            addToGridFx(row, x0, label, x1, item, width, x2, key);
+        }
+    }
 
-	private void addToGridFx(int row, final int x0, String label, final int x1, final AbstractEditorMap.Item<?> item, final int width, final int x2, final String key) {
-		Label fxLabel = new Label(label);
-		fxLabel.setTooltip(new Tooltip(item.editor.getDescription()));
-		GridPane.setConstraints(fxLabel, x0, row, 1, 1, HPos.LEFT, VPos.BASELINE, Priority.NEVER, Priority.NEVER);
-		fxPaneList.getChildren().add(fxLabel);
-		Node itemPane = item.editor.getGuiFactoryFx().getNode();
-		GridPane.setConstraints(itemPane, x2, row, width, 1, HPos.LEFT, VPos.BASELINE, Priority.SOMETIMES, Priority.NEVER);
-		fxPaneList.getChildren().add(itemPane);
-		if (!parentEditor.getOptionalOptions().isEmpty()) {
-			Button removeButton = new Button("✖");
-			removeButton.setDisable(!item.optional);
-			removeButton.setOnAction((event) -> parentEditor.removeItem(key));
-			GridPane.setConstraints(removeButton, x1, row, 1, 1, HPos.LEFT, VPos.TOP, Priority.NEVER, Priority.NEVER);
-			fxPaneList.getChildren().add(removeButton);
-		}
-	}
+    private void addToGridFx(int row, final int x0, String label, final int x1, final AbstractEditorMap.Item<?> item, final int width, final int x2, final String key) {
+        Label fxLabel = new Label(label);
+        fxLabel.setTooltip(new Tooltip(item.editor.getDescription()));
+        GridPane.setConstraints(fxLabel, x0, row, 1, 1, HPos.LEFT, VPos.BASELINE, Priority.NEVER, Priority.NEVER);
+        fxPaneList.getChildren().add(fxLabel);
+        Node itemPane = item.editor.getGuiFactoryFx().getNode();
+        GridPane.setConstraints(itemPane, x2, row, width, 1, HPos.LEFT, VPos.BASELINE, Priority.SOMETIMES, Priority.NEVER);
+        fxPaneList.getChildren().add(itemPane);
+        if (!parentEditor.getOptionalOptions().isEmpty()) {
+            Button removeButton = new Button("✖");
+            removeButton.setDisable(!item.optional);
+            removeButton.setOnAction((event) -> parentEditor.removeItem(key));
+            GridPane.setConstraints(removeButton, x1, row, 1, 1, HPos.LEFT, VPos.TOP, Priority.NEVER, Priority.NEVER);
+            fxPaneList.getChildren().add(removeButton);
+        }
+    }
 
-	private void addItem() {
-		AbstractEditorMap.Item item = fxBoxNames.getSelectionModel().getSelectedItem();
-		if (item != null) {
-			String key = item.getName();
-			parentEditor.addItem(key);
-		}
-	}
+    private void addItem() {
+        AbstractEditorMap.Item item = fxBoxNames.getSelectionModel().getSelectedItem();
+        if (item != null) {
+            String key = item.getName();
+            parentEditor.addItem(key);
+        }
+    }
 
-	public void addItem(final String key) {
-		if (fxBoxNames != null) {
-			fxBoxNames.getItems().remove(parentEditor.getOptions().get(key));
-		}
-		fillComponent();
-	}
+    public void addItem(final String key) {
+        if (fxBoxNames != null) {
+            fxBoxNames.getItems().remove(parentEditor.getOptions().get(key));
+        }
+        fillComponent();
+    }
 
-	public void removeItem(final AbstractEditorMap.Item<?> item) {
-		if (item.optional) {
-			if (fxBoxNames != null) {
-				fxBoxNames.getItems().add(item);
-			}
-			fillComponent();
-		}
-	}
+    public void removeItem(final AbstractEditorMap.Item<?> item) {
+        if (item.optional) {
+            if (fxBoxNames != null) {
+                fxBoxNames.getItems().add(item);
+            }
+            fillComponent();
+        }
+    }
 
 }

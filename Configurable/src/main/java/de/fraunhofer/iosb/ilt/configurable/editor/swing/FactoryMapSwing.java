@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -41,165 +42,165 @@ import javax.swing.border.EtchedBorder;
  */
 public final class FactoryMapSwing implements GuiFactorySwing {
 
-	private final AbstractEditorMap<?, ?> parentEditor;
-	// Swing components
-	private JPanel swComponent;
-	private JPanel swListHolder;
-	private JComboBox<AbstractEditorMap.Item> swNames;
-	private MutableComboBoxModel<AbstractEditorMap.Item> swModel;
-	private JPanel controls;
+    private final AbstractEditorMap<?, ?> parentEditor;
+    // Swing components
+    private JPanel swComponent;
+    private JPanel swListHolder;
+    private JComboBox<AbstractEditorMap.Item> swNames;
+    private MutableComboBoxModel<AbstractEditorMap.Item> swModel;
+    private JPanel controls;
 
-	public FactoryMapSwing(AbstractEditorMap<?, ?> parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactoryMapSwing(AbstractEditorMap<?, ?> parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public JComponent getComponent() {
-		if (swComponent == null) {
-			createComponent();
-		}
-		return swComponent;
-	}
+    @Override
+    public JComponent getComponent() {
+        if (swComponent == null) {
+            createComponent();
+        }
+        return swComponent;
+    }
 
-	private void createComponent() {
-		controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-		if (!parentEditor.getOptionalOptions().isEmpty()) {
-			controls.add(new JLabel("Options:"));
+    private void createComponent() {
+        controls = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        if (!parentEditor.getOptionalOptions().isEmpty()) {
+            controls.add(new JLabel("Options:"));
 
-			List<AbstractEditorMap.Item> optionals = new ArrayList<>();
-			for (final String optionName : parentEditor.getOptionalOptions()) {
-				if (!parentEditor.getRawValue().contains(optionName)) {
-					optionals.add(parentEditor.getOptions().get(optionName));
-				}
-			}
-			optionals.sort((final AbstractEditorMap.Item o1, final AbstractEditorMap.Item o2) -> o1.label.compareTo(o2.label));
-			swModel = new DefaultComboBoxModel<>(optionals.toArray(new AbstractEditorMap.Item[optionals.size()]));
-			swNames = new JComboBox<>(swModel);
-			controls.add(swNames);
+            List<AbstractEditorMap.Item> optionals = new ArrayList<>();
+            for (final String optionName : parentEditor.getOptionalOptions()) {
+                if (!parentEditor.getRawValue().contains(optionName)) {
+                    optionals.add(parentEditor.getOptions().get(optionName));
+                }
+            }
+            optionals.sort((final AbstractEditorMap.Item o1, final AbstractEditorMap.Item o2) -> o1.label.compareTo(o2.label));
+            swModel = new DefaultComboBoxModel<>(optionals.toArray(new AbstractEditorMap.Item[optionals.size()]));
+            swNames = new JComboBox<>(swModel);
+            controls.add(swNames);
 
-			final JButton addButton = new JButton("+");
-			addButton.addActionListener((event) -> addItem());
-			controls.add(addButton);
-		}
-		swListHolder = new JPanel(new GridBagLayout());
-		swComponent = new JPanel(new BorderLayout());
-		swComponent.setBorder(new EtchedBorder());
-		swComponent.add(controls, BorderLayout.NORTH);
-		swComponent.add(swListHolder, BorderLayout.CENTER);
-		fillComponent();
-	}
+            final JButton addButton = new JButton("+");
+            addButton.addActionListener((event) -> addItem());
+            controls.add(addButton);
+        }
+        swListHolder = new JPanel(new GridBagLayout());
+        swComponent = new JPanel(new BorderLayout());
+        swComponent.setBorder(new EtchedBorder());
+        swComponent.add(controls, BorderLayout.NORTH);
+        swComponent.add(swListHolder, BorderLayout.CENTER);
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		boolean canEdit = parentEditor.canEdit();
-		controls.setVisible(canEdit);
-		swListHolder.removeAll();
-		int row = 0;
-		int endCol = -1;
-		String profile = parentEditor.getProfile();
-		// clear the dropdown
-		while (swModel != null && swModel.getSize() > 0) {
-			swModel.removeElementAt(0);
-		}
-		// Iterate over the options so the order is fixed.
-		for (Map.Entry<String, ? extends AbstractEditorMap.Item<?>> entry : parentEditor.getOptions().entrySet()) {
-			final String key = entry.getKey();
-			final AbstractEditorMap.Item<?> item = entry.getValue();
-			if (canEdit && !parentEditor.getRawValue().contains(key)) {
-				if (item.hasGuiProfile(profile) && swModel != null) {
-					// Item is not selected, but is not profile-excluded.
-					swModel.addElement(item);
-				}
-				continue;
-			}
-			if (!item.hasGuiProfile(profile)) {
-				continue;
-			}
-			if (!item.editor.canEdit() && item.editor.isDefault()) {
-				continue;
-			}
-			if (!canEdit && !parentEditor.getRawValue().contains(key)) {
-				// Item is not selected, and since we can't edit it can't be selected.
-				// Therefore we now select it.
-				parentEditor.getRawValue().add(key);
-			}
-			endCol += item.colwidth;
-			if (endCol >= parentEditor.getColumns()) {
-				endCol = item.colwidth - 1;
-				row++;
-			}
-			final int startCol = endCol - item.colwidth + 1;
-			final int width = 3 * item.colwidth - 2;
-			final int x0 = startCol * 3;
-			final int x1 = x0 + 1;
-			final int x2 = x0 + width + 1;
-			String label = item.editor.getLabel();
-			if (label.isEmpty()) {
-				label = key;
-			}
-			addToGridSw(row, x0, label, x1, item, width, x2, key);
-		}
-		swListHolder.invalidate();
-		swComponent.revalidate();
-		swComponent.repaint();
-	}
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        boolean canEdit = parentEditor.canEdit();
+        controls.setVisible(canEdit);
+        swListHolder.removeAll();
+        int row = 0;
+        int endCol = -1;
+        String profile = parentEditor.getProfile();
+        // clear the dropdown
+        while (swModel != null && swModel.getSize() > 0) {
+            swModel.removeElementAt(0);
+        }
+        // Iterate over the options so the order is fixed.
+        for (Map.Entry<String, ? extends AbstractEditorMap.Item<?>> entry : parentEditor.getOptions().entrySet()) {
+            final String key = entry.getKey();
+            final AbstractEditorMap.Item<?> item = entry.getValue();
+            if (canEdit && !parentEditor.getRawValue().contains(key)) {
+                if (item.hasGuiProfile(profile) && swModel != null) {
+                    // Item is not selected, but is not profile-excluded.
+                    swModel.addElement(item);
+                }
+                continue;
+            }
+            if (!item.hasGuiProfile(profile)) {
+                continue;
+            }
+            if (!item.editor.canEdit() && item.editor.isDefault()) {
+                continue;
+            }
+            if (!canEdit && !parentEditor.getRawValue().contains(key)) {
+                // Item is not selected, and since we can't edit it can't be selected.
+                // Therefore we now select it.
+                parentEditor.getRawValue().add(key);
+            }
+            endCol += item.colwidth;
+            if (endCol >= parentEditor.getColumns()) {
+                endCol = item.colwidth - 1;
+                row++;
+            }
+            final int startCol = endCol - item.colwidth + 1;
+            final int width = 3 * item.colwidth - 2;
+            final int x0 = startCol * 3;
+            final int x1 = x0 + 1;
+            final int x2 = x0 + width + 1;
+            String label = item.editor.getLabel();
+            if (label.isEmpty()) {
+                label = key;
+            }
+            addToGridSw(row, x0, label, x1, item, width, x2, key);
+        }
+        swListHolder.invalidate();
+        swComponent.revalidate();
+        swComponent.repaint();
+    }
 
-	private void addToGridSw(int row, final int x0, String label, final int x1, final AbstractEditorMap.Item<?> item, final int width, final int x2, final String key) {
-		GridBagConstraints gbc;
-		gbc = new GridBagConstraints();
-		gbc.gridx = x0;
-		gbc.gridy = row;
-		gbc.weightx = 0;
-		gbc.anchor = GridBagConstraints.NORTHWEST;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		gbc.insets = new Insets(2, 3, 1, 1);
-		final JLabel jLabel = new JLabel(label);
-		jLabel.setToolTipText(item.editor.getDescription());
-		swListHolder.add(jLabel, gbc);
-		gbc = new GridBagConstraints();
-		gbc.gridx = x2;
-		gbc.gridy = row;
-		gbc.gridwidth = width;
-		gbc.weightx = 1;
-		gbc.fill = GridBagConstraints.HORIZONTAL;
-		swListHolder.add(item.editor.getGuiFactorySwing().getComponent(), gbc);
-		if (!parentEditor.getOptionalOptions().isEmpty()) {
-			JButton removeButton = new JButton("❌");
-			removeButton.setMargin(new java.awt.Insets(1, 1, 1, 1));
-			removeButton.setEnabled(item.optional && parentEditor.canEdit());
-			removeButton.addActionListener((event) -> parentEditor.removeItem(key));
-			gbc = new GridBagConstraints();
-			gbc.anchor = GridBagConstraints.NORTH;
-			gbc.gridx = x1;
-			gbc.gridy = row;
-			swListHolder.add(removeButton, gbc);
-		}
-	}
+    private void addToGridSw(int row, final int x0, String label, final int x1, final AbstractEditorMap.Item<?> item, final int width, final int x2, final String key) {
+        GridBagConstraints gbc;
+        gbc = new GridBagConstraints();
+        gbc.gridx = x0;
+        gbc.gridy = row;
+        gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(2, 3, 1, 1);
+        final JLabel jLabel = new JLabel(label);
+        jLabel.setToolTipText(item.editor.getDescription());
+        swListHolder.add(jLabel, gbc);
+        gbc = new GridBagConstraints();
+        gbc.gridx = x2;
+        gbc.gridy = row;
+        gbc.gridwidth = width;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        swListHolder.add(item.editor.getGuiFactorySwing().getComponent(), gbc);
+        if (!parentEditor.getOptionalOptions().isEmpty()) {
+            JButton removeButton = new JButton("❌");
+            removeButton.setMargin(new java.awt.Insets(1, 1, 1, 1));
+            removeButton.setEnabled(item.optional && parentEditor.canEdit());
+            removeButton.addActionListener((event) -> parentEditor.removeItem(key));
+            gbc = new GridBagConstraints();
+            gbc.anchor = GridBagConstraints.NORTH;
+            gbc.gridx = x1;
+            gbc.gridy = row;
+            swListHolder.add(removeButton, gbc);
+        }
+    }
 
-	private void addItem() {
-		int idx = swNames.getSelectedIndex();
-		if (idx >= 0) {
-			String key = swNames.getModel().getElementAt(idx).getName();
-			parentEditor.addItem(key);
-		}
-	}
+    private void addItem() {
+        int idx = swNames.getSelectedIndex();
+        if (idx >= 0) {
+            String key = swNames.getModel().getElementAt(idx).getName();
+            parentEditor.addItem(key);
+        }
+    }
 
-	public void addItem(final String key) {
-		if (swModel != null) {
-			swModel.removeElement(parentEditor.getOptions().get(key));
-		}
-		fillComponent();
-	}
+    public void addItem(final String key) {
+        if (swModel != null) {
+            swModel.removeElement(parentEditor.getOptions().get(key));
+        }
+        fillComponent();
+    }
 
-	public void removeItem(final AbstractEditorMap.Item<?> item) {
-		if (item.optional) {
-			if (swModel != null) {
-				swModel.addElement(item);
-			}
-			fillComponent();
-		}
-	}
+    public void removeItem(final AbstractEditorMap.Item<?> item) {
+        if (item.optional) {
+            if (swModel != null) {
+                swModel.addElement(item);
+            }
+            fillComponent();
+        }
+    }
 
 }

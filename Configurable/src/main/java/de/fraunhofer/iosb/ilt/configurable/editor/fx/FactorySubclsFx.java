@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -38,98 +39,98 @@ import javafx.scene.layout.Pane;
  */
 public final class FactorySubclsFx implements GuiFactoryFx {
 
-	private final EditorSubclass<?, ?, ?> parentEditor;
-	private classItem item;
-	private String selectLabel = "Type:";
-	private BorderPane fxPaneRoot;
-	private BorderPane fxPaneItem;
-	private ComboBox<String> fxItems;
-	private FlowPane controls;
+    private final EditorSubclass<?, ?, ?> parentEditor;
+    private classItem item;
+    private String selectLabel = "Type:";
+    private BorderPane fxPaneRoot;
+    private BorderPane fxPaneItem;
+    private ComboBox<String> fxItems;
+    private FlowPane controls;
 
-	public FactorySubclsFx(EditorSubclass<?, ?, ?> parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactorySubclsFx(EditorSubclass<?, ?, ?> parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public Pane getNode() {
-		if (fxPaneRoot == null) {
-			createGui();
-		}
-		return fxPaneRoot;
-	}
+    @Override
+    public Pane getNode() {
+        if (fxPaneRoot == null) {
+            createGui();
+        }
+        return fxPaneRoot;
+    }
 
-	private void createGui() {
-		String jsonName = parentEditor.getJsonName();
-		item = parentEditor.findClassItem(jsonName);
-		createPane();
-	}
+    private void createGui() {
+        String jsonName = parentEditor.getJsonName();
+        item = parentEditor.findClassItem(jsonName);
+        createPane();
+    }
 
-	private void createPane() {
-		Set<String> values = parentEditor.getClassesByDisplayName().keySet();
+    private void createPane() {
+        Set<String> values = parentEditor.getClassesByDisplayName().keySet();
 
-		controls = new FlowPane();
-		controls.setAlignment(Pos.TOP_CENTER);
-		controls.getChildren().add(new Label(selectLabel));
-		fxItems = new FilteringComboBox<>(FXCollections.observableArrayList(values));
-		fxItems.setEditable(true);
-		if (item != null) {
-			fxItems.getSelectionModel().select(item.displayName);
-		}
-		controls.getChildren().add(fxItems);
-		Button addButton = new Button("set");
-		addButton.setOnAction((event) -> setItem());
-		controls.getChildren().add(addButton);
-		fxPaneItem = new BorderPane();
-		fxPaneItem.setPadding(new Insets(0, 0, 0, 5));
-		fxPaneRoot = new BorderPane();
-		fxPaneRoot.setStyle(Styles.STYLE_BORDER);
-		fxPaneRoot.setCenter(fxPaneItem);
-		fxPaneRoot.setTop(controls);
-		fillComponent();
-	}
+        controls = new FlowPane();
+        controls.setAlignment(Pos.TOP_CENTER);
+        controls.getChildren().add(new Label(selectLabel));
+        fxItems = new FilteringComboBox<>(FXCollections.observableArrayList(values));
+        fxItems.setEditable(true);
+        if (item != null) {
+            fxItems.getSelectionModel().select(item.displayName);
+        }
+        controls.getChildren().add(fxItems);
+        Button addButton = new Button("set");
+        addButton.setOnAction((event) -> setItem());
+        controls.getChildren().add(addButton);
+        fxPaneItem = new BorderPane();
+        fxPaneItem.setPadding(new Insets(0, 0, 0, 5));
+        fxPaneRoot = new BorderPane();
+        fxPaneRoot.setStyle(Styles.STYLE_BORDER);
+        fxPaneRoot.setCenter(fxPaneItem);
+        fxPaneRoot.setTop(controls);
+        fillComponent();
+    }
 
-	private void setItem() {
-		String selected = fxItems.getSelectionModel().getSelectedItem();
-		if (selected != null && !selected.isEmpty()) {
-			item = parentEditor.getClassesByDisplayName().get(selected);
-			if (item == null) {
-				if (!parentEditor.isRestrictedClasses()) {
-					parentEditor.setJsonName(selected);
-				}
-			} else {
-				parentEditor.setJsonName(item.jsonName);
-			}
-		}
-	}
+    private void setItem() {
+        String selected = fxItems.getSelectionModel().getSelectedItem();
+        if (selected != null && !selected.isEmpty()) {
+            item = parentEditor.getClassesByDisplayName().get(selected);
+            if (item == null) {
+                if (!parentEditor.isRestrictedClasses()) {
+                    parentEditor.setJsonName(selected);
+                }
+            } else {
+                parentEditor.setJsonName(item.jsonName);
+            }
+        }
+    }
 
-	public void fillComponent() {
-		controls.setVisible(parentEditor.canEdit());
-		String jsonName = parentEditor.getJsonName();
-		item = parentEditor.findClassItem(jsonName);
+    public void fillComponent() {
+        controls.setVisible(parentEditor.canEdit());
+        String jsonName = parentEditor.getJsonName();
+        item = parentEditor.findClassItem(jsonName);
 
-		ConfigEditor classEditor = parentEditor.getClassEditor();
-		String label;
-		if (jsonName == null || jsonName.isEmpty()) {
-			label = "No Class selected.";
-		} else {
-			if (item == null) {
-				label = "Manual: " + jsonName;
-			} else {
-				label = "Selected: " + item.displayName;
-			}
-		}
-		fxPaneItem.getChildren().clear();
-		fxPaneItem.setTop(new Label(label));
-		if (classEditor == null) {
-			Label noConf = new Label("Nothing to be configured.");
-			fxPaneItem.setCenter(noConf);
-		} else {
-			fxPaneItem.setCenter(classEditor.getGuiFactoryFx().getNode());
-		}
-	}
+        ConfigEditor classEditor = parentEditor.getClassEditor();
+        String label;
+        if (jsonName == null || jsonName.isEmpty()) {
+            label = "No Class selected.";
+        } else {
+            if (item == null) {
+                label = "Manual: " + jsonName;
+            } else {
+                label = "Selected: " + item.displayName;
+            }
+        }
+        fxPaneItem.getChildren().clear();
+        fxPaneItem.setTop(new Label(label));
+        if (classEditor == null) {
+            Label noConf = new Label("Nothing to be configured.");
+            fxPaneItem.setCenter(noConf);
+        } else {
+            fxPaneItem.setCenter(classEditor.getGuiFactoryFx().getNode());
+        }
+    }
 
-	public void setSelectLabel(String selectLabel) {
-		this.selectLabel = selectLabel;
-	}
+    public void setSelectLabel(String selectLabel) {
+        this.selectLabel = selectLabel;
+    }
 
 }

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -40,97 +41,97 @@ import javax.swing.border.EtchedBorder;
  */
 public final class FactoryListSwing<U, T extends ConfigEditor<U>> implements GuiFactorySwing {
 
-	private final EditorList<U, T> parentEditor;
-	private JPanel swComponent;
-	private JPanel swListHolder;
-	private JButton addButton;
-	private boolean vertical = true;
-	private String text = "Add item";
+    private final EditorList<U, T> parentEditor;
+    private JPanel swComponent;
+    private JPanel swListHolder;
+    private JButton addButton;
+    private boolean vertical = true;
+    private String text = "Add item";
 
-	public FactoryListSwing(EditorList<U, T> parentEditor, boolean vertical) {
-		this.parentEditor = parentEditor;
-		this.vertical = vertical;
-		if (parentEditor.getMinCount() != parentEditor.getMaxCount()) {
-			text = "Items:";
-		}
-	}
+    public FactoryListSwing(EditorList<U, T> parentEditor, boolean vertical) {
+        this.parentEditor = parentEditor;
+        this.vertical = vertical;
+        if (parentEditor.getMinCount() != parentEditor.getMaxCount()) {
+            text = "Items:";
+        }
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public void setText(String text) {
+        this.text = text;
+    }
 
-	@Override
-	public JComponent getComponent() {
-		if (swComponent == null) {
-			createComponent();
-		}
-		return swComponent;
-	}
+    @Override
+    public JComponent getComponent() {
+        if (swComponent == null) {
+            createComponent();
+        }
+        return swComponent;
+    }
 
-	private void createComponent() {
-		JPanel controls = new JPanel(new BorderLayout());
-		controls.add(new JLabel(text, SwingConstants.LEFT), BorderLayout.CENTER);
-		addButton = new JButton("+");
-		addButton.addActionListener((event) -> parentEditor.addItem());
-		controls.add(addButton, BorderLayout.WEST);
-		swListHolder = new JPanel(new GridBagLayout());
-		swComponent = new JPanel(new BorderLayout());
-		swComponent.setBorder(new EtchedBorder());
-		swComponent.add(controls, BorderLayout.NORTH);
-		swComponent.add(swListHolder, BorderLayout.CENTER);
-		fillComponent();
-	}
+    private void createComponent() {
+        JPanel controls = new JPanel(new BorderLayout());
+        controls.add(new JLabel(text, SwingConstants.LEFT), BorderLayout.CENTER);
+        addButton = new JButton("+");
+        addButton.addActionListener((event) -> parentEditor.addItem());
+        controls.add(addButton, BorderLayout.WEST);
+        swListHolder = new JPanel(new GridBagLayout());
+        swComponent = new JPanel(new BorderLayout());
+        swComponent.setBorder(new EtchedBorder());
+        swComponent.add(controls, BorderLayout.NORTH);
+        swComponent.add(swListHolder, BorderLayout.CENTER);
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		if (swComponent == null) {
-			createComponent();
-		}
-		addButton.setVisible(parentEditor.canEdit());
-		swListHolder.removeAll();
-		if (parentEditor.getRawValue().isEmpty()) {
-			swListHolder.add(new JLabel("No items added."));
-		}
-		GridBagConstraints gbc;
-		int row = 0;
-		Insets insets = new Insets(1, 1, 1, 1);
-		for (final T item : parentEditor.getRawValue()) {
-			gbc = new GridBagConstraints();
-			gbc.gridx = vertical ? 0 : row;
-			gbc.gridy = vertical ? row : 0;
-			gbc.weightx = 1;
-			gbc.fill = GridBagConstraints.HORIZONTAL;
-			gbc.insets = insets;
-			swListHolder.add(item.getGuiFactorySwing().getComponent(), gbc);
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        if (swComponent == null) {
+            createComponent();
+        }
+        addButton.setVisible(parentEditor.canEdit());
+        swListHolder.removeAll();
+        if (parentEditor.getRawValue().isEmpty()) {
+            swListHolder.add(new JLabel("No items added."));
+        }
+        GridBagConstraints gbc;
+        int row = 0;
+        Insets insets = new Insets(1, 1, 1, 1);
+        for (final T item : parentEditor.getRawValue()) {
+            gbc = new GridBagConstraints();
+            gbc.gridx = vertical ? 0 : row;
+            gbc.gridy = vertical ? row : 0;
+            gbc.weightx = 1;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.insets = insets;
+            swListHolder.add(item.getGuiFactorySwing().getComponent(), gbc);
 
-			if (parentEditor.canEdit()) {
-				Box buttonBox = new Box(BoxLayout.Y_AXIS);
+            if (parentEditor.canEdit()) {
+                Box buttonBox = new Box(BoxLayout.Y_AXIS);
 
-				JButton removeButton = new JButton("❌");
-				removeButton.setMargin(new Insets(1, 1, 1, 1));
-				removeButton.addActionListener((event) -> parentEditor.removeItem(item));
-				buttonBox.add(removeButton);
+                JButton removeButton = new JButton("❌");
+                removeButton.setMargin(new Insets(1, 1, 1, 1));
+                removeButton.addActionListener((event) -> parentEditor.removeItem(item));
+                buttonBox.add(removeButton);
 
-				if (row > 0) {
-					final int myRow = row;
-					JButton upButton = new JButton("↑");
-					upButton.setMargin(new Insets(1, 1, 1, 1));
-					upButton.addActionListener((event) -> parentEditor.upItem(myRow));
-					buttonBox.add(upButton);
-				}
+                if (row > 0) {
+                    final int myRow = row;
+                    JButton upButton = new JButton("↑");
+                    upButton.setMargin(new Insets(1, 1, 1, 1));
+                    upButton.addActionListener((event) -> parentEditor.upItem(myRow));
+                    buttonBox.add(upButton);
+                }
 
-				gbc = new GridBagConstraints();
-				gbc.gridx = vertical ? 1 : row;
-				gbc.gridy = vertical ? row : 1;
-				gbc.insets = insets;
-				swListHolder.add(removeButton, gbc);
-			}
-			row++;
-		}
-		swListHolder.invalidate();
-		swComponent.revalidate();
-	}
+                gbc = new GridBagConstraints();
+                gbc.gridx = vertical ? 1 : row;
+                gbc.gridy = vertical ? row : 1;
+                gbc.insets = insets;
+                swListHolder.add(removeButton, gbc);
+            }
+            row++;
+        }
+        swListHolder.invalidate();
+        swComponent.revalidate();
+    }
 
 }

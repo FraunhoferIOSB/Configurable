@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2021 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,78 +25,78 @@ import java.math.BigDecimal;
  */
 public class ItemNumber extends SchemaItemAbstract<ItemNumber> {
 
-	private BigDecimal minimum;
-	private BigDecimal exclusiveMinimum;
-	private BigDecimal maximum;
-	private BigDecimal exclusiveMaximum;
+    private BigDecimal minimum;
+    private BigDecimal exclusiveMinimum;
+    private BigDecimal maximum;
+    private BigDecimal exclusiveMaximum;
 
-	public ItemNumber() {
-		super("number");
-	}
+    public ItemNumber() {
+        super("number");
+    }
 
-	@Override
-	public ItemNumber getThis() {
-		return this;
-	}
+    @Override
+    public ItemNumber getThis() {
+        return this;
+    }
 
-	/**
-	 * @return the minimum
-	 */
-	public BigDecimal getMinimum() {
-		return minimum;
-	}
+    /**
+     * @return the minimum
+     */
+    public BigDecimal getMinimum() {
+        return minimum;
+    }
 
-	/**
-	 * @param minimum the minimum to set
-	 * @return this;
-	 */
-	public ItemNumber setMinimum(BigDecimal minimum) {
-		this.minimum = minimum;
-		return this;
-	}
+    /**
+     * @param minimum the minimum to set
+     * @return this;
+     */
+    public ItemNumber setMinimum(BigDecimal minimum) {
+        this.minimum = minimum;
+        return this;
+    }
 
-	/**
-	 * @return the exclusiveMinimum
-	 */
-	public BigDecimal getExclusiveMinimum() {
-		return exclusiveMinimum;
-	}
+    /**
+     * @return the exclusiveMinimum
+     */
+    public BigDecimal getExclusiveMinimum() {
+        return exclusiveMinimum;
+    }
 
-	/**
-	 * @param exclusiveMinimum the exclusiveMinimum to set
-	 */
-	public void setExclusiveMinimum(BigDecimal exclusiveMinimum) {
-		this.exclusiveMinimum = exclusiveMinimum;
-	}
+    /**
+     * @param exclusiveMinimum the exclusiveMinimum to set
+     */
+    public void setExclusiveMinimum(BigDecimal exclusiveMinimum) {
+        this.exclusiveMinimum = exclusiveMinimum;
+    }
 
-	/**
-	 * @return the maximum
-	 */
-	public BigDecimal getMaximum() {
-		return maximum;
-	}
+    /**
+     * @return the maximum
+     */
+    public BigDecimal getMaximum() {
+        return maximum;
+    }
 
-	/**
-	 * @param maximum the maximum to set
-	 * @return this.
-	 */
-	public ItemNumber setMaximum(BigDecimal maximum) {
-		this.maximum = maximum;
-		return this;
-	}
+    /**
+     * @param maximum the maximum to set
+     * @return this.
+     */
+    public ItemNumber setMaximum(BigDecimal maximum) {
+        this.maximum = maximum;
+        return this;
+    }
 
-	/**
-	 * @return the exclusiveMaximum
-	 */
-	public BigDecimal getExclusiveMaximum() {
-		return exclusiveMaximum;
-	}
+    /**
+     * @return the exclusiveMaximum
+     */
+    public BigDecimal getExclusiveMaximum() {
+        return exclusiveMaximum;
+    }
 
-	/**
-	 * @param exclusiveMaximum the exclusiveMaximum to set
-	 */
-	public void setExclusiveMaximum(BigDecimal exclusiveMaximum) {
-		this.exclusiveMaximum = exclusiveMaximum;
-	}
+    /**
+     * @param exclusiveMaximum the exclusiveMaximum to set
+     */
+    public void setExclusiveMaximum(BigDecimal exclusiveMaximum) {
+        this.exclusiveMaximum = exclusiveMaximum;
+    }
 
 }

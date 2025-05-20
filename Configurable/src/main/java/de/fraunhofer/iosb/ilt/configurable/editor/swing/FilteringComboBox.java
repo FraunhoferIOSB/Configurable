@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2019 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -20,7 +21,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
@@ -34,85 +34,85 @@ import javax.swing.SwingUtilities;
  */
 public class FilteringComboBox<E> extends JComboBox<E> {
 
-	/**
-	 * The complete list of elements.
-	 */
-	private final E[] allElements;
+    /**
+     * The complete list of elements.
+     */
+    private final E[] allElements;
 
-	/**
-	 * Create a new FilteringComboBox, using the given list of elements.
-	 *
-	 * @param elements The elements to let the user select from.
-	 */
-	public FilteringComboBox(E[] elements) {
-		super(elements);
-		this.allElements = elements;
-		setEditable(true);
+    /**
+     * Create a new FilteringComboBox, using the given list of elements.
+     *
+     * @param elements The elements to let the user select from.
+     */
+    public FilteringComboBox(E[] elements) {
+        super(elements);
+        this.allElements = elements;
+        setEditable(true);
 
-		final JTextField textfield = (JTextField) getEditor().getEditorComponent();
+        final JTextField textfield = (JTextField) getEditor().getEditorComponent();
 
-		/**
-		 * Listen for key presses.
-		 */
-		textfield.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent ke) {
-				// Only filter on normal text entry, not when something like CTRL-a is used to select all text.
-				if (ke.isControlDown()) {
-					return;
-				}
+        /**
+         * Listen for key presses.
+         */
+        textfield.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent ke) {
+                // Only filter on normal text entry, not when something like CTRL-a is used to select all text.
+                if (ke.isControlDown()) {
+                    return;
+                }
 
-				// Don't trigger on special keys used to select items or text.
-				switch (ke.getKeyCode()) {
-					case KeyEvent.VK_DOWN:
-					case KeyEvent.VK_LEFT:
-					case KeyEvent.VK_RIGHT:
-					case KeyEvent.VK_UP:
-					case KeyEvent.VK_KP_DOWN:
-					case KeyEvent.VK_KP_LEFT:
-					case KeyEvent.VK_KP_RIGHT:
-					case KeyEvent.VK_KP_UP:
-					case KeyEvent.VK_CONTROL:
-					case KeyEvent.VK_SHIFT:
-					case KeyEvent.VK_HOME:
-					case KeyEvent.VK_END:
-					case KeyEvent.VK_ENTER:
-						return;
-				}
-				SwingUtilities.invokeLater(() -> {
-					filterElements(textfield.getText().toLowerCase());
-				});
-			}
-		});
+                // Don't trigger on special keys used to select items or text.
+                switch (ke.getKeyCode()) {
+                    case KeyEvent.VK_DOWN:
+                    case KeyEvent.VK_LEFT:
+                    case KeyEvent.VK_RIGHT:
+                    case KeyEvent.VK_UP:
+                    case KeyEvent.VK_KP_DOWN:
+                    case KeyEvent.VK_KP_LEFT:
+                    case KeyEvent.VK_KP_RIGHT:
+                    case KeyEvent.VK_KP_UP:
+                    case KeyEvent.VK_CONTROL:
+                    case KeyEvent.VK_SHIFT:
+                    case KeyEvent.VK_HOME:
+                    case KeyEvent.VK_END:
+                    case KeyEvent.VK_ENTER:
+                        return;
+                }
+                SwingUtilities.invokeLater(() -> {
+                    filterElements(textfield.getText().toLowerCase());
+                });
+            }
+        });
 
-	}
+    }
 
-	/**
-	 * Build a list of elements that contain the given search string. Elements
-	 * are converted to Strings using their toString method.
-	 *
-	 * @param enteredText The text to search for.
-	 */
-	private void filterElements(final String enteredText) {
-		String lowCaseTest = enteredText.toLowerCase();
-		List<E> entriesFiltered = new ArrayList<>();
+    /**
+     * Build a list of elements that contain the given search string. Elements
+     * are converted to Strings using their toString method.
+     *
+     * @param enteredText The text to search for.
+     */
+    private void filterElements(final String enteredText) {
+        String lowCaseTest = enteredText.toLowerCase();
+        List<E> entriesFiltered = new ArrayList<>();
 
-		for (E entry : allElements) {
-			if (entry.toString().toLowerCase().contains(lowCaseTest)) {
-				entriesFiltered.add(entry);
-			}
-		}
+        for (E entry : allElements) {
+            if (entry.toString().toLowerCase().contains(lowCaseTest)) {
+                entriesFiltered.add(entry);
+            }
+        }
 
-		if (entriesFiltered.size() > 0) {
-			final DefaultComboBoxModel model = (DefaultComboBoxModel) getModel();
-			model.removeAllElements();
-			model.addAll(entriesFiltered);
-			setSelectedItem(enteredText);
-			final JTextField textfield = (JTextField) getEditor().getEditorComponent();
-			textfield.setCaretPosition(textfield.getText().length());
-			showPopup();
-		} else {
-			hidePopup();
-		}
-	}
+        if (entriesFiltered.size() > 0) {
+            final DefaultComboBoxModel model = (DefaultComboBoxModel) getModel();
+            model.removeAllElements();
+            model.addAll(entriesFiltered);
+            setSelectedItem(enteredText);
+            final JTextField textfield = (JTextField) getEditor().getEditorComponent();
+            textfield.setCaretPosition(textfield.getText().length());
+            showPopup();
+        } else {
+            hidePopup();
+        }
+    }
 }

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,45 +31,45 @@ import java.lang.reflect.Field;
  */
 public class EditorPassword extends EditorString {
 
-	@Retention(RetentionPolicy.RUNTIME)
-	@Target(ElementType.FIELD)
-	public static @interface EdOptsPassword {
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public static @interface EdOptsPassword {
 
-		/**
-		 * @return The default value.
-		 */
-		String dflt() default "";
+        /**
+         * @return The default value.
+         */
+        String dflt() default "";
 
-		/**
-		 * A comma separated, case insensitive list of profile names. This field
-		 * is only editable when one of these profiles is active. The "default"
-		 * profile is automatically added to the list.
-		 *
-		 * @return A comma separated, case insensitive list of profile names.
-		 */
-		String profilesEdit() default "";
-	}
+        /**
+         * A comma separated, case insensitive list of profile names. This field
+         * is only editable when one of these profiles is active. The "default"
+         * profile is automatically added to the list.
+         *
+         * @return A comma separated, case insensitive list of profile names.
+         */
+        String profilesEdit() default "";
+    }
 
-	public EditorPassword() {
-	}
+    public EditorPassword() {
+    }
 
-	public EditorPassword(String deflt) {
-		this(deflt, "", "");
-	}
+    public EditorPassword(String deflt) {
+        this(deflt, "", "");
+    }
 
-	public EditorPassword(String deflt, String label, String description) {
-		super(deflt, 1, label, description);
-	}
+    public EditorPassword(String deflt, String label, String description) {
+        super(deflt, 1, label, description);
+    }
 
-	@Override
-	public void initFor(Field field) {
-		EdOptsPassword annotation = field.getAnnotation(EdOptsPassword.class);
-		if (annotation == null) {
-			throw new IllegalArgumentException("Field must have an EdOptsPassword annotation to use this editor: " + field.getName());
-		}
-		setDflt(annotation.dflt());
-		setRawValue(annotation.dflt());
-		setProfilesEdit(annotation.profilesEdit());
-	}
+    @Override
+    public void initFor(Field field) {
+        EdOptsPassword annotation = field.getAnnotation(EdOptsPassword.class);
+        if (annotation == null) {
+            throw new IllegalArgumentException("Field must have an EdOptsPassword annotation to use this editor: " + field.getName());
+        }
+        setDflt(annotation.dflt());
+        setRawValue(annotation.dflt());
+        setProfilesEdit(annotation.profilesEdit());
+    }
 
 }

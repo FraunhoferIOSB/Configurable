@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package de.fraunhofer.iosb.ilt.configurableexample;
 
 import com.google.gson.Gson;
@@ -24,153 +41,153 @@ import org.slf4j.LoggerFactory;
  */
 public class ExampleGui extends javax.swing.JFrame {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ExampleGui.class);
-	private JTextArea jsonTextArea;
-	private javax.swing.JButton jButton1;
-	private javax.swing.JButton jButtonToJson;
-	private javax.swing.JButton jButtonFromJson;
-	private javax.swing.JPanel panelEditor;
-	private ConfigEditor editor;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExampleGui.class);
+    private JTextArea jsonTextArea;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButtonToJson;
+    private javax.swing.JButton jButtonFromJson;
+    private javax.swing.JPanel panelEditor;
+    private ConfigEditor editor;
 
-	/**
-	 * Creates new form ExampleGui
-	 */
-	public ExampleGui() {
-		createGui();
-		printSchema();
-	}
+    /**
+     * Creates new form ExampleGui
+     */
+    public ExampleGui() {
+        createGui();
+        printSchema();
+    }
 
-	private void createGui() {
-		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-		setTitle("Configurable Example");
-		getContentPane().setLayout(new java.awt.BorderLayout());
+    private void createGui() {
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Configurable Example");
+        getContentPane().setLayout(new java.awt.BorderLayout());
 
-		GridBagConstraints gridBagConstraints;
+        GridBagConstraints gridBagConstraints;
 
-		JSplitPane splitPane1 = new javax.swing.JSplitPane();
-		JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
-		jsonTextArea = new javax.swing.JTextArea();
+        JSplitPane splitPane1 = new javax.swing.JSplitPane();
+        JScrollPane jScrollPane1 = new javax.swing.JScrollPane();
+        jsonTextArea = new javax.swing.JTextArea();
 
-		splitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-		splitPane1.setResizeWeight(0.5);
-		jScrollPane1.setViewportView(jsonTextArea);
-		splitPane1.setBottomComponent(jScrollPane1);
+        splitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        splitPane1.setResizeWeight(0.5);
+        jScrollPane1.setViewportView(jsonTextArea);
+        splitPane1.setBottomComponent(jScrollPane1);
 
-		JPanel panelTop = new JPanel();
-		panelTop.setLayout(new java.awt.GridBagLayout());
+        JPanel panelTop = new JPanel();
+        panelTop.setLayout(new java.awt.GridBagLayout());
 
-		jButton1 = new javax.swing.JButton();
-		jButtonToJson = new javax.swing.JButton();
-		jButtonFromJson = new javax.swing.JButton();
-		panelEditor = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
+        jButtonToJson = new javax.swing.JButton();
+        jButtonFromJson = new javax.swing.JButton();
+        panelEditor = new javax.swing.JPanel();
 
-		jButton1.setText("Wave");
-		jButton1.addActionListener((ActionEvent e) -> {
-			useConfig();
-		});
-		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.anchor = GridBagConstraints.EAST;
-		gridBagConstraints.weightx = 0.01;
-		panelTop.add(jButton1, gridBagConstraints);
+        jButton1.setText("Wave");
+        jButton1.addActionListener((ActionEvent e) -> {
+            useConfig();
+        });
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = GridBagConstraints.EAST;
+        gridBagConstraints.weightx = 0.01;
+        panelTop.add(jButton1, gridBagConstraints);
 
-		jButtonToJson.setText("To JSON");
-		jButtonToJson.addActionListener((ActionEvent e) -> {
-			printConfig();
-		});
-		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 1;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.anchor = GridBagConstraints.CENTER;
-		gridBagConstraints.weightx = 0.01;
-		panelTop.add(jButtonToJson, gridBagConstraints);
+        jButtonToJson.setText("To JSON");
+        jButtonToJson.addActionListener((ActionEvent e) -> {
+            printConfig();
+        });
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = GridBagConstraints.CENTER;
+        gridBagConstraints.weightx = 0.01;
+        panelTop.add(jButtonToJson, gridBagConstraints);
 
-		jButtonFromJson.setText("Load JSON");
-		jButtonFromJson.addActionListener((ActionEvent e) -> {
-			loadConfig();
-		});
-		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 2;
-		gridBagConstraints.gridy = 1;
-		gridBagConstraints.anchor = GridBagConstraints.WEST;
-		gridBagConstraints.weightx = 0.01;
-		panelTop.add(jButtonFromJson, gridBagConstraints);
+        jButtonFromJson.setText("Load JSON");
+        jButtonFromJson.addActionListener((ActionEvent e) -> {
+            loadConfig();
+        });
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 0.01;
+        panelTop.add(jButtonFromJson, gridBagConstraints);
 
-		panelEditor.setLayout(new java.awt.BorderLayout());
-		gridBagConstraints = new GridBagConstraints();
-		gridBagConstraints.gridx = 0;
-		gridBagConstraints.gridy = 0;
-		gridBagConstraints.gridwidth = 3;
-		gridBagConstraints.weightx = 0.01;
-		gridBagConstraints.weighty = 0.01;
-		gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
-		panelTop.add(panelEditor, gridBagConstraints);
+        panelEditor.setLayout(new java.awt.BorderLayout());
+        gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
+        gridBagConstraints.weightx = 0.01;
+        gridBagConstraints.weighty = 0.01;
+        gridBagConstraints.fill = GridBagConstraints.HORIZONTAL;
+        panelTop.add(panelEditor, gridBagConstraints);
 
-		addEditorToGui(panelEditor);
+        addEditorToGui(panelEditor);
 
-		splitPane1.setTopComponent(panelTop);
-		getContentPane().add(splitPane1, java.awt.BorderLayout.CENTER);
-		pack();
-	}
+        splitPane1.setTopComponent(panelTop);
+        getContentPane().add(splitPane1, java.awt.BorderLayout.CENTER);
+        pack();
+    }
 
-	private void addEditorToGui(JPanel parentPanel) {
-		editor = ConfigEditors.buildEditorFromClass(FlagShapeList.class, null, null).get();
-		parentPanel.add(editor.getGuiFactorySwing().getComponent());
-	}
+    private void addEditorToGui(JPanel parentPanel) {
+        editor = ConfigEditors.buildEditorFromClass(FlagShapeList.class, null, null).get();
+        parentPanel.add(editor.getGuiFactorySwing().getComponent());
+    }
 
-	private void printSchema() {
-		RootSchema jsonRootSchema = ConfigEditors.buildEditorFromClass(FlagShapeList.class, null, null)
-				.get()
-				.getJsonRootSchema();
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String jsonString = gson.toJson(jsonRootSchema);
-		jsonTextArea.setText(jsonString);
-		LOGGER.info("Our schema is:\n{}", jsonString);
-	}
+    private void printSchema() {
+        RootSchema jsonRootSchema = ConfigEditors.buildEditorFromClass(FlagShapeList.class, null, null)
+                .get()
+                .getJsonRootSchema();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        String jsonString = gson.toJson(jsonRootSchema);
+        jsonTextArea.setText(jsonString);
+        LOGGER.info("Our schema is:\n{}", jsonString);
+    }
 
-	private void useConfig() {
-		try {
-			JsonElement config = editor.getConfig();
-			FlagShapeList flag = new FlagShapeList();
-			flag.configure(config, null, null, null);
-			flag.wave();
-		} catch (ConfigurationException ex) {
-			LOGGER.error("Could not configure the flag!", ex);
-		}
-	}
+    private void useConfig() {
+        try {
+            JsonElement config = editor.getConfig();
+            FlagShapeList flag = new FlagShapeList();
+            flag.configure(config, null, null, null);
+            flag.wave();
+        } catch (ConfigurationException ex) {
+            LOGGER.error("Could not configure the flag!", ex);
+        }
+    }
 
-	private void printConfig() {
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonElement config = editor.getConfig();
-		String jsonString = gson.toJson(config);
-		jsonTextArea.setText(jsonString);
-		LOGGER.info("Our configuration is:\n{}", jsonString);
-	}
+    private void printConfig() {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        JsonElement config = editor.getConfig();
+        String jsonString = gson.toJson(config);
+        jsonTextArea.setText(jsonString);
+        LOGGER.info("Our configuration is:\n{}", jsonString);
+    }
 
-	public void loadConfig() {
-		loadConfig(jsonTextArea.getText());
-	}
+    public void loadConfig() {
+        loadConfig(jsonTextArea.getText());
+    }
 
-	public void loadConfig(String jsonString) {
-		JsonElement config = JsonParser.parseString(jsonString);
-		editor.setConfig(config);
-	}
+    public void loadConfig(String jsonString) {
+        JsonElement config = JsonParser.parseString(jsonString);
+        editor.setConfig(config);
+    }
 
-	/**
-	 * @param args the command line arguments
-	 */
-	public static void main(String args[]) {
-		/* Create and display the form */
-		java.awt.EventQueue.invokeLater(() -> {
-			ExampleGui exampleGui = new ExampleGui();
-			exampleGui.setVisible(true);
-			exampleGui.setSize(400, 300);
-		});
-		// Do classpath scanning in the background.
-		new Thread(() -> {
-			Reflection.getReflections();
-		}).start();
-	}
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> {
+            ExampleGui exampleGui = new ExampleGui();
+            exampleGui.setVisible(true);
+            exampleGui.setSize(400, 300);
+        });
+        // Do classpath scanning in the background.
+        new Thread(() -> {
+            Reflection.getReflections();
+        }).start();
+    }
 
 }

@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2019 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -31,19 +32,21 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface ConfigurableParameter {
 
-	enum ConfigurableParameterType {
-		RUNTIME_CONTEXT, CLASS_CONFIG, JSON_FIELD
-	}
+    enum ConfigurableParameterType {
+        RUNTIME_CONTEXT,
+        CLASS_CONFIG,
+        JSON_FIELD
+    }
 
-	ConfigurableParameterType type() default ConfigurableParameterType.JSON_FIELD;
+    ConfigurableParameterType type() default ConfigurableParameterType.JSON_FIELD;
 
-	/**
-	 * The name of the field in the configuration JSON to use for storing the
-	 * value of the annotated field. Defaults to the field name (case
-	 * sensitive).
-	 *
-	 * @return The name of the field in the configuration JSON to use for
-	 * storing the value of the annotated field.
-	 */
-	String jsonField() default "";
+    /**
+     * The name of the field in the configuration JSON to use for storing the
+     * value of the annotated field. Defaults to the field name (case
+     * sensitive).
+     *
+     * @return The name of the field in the configuration JSON to use for
+     * storing the value of the annotated field.
+     */
+    String jsonField() default "";
 }

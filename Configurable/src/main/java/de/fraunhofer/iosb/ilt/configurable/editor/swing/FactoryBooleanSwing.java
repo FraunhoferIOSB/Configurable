@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +19,9 @@ package de.fraunhofer.iosb.ilt.configurable.editor.swing;
 
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorBoolean;
+import java.util.Objects;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import java.util.Objects;
 
 /**
  *
@@ -28,35 +29,35 @@ import java.util.Objects;
  */
 public final class FactoryBooleanSwing implements GuiFactorySwing {
 
-	private final EditorBoolean parentEditor;
-	private JCheckBox swComponent;
+    private final EditorBoolean parentEditor;
+    private JCheckBox swComponent;
 
-	public FactoryBooleanSwing(EditorBoolean parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactoryBooleanSwing(EditorBoolean parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public JComponent getComponent() {
-		if (swComponent == null) {
-			createComponent();
-		}
-		return swComponent;
-	}
+    @Override
+    public JComponent getComponent() {
+        if (swComponent == null) {
+            createComponent();
+        }
+        return swComponent;
+    }
 
-	private void createComponent() {
-		swComponent = new JCheckBox();
-		fillComponent();
-	}
+    private void createComponent() {
+        swComponent = new JCheckBox();
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		swComponent.setSelected(Objects.requireNonNullElse(parentEditor.getRawValue(), Boolean.FALSE));
-	}
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        swComponent.setSelected(Objects.requireNonNullElse(parentEditor.getRawValue(), Boolean.FALSE));
+    }
 
-	public boolean isSelected() {
-		return swComponent.isSelected();
-	}
+    public boolean isSelected() {
+        return swComponent.isSelected();
+    }
 
 }

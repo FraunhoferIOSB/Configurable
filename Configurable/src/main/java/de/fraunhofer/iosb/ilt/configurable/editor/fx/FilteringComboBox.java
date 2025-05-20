@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2019 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -34,82 +35,82 @@ import org.slf4j.LoggerFactory;
  */
 public class FilteringComboBox<E> extends ComboBox<E> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FilteringComboBox.class.getName());
-	/**
-	 * The complete list of elements.
-	 */
-	private final List<E> allElements;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FilteringComboBox.class.getName());
+    /**
+     * The complete list of elements.
+     */
+    private final List<E> allElements;
 
-	/**
-	 * Create a new FilteringComboBox, using the given list of elements.
-	 *
-	 * @param elements The elements to let the user select from.
-	 */
-	public FilteringComboBox(List<E> elements) {
-		super(FXCollections.observableArrayList(elements));
-		this.allElements = elements;
-		setEditable(true);
+    /**
+     * Create a new FilteringComboBox, using the given list of elements.
+     *
+     * @param elements The elements to let the user select from.
+     */
+    public FilteringComboBox(List<E> elements) {
+        super(FXCollections.observableArrayList(elements));
+        this.allElements = elements;
+        setEditable(true);
 
-		final TextField textfield = getEditor();
+        final TextField textfield = getEditor();
 
-		/**
-		 * Listen for key presses.
-		 */
-		textfield.setOnKeyReleased((ke) -> {
-			// Only filter on normal text entry, not when something like CTRL-a is used to select all text.
-			if (ke.isControlDown()) {
-				return;
-			}
+        /**
+         * Listen for key presses.
+         */
+        textfield.setOnKeyReleased((ke) -> {
+            // Only filter on normal text entry, not when something like CTRL-a is used to select all text.
+            if (ke.isControlDown()) {
+                return;
+            }
 
-			// Don't trigger on special keys used to select items or text.
-			switch (ke.getCode()) {
-				case DOWN:
-				case UP:
-				case LEFT:
-				case RIGHT:
-				case KP_DOWN:
-				case KP_UP:
-				case KP_LEFT:
-				case KP_RIGHT:
-				case CONTROL:
-				case SHIFT:
-				case HOME:
-				case END:
-				case ENTER:
-					return;
-			}
-			Platform.runLater(() -> {
-				filterElements(textfield.getText().toLowerCase());
-			});
-		});
-	}
+            // Don't trigger on special keys used to select items or text.
+            switch (ke.getCode()) {
+                case DOWN:
+                case UP:
+                case LEFT:
+                case RIGHT:
+                case KP_DOWN:
+                case KP_UP:
+                case KP_LEFT:
+                case KP_RIGHT:
+                case CONTROL:
+                case SHIFT:
+                case HOME:
+                case END:
+                case ENTER:
+                    return;
+            }
+            Platform.runLater(() -> {
+                filterElements(textfield.getText().toLowerCase());
+            });
+        });
+    }
 
-	/**
-	 * Build a list of elements that contain the given search string. Elements
-	 * are converted to Strings using their toString method.
-	 *
-	 * @param enteredText The text to search for.
-	 */
-	private void filterElements(String enteredText) {
-		List<E> entriesFiltered = new ArrayList<>();
+    /**
+     * Build a list of elements that contain the given search string. Elements
+     * are converted to Strings using their toString method.
+     *
+     * @param enteredText The text to search for.
+     */
+    private void filterElements(String enteredText) {
+        List<E> entriesFiltered = new ArrayList<>();
 
-		for (E entry : allElements) {
-			if (entry.toString().toLowerCase().contains(enteredText)) {
-				entriesFiltered.add(entry);
-			}
-		}
+        for (E entry : allElements) {
+            if (entry.toString().toLowerCase().contains(enteredText)) {
+                entriesFiltered.add(entry);
+            }
+        }
 
-		if (entriesFiltered.size() > 0) {
-			ObservableList<E> items = getItems();
-			if (items.size() == entriesFiltered.size()) {
-				// The list didn't actually change. Do nothing.
-				return;
-			}
-			items.clear();
-			items.addAll(entriesFiltered);
-			show();
-		} else {
-			hide();
-		}
-	}
+        if (entriesFiltered.size() > 0) {
+            ObservableList<E> items = getItems();
+            if (items.size() == entriesFiltered.size()) {
+                // The list didn't actually change. Do nothing.
+                return;
+            }
+            items.clear();
+            items.addAll(entriesFiltered);
+            show();
+        } else {
+            hide();
+        }
+    }
 }

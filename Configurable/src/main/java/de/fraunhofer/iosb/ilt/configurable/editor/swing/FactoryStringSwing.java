@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -34,57 +35,57 @@ import javax.swing.text.JTextComponent;
  */
 public final class FactoryStringSwing implements GuiFactorySwing {
 
-	private final EditorString parentEditor;
-	private JTextComponent swText;
-	private JComponent swComponent;
-	private boolean passwordControl;
+    private final EditorString parentEditor;
+    private JTextComponent swText;
+    private JComponent swComponent;
+    private boolean passwordControl;
 
-	public FactoryStringSwing(EditorString parentEditor) {
-		this.parentEditor = parentEditor;
-		if (parentEditor instanceof EditorPassword) {
-			passwordControl = true;
-		}
-	}
+    public FactoryStringSwing(EditorString parentEditor) {
+        this.parentEditor = parentEditor;
+        if (parentEditor instanceof EditorPassword) {
+            passwordControl = true;
+        }
+    }
 
-	@Override
-	public JComponent getComponent() {
-		if (swComponent == null) {
-			createComponent();
-		}
-		return swComponent;
-	}
+    @Override
+    public JComponent getComponent() {
+        if (swComponent == null) {
+            createComponent();
+        }
+        return swComponent;
+    }
 
-	private void createComponent() {
-		if (passwordControl) {
-			swText = new JPasswordField();
-			swComponent = swText;
-		} else if (parentEditor.getLines() == 1) {
-			swText = new JTextField();
-			swComponent = swText;
-		} else {
-			JTextArea textArea = new JTextArea();
-			swText = textArea;
-			textArea.setRows(parentEditor.getLines());
-			textArea.setLineWrap(true);
-			JScrollPane jScrollPane = new JScrollPane();
-			jScrollPane.setViewportView(textArea);
-			JPanel panel = new JPanel(new BorderLayout());
-			panel.add(jScrollPane, BorderLayout.CENTER);
-			swComponent = panel;
-		}
-		fillComponent();
-	}
+    private void createComponent() {
+        if (passwordControl) {
+            swText = new JPasswordField();
+            swComponent = swText;
+        } else if (parentEditor.getLines() == 1) {
+            swText = new JTextField();
+            swComponent = swText;
+        } else {
+            JTextArea textArea = new JTextArea();
+            swText = textArea;
+            textArea.setRows(parentEditor.getLines());
+            textArea.setLineWrap(true);
+            JScrollPane jScrollPane = new JScrollPane();
+            jScrollPane.setViewportView(textArea);
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(jScrollPane, BorderLayout.CENTER);
+            swComponent = panel;
+        }
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the swComponent represents the current value.
-	 */
-	public void fillComponent() {
-		swText.setEditable(parentEditor.canEdit());
-		swText.setText(parentEditor.getRawValue());
-	}
+    /**
+     * Ensure the swComponent represents the current value.
+     */
+    public void fillComponent() {
+        swText.setEditable(parentEditor.canEdit());
+        swText.setText(parentEditor.getRawValue());
+    }
 
-	public void readComponent() {
-		parentEditor.setRawValue(swText.getText());
-	}
+    public void readComponent() {
+        parentEditor.setRawValue(swText.getText());
+    }
 
 }

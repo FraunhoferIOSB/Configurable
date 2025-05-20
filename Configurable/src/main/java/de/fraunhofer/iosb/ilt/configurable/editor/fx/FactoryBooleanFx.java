@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,39 +28,39 @@ import javafx.scene.control.CheckBox;
  */
 public final class FactoryBooleanFx implements GuiFactoryFx {
 
-	private final EditorBoolean parentEditor;
-	private CheckBox fxNode;
+    private final EditorBoolean parentEditor;
+    private CheckBox fxNode;
 
-	public FactoryBooleanFx(EditorBoolean parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactoryBooleanFx(EditorBoolean parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public Node getNode() {
-		if (fxNode == null) {
-			createNode();
-		}
-		return fxNode;
-	}
+    @Override
+    public Node getNode() {
+        if (fxNode == null) {
+            createNode();
+        }
+        return fxNode;
+    }
 
-	private void createNode() {
-		fxNode = new CheckBox();
-		fillComponent();
-	}
+    private void createNode() {
+        fxNode = new CheckBox();
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		Boolean value = parentEditor.getRawValue();
-		if (value == null) {
-			value = false;
-		}
-		fxNode.setSelected(value);
-	}
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        Boolean value = parentEditor.getRawValue();
+        if (value == null) {
+            value = false;
+        }
+        fxNode.setSelected(value);
+    }
 
-	public boolean isSelected() {
-		return fxNode.isSelected();
-	}
+    public boolean isSelected() {
+        return fxNode.isSelected();
+    }
 
 }

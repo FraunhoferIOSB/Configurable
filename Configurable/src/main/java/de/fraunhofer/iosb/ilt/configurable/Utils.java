@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -21,10 +22,10 @@ package de.fraunhofer.iosb.ilt.configurable;
  */
 public class Utils {
 
-	private Utils() {
-	}
+    private Utils() {
+    }
 
-	public static boolean isNullOrEmpty(String value) {
-		return value == null || value.isEmpty();
-	}
+    public static boolean isNullOrEmpty(String value) {
+        return value == null || value.isEmpty();
+    }
 }

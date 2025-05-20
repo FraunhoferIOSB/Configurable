@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -33,61 +34,61 @@ import org.slf4j.LoggerFactory;
  */
 public final class FactoryBigDecimalFx implements GuiFactoryFx {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FactoryBigDecimalFx.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(FactoryBigDecimalFx.class.getName());
 
-	private final EditorBigDecimal parentEditor;
-	private TextInputControl fxNode;
+    private final EditorBigDecimal parentEditor;
+    private TextInputControl fxNode;
 
-	public FactoryBigDecimalFx(EditorBigDecimal parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactoryBigDecimalFx(EditorBigDecimal parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public Node getNode() {
-		if (fxNode == null) {
-			createComponent();
-		}
-		return fxNode;
-	}
+    @Override
+    public Node getNode() {
+        if (fxNode == null) {
+            createComponent();
+        }
+        return fxNode;
+    }
 
-	private void createComponent() {
-		BigDecimal rawValue = parentEditor.getRawValue();
-		if (rawValue == null) {
-			rawValue = BigDecimal.ZERO;
-		}
-		BigDecimal min = parentEditor.getMin();
-		BigDecimal max = parentEditor.getMax();
+    private void createComponent() {
+        BigDecimal rawValue = parentEditor.getRawValue();
+        if (rawValue == null) {
+            rawValue = BigDecimal.ZERO;
+        }
+        BigDecimal min = parentEditor.getMin();
+        BigDecimal max = parentEditor.getMax();
 
-		if (min != null && min.compareTo(rawValue) > 0) {
-			parentEditor.setRawValue(min);
-		}
-		if (max != null && max.compareTo(rawValue) < 0) {
-			parentEditor.setRawValue(min);
-		}
-		fxNode = new TextField();
-		fxNode.setTextFormatter(new TextFormatter(new BigDecimalStringConverter()));
-		fillComponent();
-	}
+        if (min != null && min.compareTo(rawValue) > 0) {
+            parentEditor.setRawValue(min);
+        }
+        if (max != null && max.compareTo(rawValue) < 0) {
+            parentEditor.setRawValue(min);
+        }
+        fxNode = new TextField();
+        fxNode.setTextFormatter(new TextFormatter(new BigDecimalStringConverter()));
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		BigDecimal rawValue = parentEditor.getRawValue();
-		if (rawValue == null) {
-			rawValue = BigDecimal.ZERO;
-		}
-		fxNode.setText("" + rawValue);
-	}
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        BigDecimal rawValue = parentEditor.getRawValue();
+        if (rawValue == null) {
+            rawValue = BigDecimal.ZERO;
+        }
+        fxNode.setText("" + rawValue);
+    }
 
-	public void readComponent() {
-		if (fxNode != null) {
-			try {
-				parentEditor.setRawValue(new BigDecimal(fxNode.getText()));
-			} catch (NumberFormatException exc) {
-				LOGGER.error("Failed to parse text to number: " + fxNode.getText());
-			}
-		}
-	}
+    public void readComponent() {
+        if (fxNode != null) {
+            try {
+                parentEditor.setRawValue(new BigDecimal(fxNode.getText()));
+            } catch (NumberFormatException exc) {
+                LOGGER.error("Failed to parse text to number: " + fxNode.getText());
+            }
+        }
+    }
 
 }

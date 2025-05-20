@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2021 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,96 +30,96 @@ import java.util.Map;
  */
 public abstract class SchemaItemAbstract<T extends SchemaItemAbstract<T>> implements SchemaItem {
 
-	private final String type;
+    private final String type;
 
-	private String title;
+    private String title;
 
-	private String description;
+    private String description;
 
-	@SerializedName("default")
-	private Object deflt;
+    @SerializedName("default")
+    private Object deflt;
 
-	@SerializedName("enum")
-	private List<Object> allowedValues;
+    @SerializedName("enum")
+    private List<Object> allowedValues;
 
-	private Map<String, Object> options;
+    private Map<String, Object> options;
 
-	public SchemaItemAbstract(String type) {
-		this.type = type;
-	}
+    public SchemaItemAbstract(String type) {
+        this.type = type;
+    }
 
-	public abstract T getThis();
+    public abstract T getThis();
 
-	@Override
-	public String getType() {
-		return type;
-	}
+    @Override
+    public String getType() {
+        return type;
+    }
 
-	/**
-	 * @return the default
-	 */
-	public Object getDeflt() {
-		return deflt;
-	}
+    /**
+     * @return the default
+     */
+    public Object getDeflt() {
+        return deflt;
+    }
 
-	/**
-	 * @param deflt the default to set
-	 * @return this.
-	 */
-	public T setDeflt(Object deflt) {
-		this.deflt = deflt;
-		return getThis();
-	}
+    /**
+     * @param deflt the default to set
+     * @return this.
+     */
+    public T setDeflt(Object deflt) {
+        this.deflt = deflt;
+        return getThis();
+    }
 
-	/**
-	 * @return the title
-	 */
-	@Override
-	public String getTitle() {
-		return title;
-	}
+    /**
+     * @return the title
+     */
+    @Override
+    public String getTitle() {
+        return title;
+    }
 
-	/**
-	 * @param title the title to set
-	 * @return this.
-	 */
-	@Override
-	public T setTitle(String title) {
-		this.title = title;
-		return getThis();
-	}
+    /**
+     * @param title the title to set
+     * @return this.
+     */
+    @Override
+    public T setTitle(String title) {
+        this.title = title;
+        return getThis();
+    }
 
-	/**
-	 * @return the description
-	 */
-	@Override
-	public String getDescription() {
-		return description;
-	}
+    /**
+     * @return the description
+     */
+    @Override
+    public String getDescription() {
+        return description;
+    }
 
-	/**
-	 * @param description the description to set
-	 * @return this.
-	 */
-	@Override
-	public T setDescription(String description) {
-		this.description = description;
-		return getThis();
-	}
+    /**
+     * @param description the description to set
+     * @return this.
+     */
+    @Override
+    public T setDescription(String description) {
+        this.description = description;
+        return getThis();
+    }
 
-	public SchemaItemAbstract<T> addAllowedValue(Object value) {
-		if (allowedValues == null) {
-			allowedValues = new ArrayList<>();
-		}
-		allowedValues.add(value);
-		return this;
-	}
+    public SchemaItemAbstract<T> addAllowedValue(Object value) {
+        if (allowedValues == null) {
+            allowedValues = new ArrayList<>();
+        }
+        allowedValues.add(value);
+        return this;
+    }
 
-	public SchemaItemAbstract<T> addOption(String name, Object value) {
-		if (options == null) {
-			options = new HashMap<>();
-		}
-		options.put(name, value);
-		return this;
-	}
+    public SchemaItemAbstract<T> addOption(String name, Object value) {
+        if (options == null) {
+            options = new HashMap<>();
+        }
+        options.put(name, value);
+        return this;
+    }
 }

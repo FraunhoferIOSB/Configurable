@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -30,66 +31,66 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface ConfigurableField {
 
-	/**
-	 * The class to use as editor for the annotated field. The editor should
-	 * also supply an annotation type to use for defining further parameters.
-	 *
-	 * @return The class to use as editor for the annotated field.
-	 */
-	Class<? extends ConfigEditor> editor();
+    /**
+     * The class to use as editor for the annotated field. The editor should
+     * also supply an annotation type to use for defining further parameters.
+     *
+     * @return The class to use as editor for the annotated field.
+     */
+    Class<? extends ConfigEditor> editor();
 
-	/**
-	 * The label to use in the user interface. Defaults to the field name (case
-	 * sensitive).
-	 *
-	 * @return The label to use in the user interface.
-	 */
-	String label() default "";
+    /**
+     * The label to use in the user interface. Defaults to the field name (case
+     * sensitive).
+     *
+     * @return The label to use in the user interface.
+     */
+    String label() default "";
 
-	/**
-	 * The description to use in the user interface.
-	 *
-	 * @return The description to use in the user interface.
-	 */
-	String description() default "";
+    /**
+     * The description to use in the user interface.
+     *
+     * @return The description to use in the user interface.
+     */
+    String description() default "";
 
-	/**
-	 * The name of the field in the configuration JSON to use for storing the
-	 * value of the annotated field. Defaults to the field name (case
-	 * sensitive).
-	 *
-	 * @return The name of the field in the configuration JSON to use for
-	 * storing the value of the annotated field.
-	 */
-	String jsonField() default "";
+    /**
+     * The name of the field in the configuration JSON to use for storing the
+     * value of the annotated field. Defaults to the field name (case
+     * sensitive).
+     *
+     * @return The name of the field in the configuration JSON to use for
+     * storing the value of the annotated field.
+     */
+    String jsonField() default "";
 
-	boolean optional() default false;
+    boolean optional() default false;
 
-	/**
-	 * Merge the configuration of the field into the configuration of the Map
-	 * holding the field. This only works for fields that have a configuration
-	 * of the JSON type Object.
-	 *
-	 * @return Merge the configuration of the field into the configuration of
-	 * the Map holding the field.
-	 */
-	boolean merge() default false;
+    /**
+     * Merge the configuration of the field into the configuration of the Map
+     * holding the field. This only works for fields that have a configuration
+     * of the JSON type Object.
+     *
+     * @return Merge the configuration of the field into the configuration of
+     * the Map holding the field.
+     */
+    boolean merge() default false;
 
-	/**
-	 * A comma separated, case insensitive list of profile names. This field is
-	 * only included in the output json when one of these profiles is active.
-	 * The "default" profile is automatically added to the list.
-	 *
-	 * @return A comma separated, case insensitive list of profile names.
-	 */
-	String profilesSave() default "";
+    /**
+     * A comma separated, case insensitive list of profile names. This field is
+     * only included in the output json when one of these profiles is active.
+     * The "default" profile is automatically added to the list.
+     *
+     * @return A comma separated, case insensitive list of profile names.
+     */
+    String profilesSave() default "";
 
-	/**
-	 * A comma separated, case insensitive list of profile names. This field is
-	 * only included in the GUI when one of these profiles is active. The
-	 * "default" profile is automatically added to the list.
-	 *
-	 * @return A comma separated, case insensitive list of profile names.
-	 */
-	String profilesGui() default "";
+    /**
+     * A comma separated, case insensitive list of profile names. This field is
+     * only included in the GUI when one of these profiles is active. The
+     * "default" profile is automatically added to the list.
+     *
+     * @return A comma separated, case insensitive list of profile names.
+     */
+    String profilesGui() default "";
 }

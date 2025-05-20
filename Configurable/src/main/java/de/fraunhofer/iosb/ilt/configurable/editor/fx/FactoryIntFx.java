@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,58 +30,58 @@ import javafx.scene.control.TextFormatter;
  */
 public final class FactoryIntFx implements GuiFactoryFx {
 
-	private final EditorInt parentEditor;
-	private Spinner<Integer> fxNode;
-	private int min;
+    private final EditorInt parentEditor;
+    private Spinner<Integer> fxNode;
+    private int min;
 
-	public FactoryIntFx(EditorInt parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactoryIntFx(EditorInt parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public Node getNode() {
-		if (fxNode == null) {
-			createComponent();
-		}
-		return fxNode;
-	}
+    @Override
+    public Node getNode() {
+        if (fxNode == null) {
+            createComponent();
+        }
+        return fxNode;
+    }
 
-	private void createComponent() {
-		Integer value = parentEditor.getValue();
-		min = parentEditor.getMin();
-		if (value == null) {
-			value = Math.max(0, min);
-		}
-		SpinnerValueFactory.IntegerSpinnerValueFactory factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(
-				min,
-				parentEditor.getMax(),
-				value,
-				parentEditor.getStep());
-		fxNode = new Spinner<>(factory);
-		fxNode.setEditable(true);
-		// hook in a formatter with the same properties as the factory
-		TextFormatter formatter = new TextFormatter(factory.getConverter(), factory.getValue());
-		fxNode.getEditor().setTextFormatter(formatter);
-		// bidi-bind the values
-		factory.valueProperty().bindBidirectional(formatter.valueProperty());
-		fillComponent();
-	}
+    private void createComponent() {
+        Integer value = parentEditor.getValue();
+        min = parentEditor.getMin();
+        if (value == null) {
+            value = Math.max(0, min);
+        }
+        SpinnerValueFactory.IntegerSpinnerValueFactory factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                min,
+                parentEditor.getMax(),
+                value,
+                parentEditor.getStep());
+        fxNode = new Spinner<>(factory);
+        fxNode.setEditable(true);
+        // hook in a formatter with the same properties as the factory
+        TextFormatter formatter = new TextFormatter(factory.getConverter(), factory.getValue());
+        fxNode.getEditor().setTextFormatter(formatter);
+        // bidi-bind the values
+        factory.valueProperty().bindBidirectional(formatter.valueProperty());
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		Integer rawValue = parentEditor.getRawValue();
-		if (rawValue == null) {
-			rawValue = Math.max(0, min);
-		}
-		fxNode.getValueFactory().setValue(rawValue);
-	}
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        Integer rawValue = parentEditor.getRawValue();
+        if (rawValue == null) {
+            rawValue = Math.max(0, min);
+        }
+        fxNode.getValueFactory().setValue(rawValue);
+    }
 
-	public void readComponent() {
-		if (fxNode != null) {
-			parentEditor.setRawValue(fxNode.getValue());
-		}
-	}
+    public void readComponent() {
+        if (fxNode != null) {
+            parentEditor.setRawValue(fxNode.getValue());
+        }
+    }
 
 }

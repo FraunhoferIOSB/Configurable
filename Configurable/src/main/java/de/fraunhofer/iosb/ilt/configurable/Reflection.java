@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -32,61 +33,61 @@ import org.reflections.util.ConfigurationBuilder;
  */
 public class Reflection {
 
-	private static Reflections reflections;
+    private static Reflections reflections;
 
-	public static synchronized Reflections getReflections() {
-		if (reflections == null) {
-			ConfigurationBuilder config = new ConfigurationBuilder()
-					.addUrls(ClasspathHelper.forJavaClassPath())
-					.setScanners(Scanners.values());
-			reflections = new Reflections(config);
-		}
-		return reflections;
-	}
+    public static synchronized Reflections getReflections() {
+        if (reflections == null) {
+            ConfigurationBuilder config = new ConfigurationBuilder()
+                    .addUrls(ClasspathHelper.forJavaClassPath())
+                    .setScanners(Scanners.values());
+            reflections = new Reflections(config);
+        }
+        return reflections;
+    }
 
-	/**
-	 * Returns all subtypes of the given class or interface.
-	 *
-	 * @param parent The class or interface to get subtypes of.
-	 * @return The list of classes.
-	 */
-	public static Set<Class<?>> getSubtypesOf(Class parent) {
-		return getReflections().getSubTypesOf(parent);
-	}
+    /**
+     * Returns all subtypes of the given class or interface.
+     *
+     * @param parent The class or interface to get subtypes of.
+     * @return The list of classes.
+     */
+    public static Set<Class<?>> getSubtypesOf(Class parent) {
+        return getReflections().getSubTypesOf(parent);
+    }
 
-	/**
-	 * Returns all subtypes of the given class or interface, excluding the given
-	 * class itself. Optionally filtering out all interfaces.
-	 *
-	 * @param parent The class or interface to find subclasses of.
-	 * @param interfaces Should interfaces and abstract classes be included.
-	 * @return The list of classes.
-	 */
-	public static List<Class<?>> getSubtypesOf(Class parent, boolean interfaces) {
-		return getSubtypesOf(parent, interfaces, false);
-	}
+    /**
+     * Returns all subtypes of the given class or interface, excluding the given
+     * class itself. Optionally filtering out all interfaces.
+     *
+     * @param parent The class or interface to find subclasses of.
+     * @param interfaces Should interfaces and abstract classes be included.
+     * @return The list of classes.
+     */
+    public static List<Class<?>> getSubtypesOf(Class parent, boolean interfaces) {
+        return getSubtypesOf(parent, interfaces, false);
+    }
 
-	/**
-	 * Returns all subtypes of the given class or interface, optionally
-	 * including the given class itself. Optionally filtering out all
-	 * interfaces.
-	 *
-	 * @param parent The class or interface to find subclasses of.
-	 * @param interfaces Should interfaces and abstract classes be included.
-	 * @param includeParent Should the given parent class itself be returned.
-	 * @return The list of classes.
-	 */
-	public static List<Class<?>> getSubtypesOf(Class parent, boolean interfaces, boolean includeParent) {
-		Set<Class<?>> types = getReflections().getSubTypesOf(parent);
-		if (includeParent && (interfaces || (!parent.isInterface() && !Modifier.isAbstract(parent.getModifiers())))) {
-			types.add(parent);
-		}
-		List<Class<?>> result = new ArrayList<>();
-		for (Class subtype : types) {
-			if (interfaces || (!subtype.isInterface() && !Modifier.isAbstract(subtype.getModifiers()))) {
-				result.add(subtype);
-			}
-		}
-		return result;
-	}
+    /**
+     * Returns all subtypes of the given class or interface, optionally
+     * including the given class itself. Optionally filtering out all
+     * interfaces.
+     *
+     * @param parent The class or interface to find subclasses of.
+     * @param interfaces Should interfaces and abstract classes be included.
+     * @param includeParent Should the given parent class itself be returned.
+     * @return The list of classes.
+     */
+    public static List<Class<?>> getSubtypesOf(Class parent, boolean interfaces, boolean includeParent) {
+        Set<Class<?>> types = getReflections().getSubTypesOf(parent);
+        if (includeParent && (interfaces || (!parent.isInterface() && !Modifier.isAbstract(parent.getModifiers())))) {
+            types.add(parent);
+        }
+        List<Class<?>> result = new ArrayList<>();
+        for (Class subtype : types) {
+            if (interfaces || (!subtype.isInterface() && !Modifier.isAbstract(subtype.getModifiers()))) {
+                result.add(subtype);
+            }
+        }
+        return result;
+    }
 }

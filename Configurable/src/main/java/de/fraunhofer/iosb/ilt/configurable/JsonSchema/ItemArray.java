@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2021 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,65 +23,65 @@ package de.fraunhofer.iosb.ilt.configurable.JsonSchema;
  */
 public class ItemArray extends SchemaItemAbstract<ItemArray> {
 
-	private SchemaItem items;
-	private int minItems;
-	private int maxItems;
+    private SchemaItem items;
+    private int minItems;
+    private int maxItems;
 
-	public ItemArray() {
-		super("array");
-	}
+    public ItemArray() {
+        super("array");
+    }
 
-	@Override
-	public ItemArray getThis() {
-		return this;
-	}
+    @Override
+    public ItemArray getThis() {
+        return this;
+    }
 
-	/**
-	 * @return the items
-	 */
-	public SchemaItem getItems() {
-		return items;
-	}
+    /**
+     * @return the items
+     */
+    public SchemaItem getItems() {
+        return items;
+    }
 
-	/**
-	 * @param items the items to set
-	 * @return this.
-	 */
-	public ItemArray setItems(SchemaItem items) {
-		this.items = items;
-		return this;
-	}
+    /**
+     * @param items the items to set
+     * @return this.
+     */
+    public ItemArray setItems(SchemaItem items) {
+        this.items = items;
+        return this;
+    }
 
-	/**
-	 * @return the minItems
-	 */
-	public int getMinItems() {
-		return minItems;
-	}
+    /**
+     * @return the minItems
+     */
+    public int getMinItems() {
+        return minItems;
+    }
 
-	/**
-	 * @param minItems the minItems to set
-	 * @return this.
-	 */
-	public ItemArray setMinItems(int minItems) {
-		this.minItems = minItems;
-		return this;
-	}
+    /**
+     * @param minItems the minItems to set
+     * @return this.
+     */
+    public ItemArray setMinItems(int minItems) {
+        this.minItems = minItems;
+        return this;
+    }
 
-	/**
-	 * @return the maxItems
-	 */
-	public int getMaxItems() {
-		return maxItems;
-	}
+    /**
+     * @return the maxItems
+     */
+    public int getMaxItems() {
+        return maxItems;
+    }
 
-	/**
-	 * @param maxItems the maxItems to set
-	 * @return this.
-	 */
-	public ItemArray setMaxItems(int maxItems) {
-		this.maxItems = maxItems;
-		return this;
-	}
+    /**
+     * @param maxItems the maxItems to set
+     * @return this.
+     */
+    public ItemArray setMaxItems(int maxItems) {
+        this.maxItems = maxItems;
+        return this;
+    }
 
 }

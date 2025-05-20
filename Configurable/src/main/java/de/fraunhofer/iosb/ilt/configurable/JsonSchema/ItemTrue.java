@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2021 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,13 +23,13 @@ package de.fraunhofer.iosb.ilt.configurable.JsonSchema;
  */
 public class ItemTrue extends SchemaItemAbstract<ItemTrue> {
 
-	public ItemTrue() {
-		super("true");
-	}
+    public ItemTrue() {
+        super("true");
+    }
 
-	@Override
-	public ItemTrue getThis() {
-		return this;
-	}
+    @Override
+    public ItemTrue getThis() {
+        return this;
+    }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
  * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,19 +23,19 @@ package de.fraunhofer.iosb.ilt.configurable;
  */
 public class ConfigurationException extends Exception {
 
-	public ConfigurationException() {
-	}
+    public ConfigurationException() {
+    }
 
-	public ConfigurationException(String message) {
-		super(message);
-	}
+    public ConfigurationException(String message) {
+        super(message);
+    }
 
-	public ConfigurationException(Throwable cause) {
-		super(cause);
-	}
+    public ConfigurationException(Throwable cause) {
+        super(cause);
+    }
 
-	public ConfigurationException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public ConfigurationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

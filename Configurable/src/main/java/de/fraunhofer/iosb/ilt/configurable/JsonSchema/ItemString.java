@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2021 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,59 +23,59 @@ package de.fraunhofer.iosb.ilt.configurable.JsonSchema;
  */
 public class ItemString extends SchemaItemAbstract<ItemString> {
 
-	private Integer minLength;
-	private Integer maxLength;
-	private String pattern;
+    private Integer minLength;
+    private Integer maxLength;
+    private String pattern;
 
-	public ItemString() {
-		super("string");
-	}
+    public ItemString() {
+        super("string");
+    }
 
-	@Override
-	public ItemString getThis() {
-		return this;
-	}
+    @Override
+    public ItemString getThis() {
+        return this;
+    }
 
-	/**
-	 * @return the minLength
-	 */
-	public Integer getMinLength() {
-		return minLength;
-	}
+    /**
+     * @return the minLength
+     */
+    public Integer getMinLength() {
+        return minLength;
+    }
 
-	/**
-	 * @param minLength the minLength to set
-	 */
-	public void setMinLength(Integer minLength) {
-		this.minLength = minLength;
-	}
+    /**
+     * @param minLength the minLength to set
+     */
+    public void setMinLength(Integer minLength) {
+        this.minLength = minLength;
+    }
 
-	/**
-	 * @return the maxLength
-	 */
-	public Integer getMaxLength() {
-		return maxLength;
-	}
+    /**
+     * @return the maxLength
+     */
+    public Integer getMaxLength() {
+        return maxLength;
+    }
 
-	/**
-	 * @param maxLength the maxLength to set
-	 */
-	public void setMaxLength(Integer maxLength) {
-		this.maxLength = maxLength;
-	}
+    /**
+     * @param maxLength the maxLength to set
+     */
+    public void setMaxLength(Integer maxLength) {
+        this.maxLength = maxLength;
+    }
 
-	/**
-	 * @return the pattern
-	 */
-	public String getPattern() {
-		return pattern;
-	}
+    /**
+     * @return the pattern
+     */
+    public String getPattern() {
+        return pattern;
+    }
 
-	/**
-	 * @param pattern the pattern to set
-	 */
-	public void setPattern(String pattern) {
-		this.pattern = pattern;
-	}
+    /**
+     * @param pattern the pattern to set
+     */
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
+    }
 
 }

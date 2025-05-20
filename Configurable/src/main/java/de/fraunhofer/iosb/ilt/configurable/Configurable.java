@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -26,28 +27,28 @@ import com.google.gson.JsonElement;
  */
 public interface Configurable<C, D> {
 
-	public static final String CLASS_CONFIG_EDITOR_FACTORY_METHOD_NAME = "getClassConfigEditor";
+    public static final String CLASS_CONFIG_EDITOR_FACTORY_METHOD_NAME = "getClassConfigEditor";
 
-	/**
-	 * Configure the instance using the given configuration.
-	 *
-	 * @param config The configuration to use for this instance.
-	 * @param context the object that defines the context at runtime.
-	 * @param edtCtx the object that defines the context while editing.
-	 * @param configEditor optional {@code ConfigEditor} that may be used to
-	 * access and assign configured contents.
-	 * @throws ConfigurationException If the configuration can not be loaded.
-	 */
-	public void configure(JsonElement config, C context, D edtCtx, ConfigEditor<?> configEditor) throws ConfigurationException;
+    /**
+     * Configure the instance using the given configuration.
+     *
+     * @param config The configuration to use for this instance.
+     * @param context the object that defines the context at runtime.
+     * @param edtCtx the object that defines the context while editing.
+     * @param configEditor optional {@code ConfigEditor} that may be used to
+     * access and assign configured contents.
+     * @throws ConfigurationException If the configuration can not be loaded.
+     */
+    public void configure(JsonElement config, C context, D edtCtx, ConfigEditor<?> configEditor) throws ConfigurationException;
 
-	/**
-	 * Returns an editor for this class. Changing the configuration of this
-	 * editor <em>may</em> change the configuration of the instance that
-	 * generated the editor, but it is not guaranteed to do so.
-	 *
-	 * @param context the object that defines the context at runtime.
-	 * @param edtCtx the object that defines the context while editing.
-	 * @return A generic editor for any instance of this class.
-	 */
-	public ConfigEditor<?> getConfigEditor(C context, D edtCtx);
+    /**
+     * Returns an editor for this class. Changing the configuration of this
+     * editor <em>may</em> change the configuration of the instance that
+     * generated the editor, but it is not guaranteed to do so.
+     *
+     * @param context the object that defines the context at runtime.
+     * @param edtCtx the object that defines the context while editing.
+     * @return A generic editor for any instance of this class.
+     */
+    public ConfigEditor<?> getConfigEditor(C context, D edtCtx);
 }

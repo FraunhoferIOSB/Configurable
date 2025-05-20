@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2019 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,32 +25,32 @@ package de.fraunhofer.iosb.ilt.configurable;
  */
 public interface ContentConfigEditor<T> extends ConfigEditor<T> {
 
-	/**
-	 * For any configurable content, tries to set the configured value on the
-	 * target object.
-	 *
-	 * @param target The target instance to use.
-	 * @throws ConfigurationException if any of the values could not be loaded.
-	 */
-	public void setContentsOn(final Object target) throws ConfigurationException;
+    /**
+     * For any configurable content, tries to set the configured value on the
+     * target object.
+     *
+     * @param target The target instance to use.
+     * @throws ConfigurationException if any of the values could not be loaded.
+     */
+    public void setContentsOn(final Object target) throws ConfigurationException;
 
-	/**
-	 * Checks if the given option is set. For mandatory options this should
-	 * always return true.
-	 *
-	 * @param name The option to check.
-	 * @return true if the option is set, false otherwise.
-	 */
-	public boolean isOptionSet(final String name);
+    /**
+     * Checks if the given option is set. For mandatory options this should
+     * always return true.
+     *
+     * @param name The option to check.
+     * @return true if the option is set, false otherwise.
+     */
+    public boolean isOptionSet(final String name);
 
-	/**
-	 * Get the value set for the given option.
-	 *
-	 * @param name The option to check.
-	 * @return The value of the given option.
-	 * @throws ConfigurationException If the given option can not be retrieved
-	 * because the configuration passed to the editor was incorrect.
-	 */
-	public Object getValue(final String name) throws ConfigurationException;
+    /**
+     * Get the value set for the given option.
+     *
+     * @param name The option to check.
+     * @return The value of the given option.
+     * @throws ConfigurationException If the given option can not be retrieved
+     * because the configuration passed to the editor was incorrect.
+     */
+    public Object getValue(final String name) throws ConfigurationException;
 
 }

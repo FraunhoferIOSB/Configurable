@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -26,45 +27,45 @@ import com.google.gson.JsonElement;
  */
 public interface ConfigurableFactory {
 
-	/**
-	 * Create an instance of the given class.
-	 *
-	 * @param className The name of the class to instantiate.
-	 * @param config The configuration of the class.
-	 * @param runtimeContext The runtime context for the instance.
-	 * @param editContext The edit context for the instance.
-	 * @return an instance of the given class
-	 * @throws ConfigurationException if there is a problem instantiating the
-	 * class.
-	 */
-	public Object instantiate(String className, JsonElement config, Object runtimeContext, Object editContext) throws ConfigurationException;
+    /**
+     * Create an instance of the given class.
+     *
+     * @param className The name of the class to instantiate.
+     * @param config The configuration of the class.
+     * @param runtimeContext The runtime context for the instance.
+     * @param editContext The edit context for the instance.
+     * @return an instance of the given class
+     * @throws ConfigurationException if there is a problem instantiating the
+     * class.
+     */
+    public Object instantiate(String className, JsonElement config, Object runtimeContext, Object editContext) throws ConfigurationException;
 
-	/**
-	 * Create an instance of the given class.
-	 *
-	 * @param <T> The class type.
-	 * @param clazz The class to instantiate.
-	 * @param config The configuration of the class.
-	 * @param runtimeContext The runtime context for the instance.
-	 * @param editContext The edit context for the instance.
-	 * @return an instance of the given class
-	 * @throws ConfigurationException if there is a problem instantiating the
-	 * class.
-	 */
-	public default <T> T instantiate(Class<? extends T> clazz, JsonElement config, Object runtimeContext, Object editContext) throws ConfigurationException {
-		return clazz.cast(instantiate(clazz.getName(), config, runtimeContext, editContext));
-	}
+    /**
+     * Create an instance of the given class.
+     *
+     * @param <T> The class type.
+     * @param clazz The class to instantiate.
+     * @param config The configuration of the class.
+     * @param runtimeContext The runtime context for the instance.
+     * @param editContext The edit context for the instance.
+     * @return an instance of the given class
+     * @throws ConfigurationException if there is a problem instantiating the
+     * class.
+     */
+    public default <T> T instantiate(Class<? extends T> clazz, JsonElement config, Object runtimeContext, Object editContext) throws ConfigurationException {
+        return clazz.cast(instantiate(clazz.getName(), config, runtimeContext, editContext));
+    }
 
-	/**
-	 * Loads the class with the specified <a href="#binary-name">binary
-	 * name</a>. This method searches for classes in the same manner as the
-	 * {@link ClassLoader#loadClass(String, boolean)} method.
-	 *
-	 * @param name The <a href="#binary-name">binary name</a> of the class
-	 * @return The resulting {@code Class} object
-	 * @throws ClassNotFoundException If the class was not found
-	 */
-	public default Class<?> loadClass(final String name) throws ClassNotFoundException {
-		return getClass().getClassLoader().loadClass(name);
-	}
+    /**
+     * Loads the class with the specified <a href="#binary-name">binary
+     * name</a>. This method searches for classes in the same manner as the
+     * {@link ClassLoader#loadClass(String, boolean)} method.
+     *
+     * @param name The <a href="#binary-name">binary name</a> of the class
+     * @return The resulting {@code Class} object
+     * @throws ClassNotFoundException If the class was not found
+     */
+    public default Class<?> loadClass(final String name) throws ClassNotFoundException {
+        return getClass().getClassLoader().loadClass(name);
+    }
 }

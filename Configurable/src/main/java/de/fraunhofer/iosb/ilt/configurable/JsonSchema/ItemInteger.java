@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2021 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,82 +23,82 @@ package de.fraunhofer.iosb.ilt.configurable.JsonSchema;
  */
 public class ItemInteger extends SchemaItemAbstract<ItemInteger> {
 
-	private Long minimum;
-	private Long exclusiveMinimum;
-	private Long maximum;
-	private Long exclusiveMaximum;
+    private Long minimum;
+    private Long exclusiveMinimum;
+    private Long maximum;
+    private Long exclusiveMaximum;
 
-	public ItemInteger() {
-		super("integer");
-	}
+    public ItemInteger() {
+        super("integer");
+    }
 
-	@Override
-	public ItemInteger getThis() {
-		return this;
-	}
+    @Override
+    public ItemInteger getThis() {
+        return this;
+    }
 
-	/**
-	 * @return the minimum
-	 */
-	public Long getMinimum() {
-		return minimum;
-	}
+    /**
+     * @return the minimum
+     */
+    public Long getMinimum() {
+        return minimum;
+    }
 
-	/**
-	 * @param minimum the minimum to set
-	 * @return this;
-	 */
-	public ItemInteger setMinimum(Long minimum) {
-		this.minimum = minimum;
-		return this;
-	}
+    /**
+     * @param minimum the minimum to set
+     * @return this;
+     */
+    public ItemInteger setMinimum(Long minimum) {
+        this.minimum = minimum;
+        return this;
+    }
 
-	/**
-	 * @return the exclusiveMinimum
-	 */
-	public Long getExclusiveMinimum() {
-		return exclusiveMinimum;
-	}
+    /**
+     * @return the exclusiveMinimum
+     */
+    public Long getExclusiveMinimum() {
+        return exclusiveMinimum;
+    }
 
-	/**
-	 * @param exclusiveMinimum the exclusiveMinimum to set
-	 * @return this;
-	 */
-	public ItemInteger setExclusiveMinimum(Long exclusiveMinimum) {
-		this.exclusiveMinimum = exclusiveMinimum;
-		return this;
-	}
+    /**
+     * @param exclusiveMinimum the exclusiveMinimum to set
+     * @return this;
+     */
+    public ItemInteger setExclusiveMinimum(Long exclusiveMinimum) {
+        this.exclusiveMinimum = exclusiveMinimum;
+        return this;
+    }
 
-	/**
-	 * @return the maximum
-	 */
-	public Long getMaximum() {
-		return maximum;
-	}
+    /**
+     * @return the maximum
+     */
+    public Long getMaximum() {
+        return maximum;
+    }
 
-	/**
-	 * @param maximum the maximum to set
-	 * @return this;
-	 */
-	public ItemInteger setMaximum(Long maximum) {
-		this.maximum = maximum;
-		return this;
-	}
+    /**
+     * @param maximum the maximum to set
+     * @return this;
+     */
+    public ItemInteger setMaximum(Long maximum) {
+        this.maximum = maximum;
+        return this;
+    }
 
-	/**
-	 * @return the exclusiveMaximum
-	 */
-	public Long getExclusiveMaximum() {
-		return exclusiveMaximum;
-	}
+    /**
+     * @return the exclusiveMaximum
+     */
+    public Long getExclusiveMaximum() {
+        return exclusiveMaximum;
+    }
 
-	/**
-	 * @param exclusiveMaximum the exclusiveMaximum to set
-	 * @return this;
-	 */
-	public ItemInteger setExclusiveMaximum(Long exclusiveMaximum) {
-		this.exclusiveMaximum = exclusiveMaximum;
-		return this;
-	}
+    /**
+     * @param exclusiveMaximum the exclusiveMaximum to set
+     * @return this;
+     */
+    public ItemInteger setExclusiveMaximum(Long exclusiveMaximum) {
+        this.exclusiveMaximum = exclusiveMaximum;
+        return this;
+    }
 
 }

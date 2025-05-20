@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,14 +28,14 @@ import javax.swing.JPanel;
  */
 public final class FactoryNullSwing implements GuiFactorySwing {
 
-	private JComponent swComponent;
+    private JComponent swComponent;
 
-	@Override
-	public JComponent getComponent() {
-		if (swComponent == null) {
-			swComponent = new JPanel(new BorderLayout());
-		}
-		return swComponent;
-	}
+    @Override
+    public JComponent getComponent() {
+        if (swComponent == null) {
+            swComponent = new JPanel(new BorderLayout());
+        }
+        return swComponent;
+    }
 
 }

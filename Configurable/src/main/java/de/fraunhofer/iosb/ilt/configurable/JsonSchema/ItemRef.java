@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2021 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,29 +25,29 @@ import com.google.gson.annotations.SerializedName;
  */
 public class ItemRef extends SchemaItemAbstract<ItemRef> {
 
-	@SerializedName("$ref")
-	private final String ref;
+    @SerializedName("$ref")
+    private final String ref;
 
-	public ItemRef(String ref) {
-		this(ref, true);
-	}
+    public ItemRef(String ref) {
+        this(ref, true);
+    }
 
-	public ItemRef(String ref, boolean inDefs) {
-		super(null);
-		if (inDefs) {
-			this.ref = "#/definitions/" + ref;
-		} else {
-			this.ref = ref;
-		}
-	}
+    public ItemRef(String ref, boolean inDefs) {
+        super(null);
+        if (inDefs) {
+            this.ref = "#/definitions/" + ref;
+        } else {
+            this.ref = ref;
+        }
+    }
 
-	@Override
-	public ItemRef getThis() {
-		return this;
-	}
+    @Override
+    public ItemRef getThis() {
+        return this;
+    }
 
-	public String getRef() {
-		return ref;
-	}
+    public String getRef() {
+        return ref;
+    }
 
 }

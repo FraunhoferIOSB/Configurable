@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,33 +28,33 @@ import javafx.scene.layout.BorderPane;
  */
 public final class FactoryClassFx implements GuiFactoryFx {
 
-	private final EditorClass parentEditor;
-	private BorderPane fxPaneRoot;
+    private final EditorClass parentEditor;
+    private BorderPane fxPaneRoot;
 
-	public FactoryClassFx(EditorClass parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactoryClassFx(EditorClass parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public Node getNode() {
-		if (fxPaneRoot == null) {
-			createPane();
-		}
-		return fxPaneRoot;
-	}
+    @Override
+    public Node getNode() {
+        if (fxPaneRoot == null) {
+            createPane();
+        }
+        return fxPaneRoot;
+    }
 
-	private void createPane() {
-		fxPaneRoot = new BorderPane();
-		fillComponent();
-	}
+    private void createPane() {
+        fxPaneRoot = new BorderPane();
+        fillComponent();
+    }
 
-	public void fillComponent() {
-		if (parentEditor.getClassEditor() == null) {
-			parentEditor.initClass();
-			return; // initClass calls fillComponent again.
-		}
-		fxPaneRoot.getChildren().clear();
-		fxPaneRoot.setCenter(parentEditor.getClassEditor().getGuiFactoryFx().getNode());
-	}
+    public void fillComponent() {
+        if (parentEditor.getClassEditor() == null) {
+            parentEditor.initClass();
+            return; // initClass calls fillComponent again.
+        }
+        fxPaneRoot.getChildren().clear();
+        fxPaneRoot.setCenter(parentEditor.getClassEditor().getGuiFactoryFx().getNode());
+    }
 
 }

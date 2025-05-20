@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,36 +30,36 @@ import javax.swing.border.EtchedBorder;
  */
 public final class FactoryClassSwing implements GuiFactorySwing {
 
-	private final EditorClass parentEditor;
-	private JPanel component;
+    private final EditorClass parentEditor;
+    private JPanel component;
 
-	public FactoryClassSwing(EditorClass parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactoryClassSwing(EditorClass parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public JComponent getComponent() {
-		if (component == null) {
-			createComponent();
-		}
-		return component;
-	}
+    @Override
+    public JComponent getComponent() {
+        if (component == null) {
+            createComponent();
+        }
+        return component;
+    }
 
-	private void createComponent() {
-		component = new JPanel(new BorderLayout());
-		component.setBorder(new EtchedBorder());
-		fillComponent();
-	}
+    private void createComponent() {
+        component = new JPanel(new BorderLayout());
+        component.setBorder(new EtchedBorder());
+        fillComponent();
+    }
 
-	public void fillComponent() {
-		if (parentEditor.getClassEditor() == null) {
-			parentEditor.initClass();
-			return; // initClass calls fillComponent again.
-		}
-		component.removeAll();
-		component.add(parentEditor.getClassEditor().getGuiFactorySwing().getComponent(), BorderLayout.CENTER);
-		component.revalidate();
-		component.repaint();
-	}
+    public void fillComponent() {
+        if (parentEditor.getClassEditor() == null) {
+            parentEditor.initClass();
+            return; // initClass calls fillComponent again.
+        }
+        component.removeAll();
+        component.add(parentEditor.getClassEditor().getGuiFactorySwing().getComponent(), BorderLayout.CENTER);
+        component.revalidate();
+        component.repaint();
+    }
 
 }

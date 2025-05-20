@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -29,37 +30,37 @@ import javafx.scene.control.ChoiceBox;
  */
 public final class FactoryEnumFx<T extends Enum<T>> implements GuiFactoryFx {
 
-	private final EditorEnum<T> parentEditor;
-	private ChoiceBox<T> fxNode;
-	private final EditorEnum<T> outer;
+    private final EditorEnum<T> parentEditor;
+    private ChoiceBox<T> fxNode;
+    private final EditorEnum<T> outer;
 
-	public FactoryEnumFx(EditorEnum<T> parentEditor, final EditorEnum<T> outer) {
-		this.outer = outer;
-		this.parentEditor = parentEditor;
-	}
+    public FactoryEnumFx(EditorEnum<T> parentEditor, final EditorEnum<T> outer) {
+        this.outer = outer;
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public Node getNode() {
-		if (fxNode == null) {
-			createComponent();
-		}
-		return fxNode;
-	}
+    @Override
+    public Node getNode() {
+        if (fxNode == null) {
+            createComponent();
+        }
+        return fxNode;
+    }
 
-	private void createComponent() {
-		fxNode = new ChoiceBox<>(FXCollections.observableArrayList(outer.getSourceType().getEnumConstants()));
-		fillComponent();
-	}
+    private void createComponent() {
+        fxNode = new ChoiceBox<>(FXCollections.observableArrayList(outer.getSourceType().getEnumConstants()));
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		fxNode.setValue(outer.getRawValue());
-	}
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        fxNode.setValue(outer.getRawValue());
+    }
 
-	public void readComponent() {
-		outer.setRawValue(fxNode.getValue());
-	}
+    public void readComponent() {
+        outer.setRawValue(fxNode.getValue());
+    }
 
 }

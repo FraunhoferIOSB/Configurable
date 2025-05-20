@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -25,11 +26,11 @@ import javax.swing.JComponent;
  */
 public interface GuiFactorySwing {
 
-	/**
-	 * Get the swing Component that represents the editor.
-	 *
-	 * @return The swing Component that represents the editor.
-	 */
-	public JComponent getComponent();
+    /**
+     * Get the swing Component that represents the editor.
+     *
+     * @return The swing Component that represents the editor.
+     */
+    public JComponent getComponent();
 
 }

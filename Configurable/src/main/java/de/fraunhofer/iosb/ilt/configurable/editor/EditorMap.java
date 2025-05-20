@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,7 +19,6 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.ContentConfigEditor;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,54 +31,54 @@ import java.util.Map;
  */
 public class EditorMap<T> extends AbstractEditorMap<Map<String, T>, T> implements ContentConfigEditor<Map<String, T>> {
 
-	public EditorMap() {
-		super();
-	}
+    public EditorMap() {
+        super();
+    }
 
-	public EditorMap(int columns) {
-		super(columns);
-	}
+    public EditorMap(int columns) {
+        super(columns);
+    }
 
-	@Override
-	public Map<String, T> getValue() throws ConfigurationException {
-		Map<String, T> result = new HashMap<>();
-		for (String name : value) {
-			Item<T> item = options.get(name);
-			T val = item.editor.getValue();
-			result.put(name, val);
-		}
-		return result;
-	}
+    @Override
+    public Map<String, T> getValue() throws ConfigurationException {
+        Map<String, T> result = new HashMap<>();
+        for (String name : value) {
+            Item<T> item = options.get(name);
+            T val = item.editor.getValue();
+            result.put(name, val);
+        }
+        return result;
+    }
 
-	public double getDouble(String name, double deflt) throws ConfigurationException {
-		Item<T> item = options.get(name);
-		Object result = item.editor.getValue();
-		if (result instanceof Number) {
-			return ((Number) result).doubleValue();
-		}
-		return deflt;
-	}
+    public double getDouble(String name, double deflt) throws ConfigurationException {
+        Item<T> item = options.get(name);
+        Object result = item.editor.getValue();
+        if (result instanceof Number) {
+            return ((Number) result).doubleValue();
+        }
+        return deflt;
+    }
 
-	public long getLong(String name, long deflt) throws ConfigurationException {
-		Item<T> item = options.get(name);
-		Object result = item.editor.getValue();
-		if (result instanceof Number) {
-			return ((Number) result).longValue();
-		}
-		return deflt;
-	}
+    public long getLong(String name, long deflt) throws ConfigurationException {
+        Item<T> item = options.get(name);
+        Object result = item.editor.getValue();
+        if (result instanceof Number) {
+            return ((Number) result).longValue();
+        }
+        return deflt;
+    }
 
-	public Map<String, Long> getLongMap() throws ConfigurationException {
-		Map<String, Long> result = new HashMap<>();
-		for (String name : value) {
-			result.put(name, getLong(name, 0));
-		}
-		return result;
-	}
+    public Map<String, Long> getLongMap() throws ConfigurationException {
+        Map<String, Long> result = new HashMap<>();
+        for (String name : value) {
+            result.put(name, getLong(name, 0));
+        }
+        return result;
+    }
 
-	@Override
-	public void setValue(Map<String, T> value) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
+    @Override
+    public void setValue(Map<String, T> value) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
 }

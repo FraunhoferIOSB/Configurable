@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -31,24 +32,24 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface ConfigurableClass {
 
-	/**
-	 * The value to use in EditorSubClass when specifying this class. The
-	 * default is the fully qualified class name.
-	 *
-	 * @return The value to use in EditorSubClass when specifying this class.
-	 */
-	String jsonName() default "";
+    /**
+     * The value to use in EditorSubClass when specifying this class. The
+     * default is the fully qualified class name.
+     *
+     * @return The value to use in EditorSubClass when specifying this class.
+     */
+    String jsonName() default "";
 
-	String displayName() default "";
+    String displayName() default "";
 
-	/**
-	 * A comma separated, case insensitive list of profile names. Items can only
-	 * be added or removed from the EditorMap generated for this class, when one
-	 * of these profiles is active. The "default" profile is automatically added
-	 * to the list.
-	 *
-	 * @return A comma separated, case insensitive list of profile names.
-	 */
-	String profilesEdit() default "";
+    /**
+     * A comma separated, case insensitive list of profile names. Items can only
+     * be added or removed from the EditorMap generated for this class, when one
+     * of these profiles is active. The "default" profile is automatically added
+     * to the list.
+     *
+     * @return A comma separated, case insensitive list of profile names.
+     */
+    String profilesEdit() default "";
 
 }

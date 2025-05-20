@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,45 +28,45 @@ import javafx.scene.control.ColorPicker;
  */
 public final class FactoryColorFx implements GuiFactoryFx {
 
-	private final EditorColor parentEditor;
-	private ColorPicker fxNode;
+    private final EditorColor parentEditor;
+    private ColorPicker fxNode;
 
-	public FactoryColorFx(EditorColor parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactoryColorFx(EditorColor parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public Node getNode() {
-		if (fxNode == null) {
-			createNode();
-		}
-		return fxNode;
-	}
+    @Override
+    public Node getNode() {
+        if (fxNode == null) {
+            createNode();
+        }
+        return fxNode;
+    }
 
-	private void createNode() {
-		fxNode = new ColorPicker();
-		fxNode.setOnAction((event) -> readComponent());
-		fillComponent();
-	}
+    private void createNode() {
+        fxNode = new ColorPicker();
+        fxNode.setOnAction((event) -> readComponent());
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		javafx.scene.paint.Color color = javafx.scene.paint.Color.color(
-				parentEditor.getRed() / 255.0,
-				parentEditor.getGreen() / 255.0,
-				parentEditor.getBlue() / 255.0,
-				(255 - parentEditor.getAlpha()) / 255.0);
-		fxNode.setValue(color);
-	}
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        javafx.scene.paint.Color color = javafx.scene.paint.Color.color(
+                parentEditor.getRed() / 255.0,
+                parentEditor.getGreen() / 255.0,
+                parentEditor.getBlue() / 255.0,
+                (255 - parentEditor.getAlpha()) / 255.0);
+        fxNode.setValue(color);
+    }
 
-	public void readComponent() {
-		javafx.scene.paint.Color color = fxNode.getValue();
-		parentEditor.setRed((int) (color.getRed() * 255));
-		parentEditor.setGreen((int) (color.getGreen() * 255));
-		parentEditor.setBlue((int) (color.getBlue() * 255));
-		parentEditor.setAlpha((int) ((1 - color.getOpacity()) * 255));
-	}
+    public void readComponent() {
+        javafx.scene.paint.Color color = fxNode.getValue();
+        parentEditor.setRed((int) (color.getRed() * 255));
+        parentEditor.setGreen((int) (color.getGreen() * 255));
+        parentEditor.setBlue((int) (color.getBlue() * 255));
+        parentEditor.setAlpha((int) ((1 - color.getOpacity()) * 255));
+    }
 
 }

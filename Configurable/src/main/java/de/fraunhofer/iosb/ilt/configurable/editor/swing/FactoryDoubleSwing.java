@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -33,79 +34,78 @@ import org.slf4j.LoggerFactory;
  */
 public final class FactoryDoubleSwing implements GuiFactorySwing {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FactoryDoubleSwing.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(FactoryDoubleSwing.class.getName());
 
-	private final EditorDouble parentEditor;
-	private JTextField swComponent;
+    private final EditorDouble parentEditor;
+    private JTextField swComponent;
 
-	public FactoryDoubleSwing(EditorDouble parentEditor) {
-		this.parentEditor = parentEditor;
-	}
+    public FactoryDoubleSwing(EditorDouble parentEditor) {
+        this.parentEditor = parentEditor;
+    }
 
-	@Override
-	public JComponent getComponent() {
-		if (swComponent == null) {
-			createComponent();
-		}
-		return swComponent;
-	}
+    @Override
+    public JComponent getComponent() {
+        if (swComponent == null) {
+            createComponent();
+        }
+        return swComponent;
+    }
 
-	private void createComponent() {
-		swComponent = new JTextField();
-		swComponent.setInputVerifier(new InputVerifier() {
-			@Override
-			public boolean verify(JComponent input) {
-				try {
-					BigDecimal unused = new BigDecimal(((JTextField) input).getText());
-					return true;
-				} catch (NumberFormatException exc) {
-					LOGGER.trace("Not a decimal.", exc);
-					return false;
-				}
-			}
-		;
-		});
-		swComponent.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				readComponent();
-			}
-		});
-		fillComponent();
-	}
+    private void createComponent() {
+        swComponent = new JTextField();
+        swComponent.setInputVerifier(new InputVerifier() {
+            @Override
+            public boolean verify(JComponent input) {
+                try {
+                    BigDecimal unused = new BigDecimal(((JTextField) input).getText());
+                    return true;
+                } catch (NumberFormatException exc) {
+                    LOGGER.trace("Not a decimal.", exc);
+                    return false;
+                }
+            };
+        });
+        swComponent.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                readComponent();
+            }
+        });
+        fillComponent();
+    }
 
-	private double getRawValue() {
-		Double rawValue = parentEditor.getRawValue();
-		final double min = parentEditor.getMin();
-		final double max = parentEditor.getMax();
-		if (rawValue == null) {
-			rawValue = 0.0;
-			parentEditor.setRawValue(rawValue);
-		}
-		if (rawValue < min || rawValue > max) {
-			rawValue = Math.max(min, Math.min(rawValue, max));
-			parentEditor.setRawValue(rawValue);
-		}
-		return rawValue;
-	}
+    private double getRawValue() {
+        Double rawValue = parentEditor.getRawValue();
+        final double min = parentEditor.getMin();
+        final double max = parentEditor.getMax();
+        if (rawValue == null) {
+            rawValue = 0.0;
+            parentEditor.setRawValue(rawValue);
+        }
+        if (rawValue < min || rawValue > max) {
+            rawValue = Math.max(min, Math.min(rawValue, max));
+            parentEditor.setRawValue(rawValue);
+        }
+        return rawValue;
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		double rawValue = getRawValue();
-		swComponent.setText("" + rawValue);
-	}
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        double rawValue = getRawValue();
+        swComponent.setText("" + rawValue);
+    }
 
-	public void readComponent() {
-		if (swComponent != null) {
-			try {
-				parentEditor.setRawValue(Double.parseDouble(swComponent.getText()));
-			} catch (NumberFormatException exc) {
-				LOGGER.error("Failed to parse text to number: " + swComponent.getText());
-			}
-			fillComponent();
-		}
-	}
+    public void readComponent() {
+        if (swComponent != null) {
+            try {
+                parentEditor.setRawValue(Double.parseDouble(swComponent.getText()));
+            } catch (NumberFormatException exc) {
+                LOGGER.error("Failed to parse text to number: " + swComponent.getText());
+            }
+            fillComponent();
+        }
+    }
 
 }

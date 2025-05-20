@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -41,93 +42,93 @@ import javafx.scene.layout.VBox;
  */
 public final class FactoryListFx<U, T extends ConfigEditor<U>> implements GuiFactoryFx {
 
-	private final EditorList<U, T> parentEditor;
-	private BorderPane fxPaneRoot;
-	private GridPane fxPaneList;
-	private Button addButton;
-	private boolean vertical = true;
-	private String text = "Add item";
+    private final EditorList<U, T> parentEditor;
+    private BorderPane fxPaneRoot;
+    private GridPane fxPaneList;
+    private Button addButton;
+    private boolean vertical = true;
+    private String text = "Add item";
 
-	public FactoryListFx(EditorList<U, T> parentEditor, boolean vertical) {
-		this.parentEditor = parentEditor;
-		this.vertical = vertical;
-		if (parentEditor.getMinCount() != parentEditor.getMaxCount()) {
-			text = "Items:";
-		}
-	}
+    public FactoryListFx(EditorList<U, T> parentEditor, boolean vertical) {
+        this.parentEditor = parentEditor;
+        this.vertical = vertical;
+        if (parentEditor.getMinCount() != parentEditor.getMaxCount()) {
+            text = "Items:";
+        }
+    }
 
-	public void setText(String text) {
-		this.text = text;
-	}
+    public void setText(String text) {
+        this.text = text;
+    }
 
-	@Override
-	public Pane getNode() {
-		if (fxPaneRoot == null) {
-			createPane();
-		}
-		return fxPaneRoot;
-	}
+    @Override
+    public Pane getNode() {
+        if (fxPaneRoot == null) {
+            createPane();
+        }
+        return fxPaneRoot;
+    }
 
-	private void createPane() {
-		FlowPane controls = new FlowPane();
-		controls.setAlignment(Pos.TOP_LEFT);
+    private void createPane() {
+        FlowPane controls = new FlowPane();
+        controls.setAlignment(Pos.TOP_LEFT);
 
-		addButton = new Button("+");
-		addButton.setOnAction((event) -> parentEditor.addItem());
-		controls.getChildren().add(addButton);
-		Label addLabel = new Label(text);
-		addLabel.setAlignment(Pos.BASELINE_RIGHT);
-		controls.getChildren().add(addLabel);
+        addButton = new Button("+");
+        addButton.setOnAction((event) -> parentEditor.addItem());
+        controls.getChildren().add(addButton);
+        Label addLabel = new Label(text);
+        addLabel.setAlignment(Pos.BASELINE_RIGHT);
+        controls.getChildren().add(addLabel);
 
-		fxPaneList = new GridPane();
-		fxPaneRoot = new BorderPane();
-		fxPaneRoot.setStyle(Styles.STYLE_BORDER);
-		fxPaneRoot.setTop(controls);
-		fxPaneRoot.setCenter(fxPaneList);
-		fillComponent();
-	}
+        fxPaneList = new GridPane();
+        fxPaneRoot = new BorderPane();
+        fxPaneRoot.setStyle(Styles.STYLE_BORDER);
+        fxPaneRoot.setTop(controls);
+        fxPaneRoot.setCenter(fxPaneList);
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the component represents the current value.
-	 */
-	public void fillComponent() {
-		if (fxPaneRoot == null) {
-			createPane();
-		}
-		addButton.setVisible(parentEditor.canEdit());
-		fxPaneList.getChildren().clear();
-		if (parentEditor.getRawValue().isEmpty()) {
-			fxPaneList.add(new Label("No items added."), 0, 0);
-		}
-		int row = 0;
-		for (final T item : parentEditor.getRawValue()) {
-			Node pane = item.getGuiFactoryFx().getNode();
-			GridPane.setConstraints(
-					pane,
-					vertical ? 0 : row,
-					vertical ? row : 0,
-					1, 1, HPos.LEFT, VPos.BASELINE, Priority.ALWAYS, Priority.SOMETIMES);
-			if (parentEditor.canEdit()) {
-				VBox buttonBox = new VBox();
-				Button removeButton = new Button("-");
-				removeButton.setOnAction((event) -> parentEditor.removeItem(item));
-				buttonBox.getChildren().add(removeButton);
+    /**
+     * Ensure the component represents the current value.
+     */
+    public void fillComponent() {
+        if (fxPaneRoot == null) {
+            createPane();
+        }
+        addButton.setVisible(parentEditor.canEdit());
+        fxPaneList.getChildren().clear();
+        if (parentEditor.getRawValue().isEmpty()) {
+            fxPaneList.add(new Label("No items added."), 0, 0);
+        }
+        int row = 0;
+        for (final T item : parentEditor.getRawValue()) {
+            Node pane = item.getGuiFactoryFx().getNode();
+            GridPane.setConstraints(
+                    pane,
+                    vertical ? 0 : row,
+                    vertical ? row : 0,
+                    1, 1, HPos.LEFT, VPos.BASELINE, Priority.ALWAYS, Priority.SOMETIMES);
+            if (parentEditor.canEdit()) {
+                VBox buttonBox = new VBox();
+                Button removeButton = new Button("-");
+                removeButton.setOnAction((event) -> parentEditor.removeItem(item));
+                buttonBox.getChildren().add(removeButton);
 
-				if (row > 0) {
-					final int myRow = row;
-					Button upButton = new Button("↑");
-					upButton.setOnAction((event) -> parentEditor.upItem(myRow));
-					buttonBox.getChildren().add(upButton);
-				}
-				GridPane.setConstraints(
-						buttonBox,
-						vertical ? 1 : row,
-						vertical ? row : 1,
-						1, 1, HPos.RIGHT, VPos.TOP, Priority.NEVER, Priority.NEVER);
-				fxPaneList.getChildren().addAll(pane, buttonBox);
-			}
-			row++;
-		}
-	}
+                if (row > 0) {
+                    final int myRow = row;
+                    Button upButton = new Button("↑");
+                    upButton.setOnAction((event) -> parentEditor.upItem(myRow));
+                    buttonBox.getChildren().add(upButton);
+                }
+                GridPane.setConstraints(
+                        buttonBox,
+                        vertical ? 1 : row,
+                        vertical ? row : 1,
+                        1, 1, HPos.RIGHT, VPos.TOP, Priority.NEVER, Priority.NEVER);
+                fxPaneList.getChildren().addAll(pane, buttonBox);
+            }
+            row++;
+        }
+    }
 
 }

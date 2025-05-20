@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -27,25 +28,25 @@ import de.fraunhofer.iosb.ilt.configurable.editor.EditorMap;
  */
 public abstract class AbstractConfigurable<C, D> implements Configurable<C, D> {
 
-	private transient EditorMap<?> editor;
+    private transient EditorMap<?> editor;
 
-	@Override
-	public void configure(JsonElement config, C context, D edtCtx, ConfigEditor<?> configEditor) throws ConfigurationException {
-		if (configEditor instanceof ContentConfigEditor<?>) {
-			((ContentConfigEditor<?>) configEditor).setContentsOn(this);
-			return;
-		}
+    @Override
+    public void configure(JsonElement config, C context, D edtCtx, ConfigEditor<?> configEditor) throws ConfigurationException {
+        if (configEditor instanceof ContentConfigEditor<?>) {
+            ((ContentConfigEditor<?>) configEditor).setContentsOn(this);
+            return;
+        }
 
-		getConfigEditor(context, edtCtx).setConfig(config);
-		editor.setContentsOn(this);
-	}
+        getConfigEditor(context, edtCtx).setConfig(config);
+        editor.setContentsOn(this);
+    }
 
-	@Override
-	public EditorMap<?> getConfigEditor(C context, D edtCtx) {
-		if (editor == null) {
-			editor = AnnotationHelper.generateEditorFromAnnotations(this, context, edtCtx).get();
-		}
-		return editor;
-	}
+    @Override
+    public EditorMap<?> getConfigEditor(C context, D edtCtx) {
+        if (editor == null) {
+            editor = AnnotationHelper.generateEditorFromAnnotations(this, context, edtCtx).get();
+        }
+        return editor;
+    }
 
 }

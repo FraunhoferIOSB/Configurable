@@ -1,5 +1,6 @@
 /*
- * Copyright (C) 2017 Fraunhofer IOSB
+ * Copyright (C) 2024 Fraunhofer Institut IOSB, Fraunhoferstr. 1, D 76131
+ * Karlsruhe, Germany.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -31,52 +32,52 @@ import javafx.scene.control.TextInputControl;
  */
 public final class FactoryStringFx implements GuiFactoryFx {
 
-	private final EditorString parentEditor;
-	private TextInputControl fxNode;
-	private boolean passwordControl;
+    private final EditorString parentEditor;
+    private TextInputControl fxNode;
+    private boolean passwordControl;
 
-	public FactoryStringFx(EditorString parentEditor) {
-		this.parentEditor = parentEditor;
-		if (parentEditor instanceof EditorPassword) {
-			passwordControl = true;
-		}
-	}
+    public FactoryStringFx(EditorString parentEditor) {
+        this.parentEditor = parentEditor;
+        if (parentEditor instanceof EditorPassword) {
+            passwordControl = true;
+        }
+    }
 
-	@Override
-	public Node getNode() {
-		if (fxNode == null) {
-			createNode();
-		}
-		return fxNode;
-	}
+    @Override
+    public Node getNode() {
+        if (fxNode == null) {
+            createNode();
+        }
+        return fxNode;
+    }
 
-	private void createNode() {
-		if (passwordControl) {
-			fxNode = new PasswordField();
-		} else if (parentEditor.getLines() == 1) {
-			fxNode = new TextField();
-		} else {
-			TextArea text = new TextArea();
-			text.setPrefRowCount(parentEditor.getLines());
-			fxNode = text;
-		}
-		fillComponent();
-	}
+    private void createNode() {
+        if (passwordControl) {
+            fxNode = new PasswordField();
+        } else if (parentEditor.getLines() == 1) {
+            fxNode = new TextField();
+        } else {
+            TextArea text = new TextArea();
+            text.setPrefRowCount(parentEditor.getLines());
+            fxNode = text;
+        }
+        fillComponent();
+    }
 
-	/**
-	 * Ensure the swComponent represents the current value.
-	 */
-	public void fillComponent() {
-		fxNode.setEditable(parentEditor.canEdit());
-		String value = parentEditor.getRawValue();
-		if (value == null) {
-			value = "";
-		}
-		fxNode.setText(value);
-	}
+    /**
+     * Ensure the swComponent represents the current value.
+     */
+    public void fillComponent() {
+        fxNode.setEditable(parentEditor.canEdit());
+        String value = parentEditor.getRawValue();
+        if (value == null) {
+            value = "";
+        }
+        fxNode.setText(value);
+    }
 
-	public void readComponent() {
-		parentEditor.setRawValue(fxNode.getText());
-	}
+    public void readComponent() {
+        parentEditor.setRawValue(fxNode.getText());
+    }
 
 }
