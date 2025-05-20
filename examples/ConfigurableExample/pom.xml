@@ -18,23 +18,20 @@
     <inceptionYear>2018</inceptionYear>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>de.fraunhofer.iosb.ilt.configurableexample.ExampleGui</mainClass>
-
-        <configurable.version>${project.version}</configurable.version>
-        <logback.version>1.5.8</logback.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <root.basedir>${project.parent.basedir}</root.basedir>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>Configurable</artifactId>
-            <version>${configurable.version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${logback.version}</version>
         </dependency>
     </dependencies>
 
@@ -46,7 +43,6 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>${maven-assembly-plugin.version}</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -59,11 +55,13 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
-                        <phase>package</phase> <!-- bind to the packaging phase -->
+                        <!-- this is used for inheritance merges -->
+                        <id>make-assembly</id>
                         <goals>
                             <goal>single</goal>
                         </goals>
+                        <!-- bind to the packaging phase -->
+                        <phase>package</phase>
                     </execution>
                 </executions>
             </plugin>
