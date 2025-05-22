@@ -4,7 +4,7 @@
 
     <groupId>de.fraunhofer.iosb.ilt</groupId>
     <artifactId>ConfigurableParent</artifactId>
-    <version>0.37-SNAPSHOT</version>
+    <version>0.37</version>
     <packaging>pom</packaging>
 
     <name>ConfigurableParent</name>
@@ -43,7 +43,7 @@
     <scm>
         <connection>scm:git:git@github.com:FraunhoferIOSB/Configurable.git</connection>
         <developerConnection>scm:git:git@github.com:FraunhoferIOSB/Configurable.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v0.37</tag>
         <url>https://github.com/FraunhoferIOSB/Configurable</url>
     </scm>
 

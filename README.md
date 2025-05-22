@@ -16,7 +16,7 @@ Configurable is hosted on Maven Central:
         <dependency>
             <groupId>de.fraunhofer.iosb.ilt</groupId>
             <artifactId>Configurable</artifactId>
-            <version>0.36</version>
+            <version>0.37</version>
         </dependency>
     </dependencies>
 ```

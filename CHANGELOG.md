@@ -1,10 +1,10 @@
-# Development Version 0.37
+# Version 0.37
 
 **Updates**
 * EditorMap no longer initialises optional items that have not been selected but explicitly uses the set default value.
 
 
-# Release Version 0.36
+# Version 0.36
 
 **Updates**
 * Items in List editors now have a button to move them up in the list.
@@ -13,33 +13,33 @@
 * Updated dependencies.
 
 
-# Release Version 0.35
+# Version 0.35
 
 **Updates**
 * Updated the minimum Java version to 17, since new JavaFX versions have this requirement.
 * Updated dependencies.
 
 
-# Release Version 0.34
+# Version 0.34
 
 **Updates**
 * Updated dependencies.
 
 
-# Release Version 0.33
+# Version 0.33
 
 **Updates**
 * Improved reliability of ordering of items in generated JSON.
 
 
-# Release Version 0.32
+# Version 0.32
 
 **Updates**
 * Switched back to the original Reflections library.
 * Made JavaFX dependency `provided`, so JavaFX projects should include it themselves.
 
 
-# Release Version 0.31
+# Version 0.31
 
 **Updates**
 * Added JSON Schema generation. The schema can be used to generate an editor using
@@ -47,20 +47,20 @@
 * Updated dependencies.
 
 
-# Release Version 0.30
+# Version 0.30
 
 **Updates**
 * Changed distribution to oss.sonatype.org / maven central.
 * Updated dependencies.
 
 
-# Release Version 0.29
+# Version 0.29
 
 **Updates**
 * Fixed Boolean values not being transferred to the GUI.
 
 
-# Release Version 0.28
+# Version 0.28
 
 **Updates**
 * All (simple) editors can now have a NULL default value, by setting the
@@ -68,13 +68,13 @@
   accept a null dflt.
 
 
-# Release Version 0.27
+# Version 0.27
 
 **Updates**
 * Fixed allow/deny list annotations not having empty default values.
 
 
-# Release Version 0.26
+# Version 0.26
 
 **Updates**
 * Added allowList and denyList of annotations to EditorSubClass, to filter the
@@ -85,74 +85,74 @@
   be used to filter the suggested class names.
 
 
-# Release Version 0.25
+# Version 0.25
 
 **Updates**
 * Fixed some editors not being reset when setting a null configuration.
 
 
-# Release Version 0.24
+# Version 0.24
 
 **Updates**
 * Changed default setting of EditorSubclass.shortenClassNames to false.
 * Fixed Java 8 compatibility.
 
 
-# Release Version 0.23
+# Version 0.23
 
 **Updates**
 * Fixed EditorClass not working correctly with annotations.
 * Changed search for ConfigurableClass annotation to include interfaces. 
 
 
-# Release Version 0.22
+# Version 0.22
 
 **Updates**
 * Fixed EditorColor in FX.
 * Updated depencencies.
 
 
-# Release Version 0.21
+# Version 0.21
 
 **Updates**
 * Added an editor for passwords. It hides the typed text in the GUI, but still puts
   the password in the JSON as plain text.
 
 
-# Release Version 0.20
+# Version 0.20
 
 **Updates**
 * Fixed running with java -jar jarfile.jar
 
 
-# Release Version 0.19
+# Version 0.19
 
 **Updates**
 * Fixed behaviour in Windows look and feel of Swing.
 * Improved behaviour when selecting text with keys.
 
 
-# Release Version 0.18
+# Version 0.18
 
 **Updates**
 * Changed the ComboBox of EditorSubClass to a type that can filter.
 * Added option to EditorSubClass to not shorten class names.
 
 
-# Release Version 0.17
+# Version 0.17
 
 **Updates**
 * Fixed Swing EditorColor misbehaving.
 * Added isOptionSet method to ContentConfigEditor interface.
 
 
-# Release Version 0.16
+# Version 0.16
 
 **Updates**
  * Fixed NoSuchElementException for old-style configurables.
 
 
-# Release Version 0.15
+# Version 0.15
 
 **Updates**
 * Reworked the instantiation system to allow  for a static getConfigEditor method
@@ -165,7 +165,7 @@
   just to configure itself.
 
 
-# Release Version 0.14
+# Version 0.14
 
 **Updates**
 * Introduced a ConfigurableFactory interface that can instantiate classes.
@@ -175,19 +175,19 @@
   the error is no longer silently ignored, but an exception is thrown.
 
 
-# Release Version 0.13
+# Version 0.13
 
 **Updates**
 * Updated version of Reflections library.
 
 
-# Release Version 0.12
+# Version 0.12
 
 **Updates**
 * Fixed build for Java 9+
 
 
-# Release Version 0.11
+# Version 0.11
 
 **Updates**
 * Added support for nested Lists.
@@ -199,33 +199,33 @@
 * Fixed Swing colour picker.
 
 
-# Release Version 0.10
+# Version 0.10
 
 **Updates**
 * Improved layout: Fixed adding empty FlowPane to EditorMap with no optionals.
 * Use ChoiceBox instead of Spinner for FactoryEnumFx.
 
 
-# Release Version 0.9
+# Version 0.9
 
 **Updates**
 * EditorSubClass now also offers the configured superclass as an option, instead of only its subclasses.
 * Editors can now be configured using annotations. See AnnotationExample for examples of how to use the annotations.
 
 
-# Release Version 0.8
+# Version 0.8
 
 **Updates**
 * Added some helper methods to EditorSubClass.
 
 
-# Release Version 0.7
+# Version 0.7
 
 **Updates**
 * Removed abstract classes from the implementation-selection list of EditorSubclass.
 
 
-# Release Version 0.6
+# Version 0.6
 
 **Updates**
 * The first properly released version.
