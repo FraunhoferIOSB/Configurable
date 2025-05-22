@@ -63,7 +63,9 @@ public interface ConfigEditor<T> {
      * @throws ConfigurationException when the configuration can not be used to
      * create a value.
      */
-    public T getDefaultValue() throws ConfigurationException;
+    public default T getDefaultValue() throws ConfigurationException {
+        return null;
+    }
 
     /**
      * Set the value in the editor. Used for saving an (externally) updated
