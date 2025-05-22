@@ -19,6 +19,7 @@ package de.fraunhofer.iosb.ilt.configurable.editor;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
+import de.fraunhofer.iosb.ilt.configurable.ConfigurationException;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactoryFx;
 import de.fraunhofer.iosb.ilt.configurable.GuiFactorySwing;
 import de.fraunhofer.iosb.ilt.configurable.JsonSchema.ItemTrue;
@@ -89,6 +90,11 @@ public class EditorNull extends EditorDefault<Void> {
 
     @Override
     public Void getValue() {
+        return null;
+    }
+
+    @Override
+    public Void getDefaultValue() throws ConfigurationException {
         return null;
     }
 

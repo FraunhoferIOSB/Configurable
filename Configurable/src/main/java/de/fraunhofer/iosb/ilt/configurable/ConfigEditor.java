@@ -56,6 +56,16 @@ public interface ConfigEditor<T> {
     public T getValue() throws ConfigurationException;
 
     /**
+     * Get the default value defined by annotations.Returns null if there is no
+     * default value.
+     *
+     * @return the default value as defined by annotations.
+     * @throws ConfigurationException when the configuration can not be used to
+     * create a value.
+     */
+    public T getDefaultValue() throws ConfigurationException;
+
+    /**
      * Set the value in the editor. Used for saving an (externally) updated
      * configuration.
      *

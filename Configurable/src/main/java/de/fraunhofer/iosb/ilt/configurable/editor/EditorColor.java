@@ -282,6 +282,11 @@ public class EditorColor extends EditorDefault<Color> {
     }
 
     @Override
+    public Color getDefaultValue() {
+        return dflt;
+    }
+
+    @Override
     public void setValue(Color value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

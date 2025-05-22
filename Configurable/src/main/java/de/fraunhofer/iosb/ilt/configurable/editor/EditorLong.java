@@ -242,6 +242,11 @@ public final class EditorLong extends EditorDefault<Long> {
     }
 
     @Override
+    public Long getDefaultValue() {
+        return dflt;
+    }
+
+    @Override
     public void setValue(Long value) {
         this.value = value;
         fillComponent();

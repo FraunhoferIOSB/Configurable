@@ -211,6 +211,11 @@ public final class EditorBoolean extends EditorDefault<Boolean> {
     }
 
     @Override
+    public Boolean getDefaultValue() {
+        return dflt;
+    }
+
+    @Override
     public void setValue(Boolean value) {
         this.value = value;
         fillComponent();

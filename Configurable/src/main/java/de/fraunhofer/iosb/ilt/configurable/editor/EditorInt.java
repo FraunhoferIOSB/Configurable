@@ -246,6 +246,11 @@ public final class EditorInt extends EditorDefault<Integer> {
     }
 
     @Override
+    public Integer getDefaultValue() {
+        return dflt;
+    }
+
+    @Override
     public void setValue(Integer value) {
         this.value = value;
         fillComponent();

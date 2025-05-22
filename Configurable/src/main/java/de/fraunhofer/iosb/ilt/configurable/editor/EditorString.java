@@ -209,6 +209,11 @@ public class EditorString extends EditorDefault<String> {
     }
 
     @Override
+    public String getDefaultValue() {
+        return dflt;
+    }
+
+    @Override
     public void setValue(String value) {
         this.value = value;
         fillComponent();

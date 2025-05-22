@@ -261,6 +261,11 @@ public class EditorDouble extends EditorDefault<Double> {
     }
 
     @Override
+    public Double getDefaultValue() {
+        return dflt;
+    }
+
+    @Override
     public void setValue(Double value) {
         this.value = value;
         fillComponent();

@@ -345,12 +345,18 @@ public abstract class AbstractEditorMap<T, V> extends EditorDefault<T> implement
      * @throws ConfigurationException if any of the values could not be loaded.
      */
     public void setContentsOn(final Object target) throws ConfigurationException {
-        for (final String itemName : value) {
-            Item<V> item = options.get(itemName);
+        for (Entry<String, Item<V>> entry : options.entrySet()) {
+            final String itemName = entry.getKey();
+            final Item<V> item = entry.getValue();
             if (hasConfigurableConstructorParameter(target, item.fieldName)) {
                 continue;
             }
-            final Object val = item.editor.getValue();
+            final Object val;
+            if (value.contains(itemName)) {
+                val = item.editor.getValue();
+            } else {
+                val = item.editor.getDefaultValue();
+            }
             if (val == null) {
                 continue;
             }

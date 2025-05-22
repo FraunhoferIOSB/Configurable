@@ -240,6 +240,11 @@ public class EditorBigDecimal extends EditorDefault<BigDecimal> {
     }
 
     @Override
+    public BigDecimal getDefaultValue() {
+        return dflt;
+    }
+
+    @Override
     public void setValue(BigDecimal value) {
         this.value = value;
         fillComponent();

@@ -1,7 +1,7 @@
 # Development Version 0.37
 
 **Updates**
-* EditorMap no longer initialises optional items that have not been selected.
+* EditorMap no longer initialises optional items that have not been selected but explicitly uses the set default value.
 
 
 # Release Version 0.36

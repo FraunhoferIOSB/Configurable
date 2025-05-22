@@ -353,6 +353,11 @@ public class EditorList<U, T extends ConfigEditor<U>> extends EditorDefault<List
     }
 
     @Override
+    public List<U> getDefaultValue() {
+        return new ArrayList<>();
+    }
+
+    @Override
     public void setValue(List<U> value) {
         throw new UnsupportedOperationException("Not supported yet.");
     }

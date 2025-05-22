@@ -65,11 +65,21 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
          * @return The configurable class to configure.
          */
         Class<?> clazz();
+
+        /**
+         * If set to true, the default value of the editor is null instead of a
+         * non-configured instance of the class. This comes into play when
+         * setting an EditorClass as optional in an EditorMap.
+         *
+         * @return if true, the default value of the editor is null.
+         */
+        boolean dfltIsNull() default false;
     }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EditorClass.class);
 
     private Class<T> clazz;
+    private boolean dfltIsNull;
     private JsonElement classConfig;
     private ConfigEditor classEditor;
 
@@ -115,6 +125,7 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
             throw new IllegalArgumentException("Field must have an EdOptsClass annotation to use this editor: " + field.getName());
         }
         clazz = (Class<T>) annotation.clazz();
+        dfltIsNull = annotation.dfltIsNull();
     }
 
     public final void setContexts(final C context, final D edtCtx) {
@@ -237,6 +248,14 @@ public final class EditorClass<C, D, T> extends EditorDefault<T> {
     public T getValue() throws ConfigurationException {
         readComponent();
         return tryToInstantiate();
+    }
+
+    @Override
+    public T getDefaultValue() throws ConfigurationException {
+        if (dfltIsNull) {
+            return null;
+        }
+        return getValue();
     }
 
     private T tryToInstantiate() throws ConfigurationException {

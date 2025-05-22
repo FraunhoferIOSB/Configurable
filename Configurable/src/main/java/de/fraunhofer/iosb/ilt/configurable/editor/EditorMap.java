@@ -50,6 +50,11 @@ public class EditorMap<T> extends AbstractEditorMap<Map<String, T>, T> implement
         return result;
     }
 
+    @Override
+    public Map<String, T> getDefaultValue() throws ConfigurationException {
+        return new HashMap<>();
+    }
+
     public double getDouble(String name, double deflt) throws ConfigurationException {
         Item<T> item = options.get(name);
         Object result = item.editor.getValue();

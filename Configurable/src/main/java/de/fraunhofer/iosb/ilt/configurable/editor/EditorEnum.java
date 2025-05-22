@@ -217,6 +217,11 @@ public class EditorEnum<T extends Enum<T>> extends EditorDefault<T> {
     }
 
     @Override
+    public T getDefaultValue() {
+        return dflt;
+    }
+
+    @Override
     public void setValue(T value) {
         this.value = value;
         fillComponent();

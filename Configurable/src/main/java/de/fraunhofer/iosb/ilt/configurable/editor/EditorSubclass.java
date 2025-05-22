@@ -695,6 +695,11 @@ public class EditorSubclass<C, D, T> extends EditorDefault<T> {
         return instance;
     }
 
+    @Override
+    public T getDefaultValue() throws ConfigurationException {
+        return null;
+    }
+
     private T tryToInstantiate() throws ConfigurationException {
         try {
             return instantiate();
