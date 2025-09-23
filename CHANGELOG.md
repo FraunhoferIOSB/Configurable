@@ -1,6 +1,7 @@
 # Version 0.38-SNAPSHOT
 
 **Updates**
+* Updated dependencies.
 
 
 # Version 0.37
