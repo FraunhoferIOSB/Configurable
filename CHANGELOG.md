@@ -1,6 +1,7 @@
 # Version 0.38-SNAPSHOT
 
 **Updates**
+* [FX] Hide options dropdown in map (class) editor when its empty.
 * Updated dependencies.
 
 

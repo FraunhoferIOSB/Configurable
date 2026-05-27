@@ -83,7 +83,7 @@ public final class FactoryMapFx implements GuiFactoryFx {
         fxPaneRoot.setTop(controls);
 
         if (parentEditor.getOptionalOptions().isEmpty()) {
-            controls.setVisible(false);
+            FxUtils.nodeVisible(controls, false);
         }
 
         fxPaneList = new GridPane();
@@ -96,7 +96,6 @@ public final class FactoryMapFx implements GuiFactoryFx {
      * Ensure the component represents the current value.
      */
     public void fillComponent() {
-        controls.setVisible(parentEditor.canEdit() && !parentEditor.getOptionalOptions().isEmpty());
         fxPaneList.getChildren().clear();
         int row = 0;
         int endCol = -1;
@@ -141,6 +140,7 @@ public final class FactoryMapFx implements GuiFactoryFx {
             }
             addToGridFx(row, x0, label, x1, item, width, x2, key);
         }
+        FxUtils.nodeVisible(controls, parentEditor.canEdit() && !fxBoxNames.getItems().isEmpty());
     }
 
     private void addToGridFx(int row, final int x0, String label, final int x1, final AbstractEditorMap.Item<?> item, final int width, final int x2, final String key) {
