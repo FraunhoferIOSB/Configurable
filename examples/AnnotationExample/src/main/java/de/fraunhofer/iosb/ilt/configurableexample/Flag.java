@@ -21,11 +21,13 @@ import de.fraunhofer.iosb.ilt.configurable.AbstractConfigurable;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableField;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorBoolean;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorClass;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorInstant;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorInt;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +78,13 @@ public class Flag extends AbstractConfigurable<Object, Object> {
             description = "Is this flag made of cloth?")
     @EditorBoolean.EdOptsBool(dflt = true)
     private boolean cloth;
+
+    @ConfigurableField(
+            editor = EditorInstant.class,
+            label = "Since",
+            description = "The date-time since when this flag is used.")
+    @EditorInstant.EdOptsInstant()
+    private Instant since;
 
     public void wave() {
         LOGGER.info("I'm waving a flag of {} by {}. It is made of cloth: {}. It has a circle:", width, height, cloth);

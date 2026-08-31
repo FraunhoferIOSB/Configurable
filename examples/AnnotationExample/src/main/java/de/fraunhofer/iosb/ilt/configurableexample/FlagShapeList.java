@@ -22,12 +22,14 @@ import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableField;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorBigDecimal;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorBoolean;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorDouble;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorInstant;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorInt;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorList;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorLong;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorString;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorSubclass;
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import org.slf4j.Logger;
@@ -156,8 +158,15 @@ public class FlagShapeList implements AnnotatedConfigurable<Object, Object> {
     @EditorBigDecimal.EdOptsBigDecimal(dfltIsNull = true)
     private BigDecimal bdNull;
 
+    @ConfigurableField(
+            editor = EditorInstant.class,
+            label = "Since",
+            description = "The date-time since when this flag is used.")
+    @EditorInstant.EdOptsInstant()
+    private Instant since;
+
     public void wave() {
-        LOGGER.info("I'm waving a flag of {} by {}. It is made of cloth: {}. It has shapes:", width, height, cloth);
+        LOGGER.info("I'm waving a flag of {} by {} used since {} and is made of cloth:{}. It has a shape:", width, height, since, cloth);
         for (Shape shape : shapes) {
             shape.paintMe();
         }

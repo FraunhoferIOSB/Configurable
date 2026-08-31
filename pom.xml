@@ -70,7 +70,7 @@
         <version.maven.plugin.source>3.4.0</version.maven.plugin.source>
         <version.maven.plugin.spotless>3.5.1</version.maven.plugin.spotless>
 
-        <version.openjfx>22.0.2</version.openjfx>
+        <version.openjfx>23.0.2</version.openjfx>
         <version.reflections>0.10.2</version.reflections>
         <version.slf4j-api>2.0.18</version.slf4j-api>
     </properties>
@@ -102,6 +102,24 @@
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-fxml</artifactId>
                 <version>${version.openjfx}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-graphics</artifactId>
+                <version>${version.openjfx}</version>
+                <classifier>win</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-graphics</artifactId>
+                <version>${version.openjfx}</version>
+                <classifier>linux</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-graphics</artifactId>
+                <version>${version.openjfx}</version>
+                <classifier>mac</classifier>
             </dependency>
             <dependency>
                 <groupId>org.reflections</groupId>

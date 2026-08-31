@@ -45,9 +45,11 @@ public class ItemString extends SchemaItemAbstract<ItemString> {
 
     /**
      * @param minLength the minLength to set
+     * @return this.
      */
-    public void setMinLength(Integer minLength) {
+    public ItemString setMinLength(Integer minLength) {
         this.minLength = minLength;
+        return this;
     }
 
     /**
@@ -59,9 +61,11 @@ public class ItemString extends SchemaItemAbstract<ItemString> {
 
     /**
      * @param maxLength the maxLength to set
+     * @return this.
      */
-    public void setMaxLength(Integer maxLength) {
+    public ItemString setMaxLength(Integer maxLength) {
         this.maxLength = maxLength;
+        return this;
     }
 
     /**
@@ -73,9 +77,11 @@ public class ItemString extends SchemaItemAbstract<ItemString> {
 
     /**
      * @param pattern the pattern to set
+     * @return this.
      */
-    public void setPattern(String pattern) {
+    public ItemString setPattern(String pattern) {
         this.pattern = pattern;
+        return this;
     }
 
 }

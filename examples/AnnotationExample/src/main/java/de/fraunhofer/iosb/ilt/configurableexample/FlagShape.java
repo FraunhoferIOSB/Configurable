@@ -19,8 +19,10 @@ package de.fraunhofer.iosb.ilt.configurableexample;
 
 import de.fraunhofer.iosb.ilt.configurable.AbstractConfigurable;
 import de.fraunhofer.iosb.ilt.configurable.annotations.ConfigurableField;
+import de.fraunhofer.iosb.ilt.configurable.editor.EditorInstant;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorInt;
 import de.fraunhofer.iosb.ilt.configurable.editor.EditorSubclass;
+import java.time.Instant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +55,18 @@ public class FlagShape extends AbstractConfigurable<Object, Object> {
     @EditorSubclass.EdOptsSubclass(iface = Shape.class)
     private Shape shape;
 
+    @ConfigurableField(
+            editor = EditorInstant.class,
+            label = "Since",
+            description = "The date-time since when this flag is used.")
+    @EditorInstant.EdOptsInstant()
+    private Instant since;
+
     public void wave() {
         if (shape == null) {
-            LOGGER.info("I'm waving a flag of {} by {}. It is plain.", width, height);
+            LOGGER.info("I'm waving a flag of {} by {} used since {}. It is plain.", width, height, since);
         } else {
-            LOGGER.info("I'm waving a flag of {} by {}. It has a shape:", width, height);
+            LOGGER.info("I'm waving a flag of {} by {} used since {}. It has a shape:", width, height, since);
             shape.paintMe();
         }
     }
